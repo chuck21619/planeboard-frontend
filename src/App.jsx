@@ -1,35 +1,41 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useEffect } from "react";
+import { Stage, Layer, Rect } from "react-konva";
+import { connectToRoom, sendMessage } from "./ws";
 
 function App() {
-  const [count, setCount] = useState(0)
+  useEffect(() => {
+    connectToRoom("1234");
+  }, []);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div>
+      <h1 style={{ textAlign: "center" }}>Planeboard</h1>
+      <Stage width={window.innerWidth} height={window.innerHeight}>
+        <Layer>
+          <Rect
+            x={100}
+            y={100}
+            width={100}
+            height={140}
+            fill="white"
+            stroke="black"
+            strokeWidth={2}
+            cornerRadius={8}
+            draggable
+            shadowBlur={5}
+            onDragEnd={(e) => {
+              console.log("🟢 Card dragged:", e.target.x(), e.target.y());
+              sendMessage({
+                type: "MOVE_CARD",
+                x: e.target.x(),
+                y: e.target.y(),
+              });
+            }}
+          />
+        </Layer>
+      </Stage>
+    </div>
+  );
 }
 
-export default App
+export default App;
