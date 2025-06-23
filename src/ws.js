@@ -1,8 +1,10 @@
 let socket;
 let onMessageHandler = null;
 
+const WS_BASE_URL = import.meta.env.VITE_WS_BASE_URL;
+
 export function connectToRoom(roomId = "1234") {
-  socket = new WebSocket(`ws://localhost:8080/ws?room=${roomId}`);
+  socket = new WebSocket(`${WS_BASE_URL}/ws?room=${roomId}`);
 
   socket.onopen = () => {
     console.log("✅ WebSocket connected");
