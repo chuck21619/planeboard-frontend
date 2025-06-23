@@ -1,17 +1,20 @@
 let socket;
+let onMessageHandler = null;
 
 export function connectToRoom(roomId = "1234") {
   socket = new WebSocket(`ws://localhost:8080/ws?room=${roomId}`);
 
   socket.onopen = () => {
     console.log("✅ WebSocket connected");
-    // Send a test message
     socket.send(JSON.stringify({ type: "JOIN", user: "Player1" }));
   };
 
   socket.onmessage = (event) => {
     const message = JSON.parse(event.data);
     console.log("📨 Message from server:", message);
+    if (onMessageHandler) {
+      onMessageHandler(message);
+    }
   };
 
   socket.onclose = () => {
@@ -30,4 +33,8 @@ export function sendMessage(msg) {
   } else {
     console.warn("WebSocket not open");
   }
+}
+
+export function setOnMessageHandler(handler) {
+  onMessageHandler = handler;
 }
