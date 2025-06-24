@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Stage, Layer, Rect } from "react-konva";
 import { connectToRoom, sendMessage, setOnMessageHandler } from "./ws";
+import { useParams } from "react-router-dom";
 
 function App() {
+  const { roomId } = useParams();
   const [cards, setCards] = useState([]);
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    connectToRoom("1234");
+    connectToRoom(roomId || "1234");
 
     setOnMessageHandler((message) => {
       if (message.type === "BOARD_STATE") {
@@ -19,13 +22,23 @@ function App() {
               : card
           )
         );
+      } else if (message.type === "USER_JOINED") {
+        setUsers(message.users);
+      } else if (message.type === "USER_LEFT") {
+        setUsers(message.users);
       }
     });
-  }, []);
+  }, [roomId]);
 
   return (
     <div>
-      <h1 style={{ textAlign: "center" }}>Planeboard</h1>
+      <h1 style={{ textAlign: "center" }}>Planeboard - Room {roomId}</h1>
+      <h3>Players in room:</h3>
+      <ul>
+        {users.map((u) => (
+          <li key={u}>{u}</li>
+        ))}
+      </ul>
       <Stage width={window.innerWidth} height={window.innerHeight}>
         <Layer>
           {cards.map((card) => (
