@@ -3,7 +3,7 @@ import { useState } from "react";
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const [roomId, setRoomId] = useState("1234");
+  const [roomId, setRoomId] = useState("");
   const [deckUrl, setDeckUrl] = useState("");
 
   const handleJoinRoom = () => {
@@ -21,7 +21,7 @@ export default function Dashboard() {
         type="text"
         value={roomId}
         onChange={(e) => setRoomId(e.target.value)}
-        placeholder="Enter room ID"
+        placeholder="Room Name"
         style={{ padding: "0.5rem", fontSize: "1rem", width: "300px" }}
       />
       <br />
@@ -30,7 +30,7 @@ export default function Dashboard() {
         type="text"
         value={deckUrl}
         onChange={(e) => setDeckUrl(e.target.value)}
-        placeholder="Paste Archidekt deck URL"
+        placeholder="Archidekt URL"
         style={{ padding: "0.5rem", fontSize: "1rem", width: "300px" }}
       />
       <br />
