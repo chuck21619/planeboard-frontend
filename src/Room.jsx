@@ -7,12 +7,9 @@ function App() {
   const { roomId } = useParams();
   const [cards, setCards] = useState([]);
   const [users, setUsers] = useState([]);
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  const deckUrl = searchParams.get("deck") || "";
 
   useEffect(() => {
-    connectToRoom(roomId || "1234", deckUrl);
+    connectToRoom();
 
     setOnMessageHandler((message) => {
       if (message.type === "BOARD_STATE") {

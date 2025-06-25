@@ -2,17 +2,22 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 export default function Login() {
-  const [username, setUsername] = useState(() => localStorage.getItem("username") || "");
-  const [roomId, setRoomId] = useState(() => localStorage.getItem("roomId") || ""); 
-  const [deckUrl, setDeckUrl] = useState(() => localStorage.getItem("deckUrl") || "");
+  const [username, setUsername] = useState(
+    () => localStorage.getItem("username") || ""
+  );
+  const [roomId, setRoomId] = useState(
+    () => localStorage.getItem("roomId") || ""
+  );
+  const [deckUrl, setDeckUrl] = useState(
+    () => localStorage.getItem("deckUrl") || ""
+  );
   const navigate = useNavigate();
 
   const handleJoinRoom = () => {
     localStorage.setItem("username", username);
     localStorage.setItem("roomId", roomId);
     localStorage.setItem("deckUrl", deckUrl);
-    const params = new URLSearchParams({ deck: deckUrl.trim() });
-    navigate(`/room/${roomId.trim()}?${params.toString()}`);
+    navigate(`/room/${roomId}`);
   };
 
   return (

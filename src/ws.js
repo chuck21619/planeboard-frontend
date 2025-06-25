@@ -3,8 +3,10 @@ let onMessageHandler = null;
 
 const WS_BASE_URL = import.meta.env.VITE_WS_BASE_URL;
 
-export function connectToRoom(roomId, deckUrl) {
-  const username = localStorage.getItem("username") || "Anonymous";
+export function connectToRoom() {
+  const username = localStorage.getItem("username");
+  const roomId = localStorage.getItem("roomId");
+  const deckUrl = localStorage.getItem("deckUrl");
   socket = new WebSocket(
     `${import.meta.env.VITE_WS_BASE_URL}/ws?room=${roomId}&username=${username}`
   );
