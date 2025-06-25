@@ -2,28 +2,50 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 export default function Login() {
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState(() => localStorage.getItem("username") || "");
+  const [roomId, setRoomId] = useState(() => localStorage.getItem("roomId") || ""); 
+  const [deckUrl, setDeckUrl] = useState(() => localStorage.getItem("deckUrl") || "");
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    if (!username.trim()) return;
-    localStorage.setItem("username", username.trim());
-    navigate("/dashboard");
+  const handleJoinRoom = () => {
+    localStorage.setItem("username", username);
+    localStorage.setItem("roomId", roomId);
+    localStorage.setItem("deckUrl", deckUrl);
+    const params = new URLSearchParams({ deck: deckUrl.trim() });
+    navigate(`/room/${roomId.trim()}?${params.toString()}`);
   };
 
   return (
     <div style={{ textAlign: "center", marginTop: "100px" }}>
-      <h1>Login</h1>
+      <h1>Planeboard</h1>
       <input
         type="text"
         placeholder="Enter username"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
-        style={{ padding: "0.5rem", fontSize: "1rem" }}
+        style={{ padding: "0.5rem", fontSize: "1rem", width: "300px" }}
       />
       <br />
       <br />
-      <button onClick={handleLogin}>Login</button>
+      <input
+        type="text"
+        value={roomId}
+        onChange={(e) => setRoomId(e.target.value)}
+        placeholder="Room Name"
+        style={{ padding: "0.5rem", fontSize: "1rem", width: "300px" }}
+      />
+      <br />
+      <br />
+      <input
+        type="text"
+        value={deckUrl}
+        onChange={(e) => setDeckUrl(e.target.value)}
+        placeholder="Archidekt URL"
+        style={{ padding: "0.5rem", fontSize: "1rem", width: "300px" }}
+      />
+      <br />
+      <br />
+      <button onClick={handleJoinRoom}>Join Room</button>
     </div>
   );
 }
