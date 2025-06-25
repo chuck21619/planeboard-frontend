@@ -16,6 +16,7 @@ function App() {
       if (message.type === "BOARD_STATE") {
         setCards(message.cards);
         setDecks(message.decks);
+        setUsers(message.users);
       } else if (message.type === "MOVE_CARD") {
         setCards((prevCards) =>
           prevCards.map((card) =>
@@ -33,10 +34,13 @@ function App() {
           )
         );
       } else if (message.type === "USER_JOINED") {
-        setUsers(message.users);
-        setDecks(Object.values(message.decks));
+        setUsers((users) => [...users, message.user]);
+        setDecks((decks) => [...decks, message.deck]);
       } else if (message.type === "USER_LEFT") {
-        setUsers(message.users);
+        setDecks((prevDecks) =>
+          prevDecks.filter((deck) => deck.id !== message.user)
+        );
+        setUsers((prevUsers) => prevUsers.filter((u) => u !== message.user));
       }
     });
   }, [roomId]);
@@ -82,7 +86,7 @@ function App() {
                 y={deck.y}
                 width={60}
                 height={90}
-                fill="darkblue"
+                fill="darkgreen"
                 cornerRadius={8}
                 shadowBlur={5}
                 draggable
