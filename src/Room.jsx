@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Stage, Layer, Rect } from "react-konva";
 import { connectToRoom, sendMessage, setOnMessageHandler } from "./ws";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 
 function App() {
   const { roomId } = useParams();
   const [cards, setCards] = useState([]);
   const [users, setUsers] = useState([]);
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const deckUrl = searchParams.get("deck") || "";
 
   useEffect(() => {
-    connectToRoom(roomId || "1234");
+    connectToRoom(roomId || "1234", deckUrl);
 
     setOnMessageHandler((message) => {
       if (message.type === "BOARD_STATE") {
