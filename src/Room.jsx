@@ -7,8 +7,11 @@ function App() {
   const { roomId } = useParams();
   const [cards, setCards] = useState([]);
   const [decks, setDecks] = useState([]);
-  const [users, setUsers] = useState([]);
   const [positions, setPositions] = useState({});
+  const [stageScale, setStageScale] = useState(1);
+  const [stagePosition, setStagePosition] = useState({ x: 0, y: 0 });
+
+  const size = 5000;
 
   useEffect(() => {
     connectToRoom();
@@ -17,7 +20,6 @@ function App() {
       if (message.type === "BOARD_STATE") {
         setCards(message.cards);
         setDecks(message.decks);
-        setUsers(message.users);
         setPositions(message.positions);
       } else if (message.type === "MOVE_CARD") {
         setCards((prevCards) =>
@@ -36,13 +38,11 @@ function App() {
           )
         );
       } else if (message.type === "USER_JOINED") {
-        setUsers(message.users);
         setDecks(Object.values(message.decks));
       } else if (message.type === "USER_LEFT") {
         setDecks((prevDecks) =>
           prevDecks.filter((deck) => deck.id !== message.user)
         );
-        setUsers((prevUsers) => prevUsers.filter((u) => u !== message.user));
       }
     });
   }, [roomId]);
@@ -79,7 +79,74 @@ function App() {
         </div>
       </div>
 
-      <Stage width={window.innerWidth} height={window.innerHeight}>
+      <Stage
+        width={window.innerWidth}
+        height={window.innerHeight}
+        scaleX={stageScale}
+        scaleY={stageScale}
+        x={stagePosition.x}
+        y={stagePosition.y}
+        draggable
+        onDragEnd={(e) => {
+          setStagePosition({ x: e.target.x(), y: e.target.y() });
+        }}
+        onWheel={(e) => {
+          e.evt.preventDefault();
+          const scaleBy = 1.05;
+          const oldScale = stageScale;
+          const pointer = e.target.getStage().getPointerPosition();
+          const mousePointTo = {
+            x: (pointer.x - stagePosition.x) / oldScale,
+            y: (pointer.y - stagePosition.y) / oldScale,
+          };
+          const newScale =
+            e.evt.deltaY < 0 ? oldScale * scaleBy : oldScale / scaleBy;
+          setStageScale(newScale);
+          const newPos = {
+            x: pointer.x - mousePointTo.x * newScale,
+            y: pointer.y - mousePointTo.y * newScale,
+          };
+          setStagePosition(newPos);
+        }}
+      >
+        <Layer>
+          {/* Top-left */}
+          <Rect
+            x={-size}
+            y={-size}
+            width={size}
+            height={size}
+            fill="#1e1e6a"
+            opacity={0.05}
+          />
+          {/* Top-right */}
+          <Rect
+            x={0}
+            y={-size}
+            width={size}
+            height={size}
+            fill="#1e6a1e"
+            opacity={0.05}
+          />
+          {/* Bottom-left */}
+          <Rect
+            x={-size}
+            y={0}
+            width={size}
+            height={size}
+            fill="#6a1e1e"
+            opacity={0.05}
+          />
+          {/* Bottom-right */}
+          <Rect
+            x={0}
+            y={0}
+            width={size}
+            height={size}
+            fill="#6a6a1e"
+            opacity={0.05}
+          />
+        </Layer>
         <Layer>
           {cards.map((card) => (
             <Rect
