@@ -88,7 +88,15 @@ function App() {
         y={stagePosition.y}
         draggable
         onDragEnd={(e) => {
-          setStagePosition({ x: e.target.x(), y: e.target.y() });
+          const target = e.target;
+          if (target === e.target.getStage()) {
+            const newX = target.x();
+            const newY = target.y();
+            console.log("Stage drag ended at", newX, newY);
+            setStagePosition({ x: newX, y: newY });
+          } else {
+            console.log("Ignored dragEnd from", target.className);
+          }
         }}
         onWheel={(e) => {
           e.evt.preventDefault();
@@ -117,7 +125,7 @@ function App() {
             width={size}
             height={size}
             fill="#1e1e6a"
-            opacity={0.05}
+            opacity={0.2}
           />
           {/* Top-right */}
           <Rect
@@ -126,7 +134,7 @@ function App() {
             width={size}
             height={size}
             fill="#1e6a1e"
-            opacity={0.05}
+            opacity={0.2}
           />
           {/* Bottom-left */}
           <Rect
@@ -135,7 +143,7 @@ function App() {
             width={size}
             height={size}
             fill="#6a1e1e"
-            opacity={0.05}
+            opacity={0.2}
           />
           {/* Bottom-right */}
           <Rect
@@ -144,7 +152,7 @@ function App() {
             width={size}
             height={size}
             fill="#6a6a1e"
-            opacity={0.05}
+            opacity={0.2}
           />
         </Layer>
         <Layer>
