@@ -8,6 +8,7 @@ function App() {
   const [cards, setCards] = useState([]);
   const [decks, setDecks] = useState([]);
   const [users, setUsers] = useState([]);
+  const [positions, setPositions] = useState({});
 
   useEffect(() => {
     connectToRoom();
@@ -17,6 +18,7 @@ function App() {
         setCards(message.cards);
         setDecks(message.decks);
         setUsers(message.users);
+        setPositions(message.positions);
       } else if (message.type === "MOVE_CARD") {
         setCards((prevCards) =>
           prevCards.map((card) =>
@@ -46,7 +48,14 @@ function App() {
   }, [roomId]);
 
   return (
-    <div>
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        overflow: "hidden",
+        position: "relative",
+      }}
+    >
       <h1 style={{ textAlign: "center" }}>Planeboard - Room {roomId}</h1>
       <h3>Players in room:</h3>
       <ul>
@@ -54,6 +63,58 @@ function App() {
           <li key={u}>{u}</li>
         ))}
       </ul>
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          display: "flex",
+          justifyContent: "space-between",
+          padding: "10px 40px", // add horizontal padding
+          pointerEvents: "none",
+        }}
+      >
+        <div style={{ width: "50%", textAlign: "center" }}>
+          {Object.entries(positions).find(([_, pos]) => pos === "topLeft")?.[0]}
+        </div>
+        <div style={{ width: "50%", textAlign: "center" }}>
+          {
+            Object.entries(positions).find(
+              ([_, pos]) => pos === "topRight"
+            )?.[0]
+          }
+        </div>
+      </div>
+
+      <div
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          width: "100%",
+          display: "flex",
+          justifyContent: "space-between",
+          padding: "10px 40px",
+          pointerEvents: "none",
+        }}
+      >
+        <div style={{ width: "50%", textAlign: "center" }}>
+          {
+            Object.entries(positions).find(
+              ([_, pos]) => pos === "bottomLeft"
+            )?.[0]
+          }
+        </div>
+        <div style={{ width: "50%", textAlign: "center" }}>
+          {
+            Object.entries(positions).find(
+              ([_, pos]) => pos === "bottomRight"
+            )?.[0]
+          }
+        </div>
+      </div>
+
       <Stage width={window.innerWidth} height={window.innerHeight}>
         <Layer>
           {cards.map((card) => (
