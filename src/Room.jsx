@@ -48,37 +48,12 @@ function App() {
   }, [roomId]);
 
   return (
-    <div
-      style={{
-        width: "100%",
-        height: "100%",
-        overflow: "hidden",
-        position: "relative",
-      }}
-    >
-      <h1 style={{ textAlign: "center" }}>Planeboard - Room {roomId}</h1>
-      <h3>Players in room:</h3>
-      <ul>
-        {users.map((u) => (
-          <li key={u}>{u}</li>
-        ))}
-      </ul>
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          display: "flex",
-          justifyContent: "space-between",
-          padding: "10px 40px", // add horizontal padding
-          pointerEvents: "none",
-        }}
-      >
-        <div style={{ width: "50%", textAlign: "center" }}>
+    <div className="room-container">
+      <div className="player-bar player-bar-top">
+        <div className="player-half">
           {Object.entries(positions).find(([_, pos]) => pos === "topLeft")?.[0]}
         </div>
-        <div style={{ width: "50%", textAlign: "center" }}>
+        <div className="player-half">
           {
             Object.entries(positions).find(
               ([_, pos]) => pos === "topRight"
@@ -87,26 +62,15 @@ function App() {
         </div>
       </div>
 
-      <div
-        style={{
-          position: "absolute",
-          bottom: 0,
-          left: 0,
-          width: "100%",
-          display: "flex",
-          justifyContent: "space-between",
-          padding: "10px 40px",
-          pointerEvents: "none",
-        }}
-      >
-        <div style={{ width: "50%", textAlign: "center" }}>
+      <div className="player-bar player-bar-bottom">
+        <div className="player-half">
           {
             Object.entries(positions).find(
               ([_, pos]) => pos === "bottomLeft"
             )?.[0]
           }
         </div>
-        <div style={{ width: "50%", textAlign: "center" }}>
+        <div className="player-half">
           {
             Object.entries(positions).find(
               ([_, pos]) => pos === "bottomRight"
@@ -158,7 +122,6 @@ function App() {
                       : d
                   );
                   setDecks(newDecks);
-
                   sendMessage({
                     type: "MOVE_DECK",
                     id: deck.id,
