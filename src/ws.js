@@ -7,6 +7,8 @@ export function connectToRoom() {
   const username = localStorage.getItem("username");
   const roomId = localStorage.getItem("roomId");
   const deckUrl = localStorage.getItem("deckUrl");
+  const cardsJson = localStorage.getItem("cards");
+  const cards = cardsJson ? JSON.parse(cardsJson) : [];
   socket = new WebSocket(
     `${import.meta.env.VITE_WS_BASE_URL}/ws?room=${roomId}&username=${username}`
   );
@@ -17,6 +19,7 @@ export function connectToRoom() {
       type: "JOIN",
       username,
       deckUrl,
+      cards
     }));
   };
 
