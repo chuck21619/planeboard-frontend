@@ -34,8 +34,8 @@ function App() {
           )
         );
       } else if (message.type === "USER_JOINED") {
-        setUsers((users) => [...users, message.user]);
-        setDecks((decks) => [...decks, message.deck]);
+        setUsers(message.users);
+        setDecks(Object.values(message.decks));
       } else if (message.type === "USER_LEFT") {
         setDecks((prevDecks) =>
           prevDecks.filter((deck) => deck.id !== message.user)

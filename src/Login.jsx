@@ -14,15 +14,6 @@ export default function Login() {
   const navigate = useNavigate();
 
   const handleJoinRoom = async () => {
-    const deckUrl = localStorage.getItem("deckUrl");
-    const deckId = deckUrl.split("/").pop();
-
-    const res = await fetch(
-      `https://archidekt.com/api/decks/${deckId}/export/compact/`
-    );
-    const data = await res.json();
-    console.log(data);
-
     localStorage.setItem("username", username);
     localStorage.setItem("roomId", roomId);
     localStorage.setItem("deckUrl", deckUrl);
