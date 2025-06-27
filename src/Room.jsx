@@ -2,8 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Stage, Layer, Rect, Text } from "react-konva";
 import { connectToRoom, sendMessage, setOnMessageHandler } from "./ws";
 import { useParams } from "react-router-dom";
+import Card from "./components/Card";
+import Deck from "./components/Deck";
+import BoardBackground from "./components/BoardBackground";
 
-function App() {
+function Room() {
   const { roomId } = useParams();
   const [cards, setCards] = useState([]);
   const [decks, setDecks] = useState([]);
@@ -124,103 +127,14 @@ function App() {
         }}
       >
         <Layer>
-          {/* Top-left */}
-          <Rect
-            x={-size}
-            y={-size}
-            width={size}
-            height={size}
-            fill="#155215"
-            opacity={0.1}
-          />
-          {/* Top-right */}
-          <Rect
-            x={0}
-            y={-size}
-            width={size}
-            height={size}
-            fill="#151554"
-            opacity={0.1}
-          />
-          {/* Bottom-left */}
-          <Rect
-            x={-size}
-            y={0}
-            width={size}
-            height={size}
-            fill="#541515"
-            opacity={0.1}
-          />
-          {/* Bottom-right */}
-          <Rect
-            x={0}
-            y={0}
-            width={size}
-            height={size}
-            fill="#545415"
-            opacity={0.1}
-          />
+          <BoardBackground size={size} />
         </Layer>
         <Layer>
           {cards.map((card) => (
-            <Rect
-              key={card.id}
-              x={card.x}
-              y={card.y}
-              width={100}
-              height={140}
-              fill="white"
-              stroke="black"
-              strokeWidth={2}
-              cornerRadius={8}
-              draggable
-              shadowBlur={5}
-              onDragEnd={(e) => {
-                sendMessage({
-                  type: "MOVE_CARD",
-                  id: card.id,
-                  x: e.target.x(),
-                  y: e.target.y(),
-                });
-              }}
-            />
+            <Card key={card.id} card={card} />
           ))}
           {decks.map((deck) => (
-            <React.Fragment key={deck.id}>
-              <Rect
-                x={deck.x}
-                y={deck.y}
-                width={60}
-                height={90}
-                fill="darkgreen"
-                cornerRadius={8}
-                shadowBlur={5}
-                draggable
-                onDragEnd={(e) => {
-                  const newDecks = decks.map((d) =>
-                    d.id === deck.id
-                      ? { ...d, x: e.target.x(), y: e.target.y() }
-                      : d
-                  );
-                  setDecks(newDecks);
-                  sendMessage({
-                    type: "MOVE_DECK",
-                    id: deck.id,
-                    x: e.target.x(),
-                    y: e.target.y(),
-                  });
-                }}
-              />
-              <Text
-                text={`${deck.id}'s Deck`}
-                x={deck.x}
-                y={deck.y - 20}
-                fontSize={14}
-                fill="white"
-                align="center"
-                width={60}
-              />
-            </React.Fragment>
+            <Deck key={deck.id} deck={deck} decks={decks} setDecks={setDecks} />
           ))}
         </Layer>
       </Stage>
@@ -228,4 +142,4 @@ function App() {
   );
 }
 
-export default App;
+export default Room;
