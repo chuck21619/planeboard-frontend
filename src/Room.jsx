@@ -6,8 +6,12 @@ import { useParams } from "react-router-dom";
 import Card from "./components/Card";
 import Deck from "./components/Deck";
 import Hand from "./components/Hand";
+import OpponentHand from "./components/OpponentHand";
 import BoardBackground from "./components/BoardBackground";
-import { useCardImagePreloader } from './hooks/useCardImagePreloader';
+import { useCardImagePreloader } from "./hooks/useCardImagePreloader";
+import useImage from "use-image";
+
+const username = localStorage.getItem("username");
 
 function Room() {
   const navigate = useNavigate();
@@ -19,6 +23,8 @@ function Room() {
   const [cards, setCards] = useState([]);
   const [decks, setDecks] = useState([]);
   const [hand, setHand] = useState([]);
+  const [handSizes, setHandSizes] = useState({});
+  const [cardBackImage] = useImage("/defaultCardBack.jpg");
   const [positions, setPositions] = useState({});
   const [stageScale, setStageScale] = useState(1);
   const [stagePosition, setStagePosition] = useState({ x: 0, y: 0 });
@@ -77,6 +83,7 @@ function Room() {
         setCards(message.cards);
         setDecks(message.decks);
         setPositions(message.positions);
+        setHandSizes(message.handSizes);
       } else if (message.type === "MOVE_CARD") {
         setCards((prevCards) =>
           prevCards.map((card) =>
@@ -88,18 +95,26 @@ function Room() {
       } else if (message.type === "USER_JOINED") {
         setDecks(Object.values(message.decks));
         setPositions(message.positions);
-        if (message.users.includes(localStorage.getItem("username"))) {
+        if (message.users.includes(username)) {
           setHasJoined(true);
         }
       } else if (message.type === "CARD_DRAWN") {
         setHand((prev) => [...prev, message.card]);
       } else if (message.type === "PLAYER_DREW_CARD") {
-        // Show a cardback in that player's hand area
+        setHandSizes((prev) => ({
+          ...prev,
+          [message.player]: message.handSize,
+        }));
       } else if (message.type === "USER_LEFT") {
         setPositions(message.positions);
         setDecks((prevDecks) =>
           prevDecks.filter((deck) => deck.id !== message.user)
         );
+        setHandSizes((prevSizes) => {
+          const updated = { ...prevSizes };
+          delete updated[message.user];
+          return updated;
+        });
       } else if (message.type === "ERROR") {
         alert(message.reason);
         disconnect();
@@ -201,6 +216,19 @@ function Room() {
         >
           <Layer>
             <BoardBackground size={size} />
+          </Layer>
+          <Layer>
+            {Object.entries(handSizes).map(([playerName, count]) => {
+              if (playerName === username) return null;
+              return (
+                <OpponentHand
+                  key={playerName}
+                  count={count}
+                  quadrant={positions[playerName]}
+                  cardBackImage={cardBackImage}
+                />
+              );
+            })}
           </Layer>
           <Layer>
             {cards.map((card) => (
