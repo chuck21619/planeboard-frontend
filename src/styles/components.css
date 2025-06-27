@@ -62,7 +62,13 @@
   width: 64px;
   height: 89px;
 }
-
+.card-img {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
 .card-img,
 .card-placeholder {
   position: absolute;
@@ -92,8 +98,10 @@
 
 .card-img.visible {
   opacity: 1;
-  transition: opacity 0.2s ease;
-  z-index: 2;
+}
+
+.card-img.no-fade {
+  transition: none;
 }
 
 .card-placeholder.hidden {

@@ -30,24 +30,31 @@ export default function Hand({ hand }) {
 
 function CardWithPreload({ card, cardWidth }) {
   const [loaded, setLoaded] = useState(false);
+  const [wasCached, setWasCached] = useState(false);
 
   useEffect(() => {
     const img = new Image();
     img.src = card.imageUrl;
-    img.onload = () => setLoaded(true);
+
+    if (img.complete) {
+      setWasCached(true);
+      setLoaded(true);
+    } else {
+      img.onload = () => setLoaded(true);
+    }
   }, [card.imageUrl]);
+
+  const classNames = `card-img ${loaded ? "visible" : "hidden"} ${
+    wasCached ? "no-fade" : ""
+  }`;
 
   return (
     <div className="card-in-hand">
-      {!loaded && (
-        <div className={`card-placeholder ${loaded ? "hidden" : ""}`}>
-          {card.name}
-        </div>
-      )}
+      {!loaded && <div className="card-placeholder">{card.name}</div>}
       <img
         src={card.imageUrl}
         alt={card.name}
-        className={`card-img ${loaded ? "visible" : "hidden"}`}
+        className={classNames}
         style={{ width: cardWidth, height: 89 }}
       />
     </div>
