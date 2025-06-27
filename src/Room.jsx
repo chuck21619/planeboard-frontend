@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { Stage, Layer, Rect, Text } from "react-konva";
-import { connectToRoom, sendMessage, setOnMessageHandler } from "./ws";
+import { useEffect, useState } from "react";
+import { Stage, Layer } from "react-konva";
+import { connectToRoom, disconnect, setOnMessageHandler } from "./ws";
 import { useParams } from "react-router-dom";
 import Card from "./components/Card";
 import Deck from "./components/Deck";
@@ -13,10 +13,17 @@ function Room() {
   const [positions, setPositions] = useState({});
   const [stageScale, setStageScale] = useState(1);
   const [stagePosition, setStagePosition] = useState({ x: 0, y: 0 });
-
   const size = 5000;
 
   useEffect(() => {
+    const handleBeforeUnload = () => {
+      disconnect();
+    };
+    const handlePopState = () => {
+      disconnect();
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("popstate", handlePopState);
     setStagePosition({
       x: window.innerWidth / 2,
       y: window.innerHeight / 2,
@@ -54,6 +61,11 @@ function Room() {
         );
       }
     });
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("popstate", handlePopState);
+      disconnect();
+    };
   }, [roomId]);
 
   return (

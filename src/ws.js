@@ -15,12 +15,14 @@ export function connectToRoom() {
 
   socket.onopen = () => {
     console.log("✅ WebSocket connected");
-    socket.send(JSON.stringify({
-      type: "JOIN",
-      username,
-      deckUrl,
-      cards
-    }));
+    socket.send(
+      JSON.stringify({
+        type: "JOIN",
+        username,
+        deckUrl,
+        cards,
+      })
+    );
   };
 
   socket.onmessage = (event) => {
@@ -51,4 +53,8 @@ export function sendMessage(msg) {
 
 export function setOnMessageHandler(handler) {
   onMessageHandler = handler;
+}
+
+export function disconnect() {
+  if (socket) socket.close();
 }
