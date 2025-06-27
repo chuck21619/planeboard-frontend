@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Stage, Layer } from "react-konva";
 import { connectToRoom, disconnect, setOnMessageHandler } from "./ws";
@@ -7,6 +7,7 @@ import Card from "./components/Card";
 import Deck from "./components/Deck";
 import Hand from "./components/Hand";
 import BoardBackground from "./components/BoardBackground";
+import { useCardImagePreloader } from './hooks/useCardImagePreloader';
 
 function Room() {
   const navigate = useNavigate();
@@ -25,47 +26,9 @@ function Room() {
     width: window.innerWidth,
     height: window.innerHeight,
   });
-  useEffect(() => {
-    const imagesToLoad = [];
+  const prevImageUrlsRef = useRef(new Set());
 
-    decks.forEach((deck) => {
-      deck.cards?.forEach((card) => {
-        imagesToLoad.push(card.imageUrl);
-      });
-    });
-
-    let index = 0;
-    let timeoutId;
-
-    const loadNextImage = () => {
-      if (index >= imagesToLoad.length) return;
-
-      const img = new Image();
-      const start = performance.now();
-
-      img.onload = () => {
-        const duration = performance.now() - start;
-        const fromCache = duration < 50;
-
-        // Schedule next load based on whether it came from cache
-        const delay = fromCache ? 30 : 125;
-        timeoutId = setTimeout(loadNextImage, delay);
-      };
-
-      img.onerror = () => {
-        // Retry less aggressively on error
-        timeoutId = setTimeout(loadNextImage, 250);
-      };
-
-      img.src = imagesToLoad[index];
-      index++;
-    };
-
-    loadNextImage(); // start loading
-
-    return () => clearTimeout(timeoutId);
-  }, [decks]);
-
+  useCardImagePreloader(decks);
   useEffect(() => {
     const handleResize = () => {
       console.log("Window resized:", window.innerWidth, window.innerHeight);
