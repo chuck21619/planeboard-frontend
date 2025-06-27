@@ -62,14 +62,6 @@ function Room() {
               : card
           )
         );
-      } else if (message.type === "MOVE_DECK") {
-        setDecks((prevDecks) =>
-          prevDecks.map((deck) =>
-            deck.id === message.id
-              ? { ...deck, x: message.x, y: message.y }
-              : deck
-          )
-        );
       } else if (message.type === "USER_JOINED") {
         setDecks(Object.values(message.decks));
         setPositions(message.positions);
