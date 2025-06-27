@@ -17,7 +17,6 @@ export default function Login() {
     localStorage.setItem("username", username);
     localStorage.setItem("roomId", roomId);
     localStorage.setItem("deckUrl", deckUrl);
-    //localStorage.setItem("cards", JSON.stringify(cards));
     navigate(`/room/${roomId}`);
   };
 

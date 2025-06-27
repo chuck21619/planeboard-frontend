@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Stage, Layer } from "react-konva";
 import { connectToRoom, disconnect, setOnMessageHandler } from "./ws";
 import { useParams } from "react-router-dom";
@@ -7,6 +8,7 @@ import Deck from "./components/Deck";
 import BoardBackground from "./components/BoardBackground";
 
 function Room() {
+  const navigate = useNavigate();
   const { roomId } = useParams();
   const [cards, setCards] = useState([]);
   const [decks, setDecks] = useState([]);
@@ -59,6 +61,10 @@ function Room() {
         setDecks((prevDecks) =>
           prevDecks.filter((deck) => deck.id !== message.user)
         );
+      } else if (message.type === "ERROR") {
+        alert(message.reason);
+        disconnect();
+        navigate("/");
       }
     });
     return () => {
