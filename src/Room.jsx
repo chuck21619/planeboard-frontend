@@ -35,18 +35,35 @@ function Room() {
     });
 
     let index = 0;
-    const interval = setInterval(() => {
-      if (index >= imagesToLoad.length) {
-        clearInterval(interval);
-        return;
-      }
+    let timeoutId;
+
+    const loadNextImage = () => {
+      if (index >= imagesToLoad.length) return;
 
       const img = new Image();
+      const start = performance.now();
+
+      img.onload = () => {
+        const duration = performance.now() - start;
+        const fromCache = duration < 50;
+
+        // Schedule next load based on whether it came from cache
+        const delay = fromCache ? 30 : 125;
+        timeoutId = setTimeout(loadNextImage, delay);
+      };
+
+      img.onerror = () => {
+        // Retry less aggressively on error
+        timeoutId = setTimeout(loadNextImage, 250);
+      };
+
       img.src = imagesToLoad[index];
       index++;
-    }, 120); // 1000ms / 8 = 125ms → 8 requests/sec
+    };
 
-    return () => clearInterval(interval);
+    loadNextImage(); // start loading
+
+    return () => clearTimeout(timeoutId);
   }, [decks]);
 
   useEffect(() => {

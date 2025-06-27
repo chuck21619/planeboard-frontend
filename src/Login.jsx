@@ -32,7 +32,7 @@ export default function Login() {
       <h1>Planeboard</h1>
       <input
         type="text"
-        placeholder="Enter username"
+        placeholder="Username"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
         style={{ padding: "0.5rem", fontSize: "1rem", width: "300px" }}
