@@ -19,6 +19,24 @@ function Room() {
   const [positions, setPositions] = useState({});
   const [stageScale, setStageScale] = useState(1);
   const [stagePosition, setStagePosition] = useState({ x: 0, y: 0 });
+  const [windowSize, setWindowSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      console.log("Window resized:", window.innerWidth, window.innerHeight);
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const size = 5000;
   useEffect(() => {
     const timer = setTimeout(() => setShowSpinner(true), 10);
