@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import "./index.css";
+import './styles/index.css';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./Login.jsx";
 import Room from "./Room.jsx";
