@@ -43,7 +43,9 @@ function App() {
         );
       } else if (message.type === "USER_JOINED") {
         setDecks(Object.values(message.decks));
+        setPositions(message.positions);
       } else if (message.type === "USER_LEFT") {
+        setPositions(message.positions);
         setDecks((prevDecks) =>
           prevDecks.filter((deck) => deck.id !== message.user)
         );
