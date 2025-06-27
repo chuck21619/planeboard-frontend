@@ -11,17 +11,24 @@ export default function Login() {
   const [deckUrl, setDeckUrl] = useState(
     () => localStorage.getItem("deckUrl") || ""
   );
+  const [isFadingOut, setIsFadingOut] = useState(false);
   const navigate = useNavigate();
 
-  const handleJoinRoom = async () => {
+  const handleJoinRoom = () => {
     localStorage.setItem("username", username);
     localStorage.setItem("roomId", roomId);
     localStorage.setItem("deckUrl", deckUrl);
-    navigate(`/room/${roomId}`);
+    setIsFadingOut(true);
+    setTimeout(() => {
+      navigate(`/room/${roomId}`);
+    }, 200);
   };
 
   return (
-    <div style={{ textAlign: "center", marginTop: "100px" }}>
+    <div
+      className={`fade-in ${!isFadingOut ? "show" : ""}`}
+      style={{ textAlign: "center", marginTop: "100px" }}
+    >
       <h1>Planeboard</h1>
       <input
         type="text"
