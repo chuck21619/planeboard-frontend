@@ -25,6 +25,29 @@ function Room() {
     width: window.innerWidth,
     height: window.innerHeight,
   });
+  useEffect(() => {
+    const imagesToLoad = [];
+
+    decks.forEach((deck) => {
+      deck.cards?.forEach((card) => {
+        imagesToLoad.push(card.imageUrl);
+      });
+    });
+
+    let index = 0;
+    const interval = setInterval(() => {
+      if (index >= imagesToLoad.length) {
+        clearInterval(interval);
+        return;
+      }
+
+      const img = new Image();
+      img.src = imagesToLoad[index];
+      index++;
+    }, 120); // 1000ms / 8 = 125ms → 8 requests/sec
+
+    return () => clearInterval(interval);
+  }, [decks]);
 
   useEffect(() => {
     const handleResize = () => {

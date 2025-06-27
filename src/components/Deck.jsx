@@ -14,8 +14,8 @@ export default function Deck({ deck, setDecks, decks }) {
       <Rect
         x={deck.x}
         y={deck.y}
-        width={60}
-        height={90}
+        width={64}
+        height={89}
         fill="darkgreen"
         cornerRadius={8}
         shadowBlur={5}
@@ -28,7 +28,7 @@ export default function Deck({ deck, setDecks, decks }) {
         fontSize={14}
         fill="white"
         align="center"
-        width={60}
+        width={64}
       />
     </>
   );
