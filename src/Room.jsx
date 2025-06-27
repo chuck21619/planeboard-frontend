@@ -14,6 +14,10 @@ function App() {
   const size = 5000;
 
   useEffect(() => {
+    setStagePosition({
+      x: window.innerWidth / 2,
+      y: window.innerHeight / 2,
+    });
     connectToRoom();
 
     setOnMessageHandler((message) => {
@@ -124,8 +128,8 @@ function App() {
             y={-size}
             width={size}
             height={size}
-            fill="#1e1e6a"
-            opacity={0.2}
+            fill="#155215"
+            opacity={0.1}
           />
           {/* Top-right */}
           <Rect
@@ -133,8 +137,8 @@ function App() {
             y={-size}
             width={size}
             height={size}
-            fill="#1e6a1e"
-            opacity={0.2}
+            fill="#151554"
+            opacity={0.1}
           />
           {/* Bottom-left */}
           <Rect
@@ -142,8 +146,8 @@ function App() {
             y={0}
             width={size}
             height={size}
-            fill="#6a1e1e"
-            opacity={0.2}
+            fill="#541515"
+            opacity={0.1}
           />
           {/* Bottom-right */}
           <Rect
@@ -151,8 +155,8 @@ function App() {
             y={0}
             width={size}
             height={size}
-            fill="#6a6a1e"
-            opacity={0.2}
+            fill="#545415"
+            opacity={0.1}
           />
         </Layer>
         <Layer>
