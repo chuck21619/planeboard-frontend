@@ -2,6 +2,13 @@ import { Rect, Text } from "react-konva";
 import { sendMessage } from "../ws";
 
 export default function Deck({ deck, setDecks, decks }) {
+  const handleClick = () => {
+    const username = localStorage.getItem("username");
+    if (deck.id === username) {
+      sendMessage({ type: "DRAW_CARD" });
+    }
+  };
+
   return (
     <>
       <Rect
@@ -12,6 +19,7 @@ export default function Deck({ deck, setDecks, decks }) {
         fill="darkgreen"
         cornerRadius={8}
         shadowBlur={5}
+        onClick={handleClick}
       />
       <Text
         text={`${deck.id}'s Deck`}

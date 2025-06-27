@@ -5,6 +5,7 @@ import { connectToRoom, disconnect, setOnMessageHandler } from "./ws";
 import { useParams } from "react-router-dom";
 import Card from "./components/Card";
 import Deck from "./components/Deck";
+import Hand from "./components/Hand";
 import BoardBackground from "./components/BoardBackground";
 
 function Room() {
@@ -16,6 +17,7 @@ function Room() {
   const [showRoom, setShowRoom] = useState(false);
   const [cards, setCards] = useState([]);
   const [decks, setDecks] = useState([]);
+  const [hand, setHand] = useState([]);
   const [positions, setPositions] = useState({});
   const [stageScale, setStageScale] = useState(1);
   const [stagePosition, setStagePosition] = useState({ x: 0, y: 0 });
@@ -86,6 +88,10 @@ function Room() {
         if (message.users.includes(localStorage.getItem("username"))) {
           setHasJoined(true);
         }
+      } else if (message.type === "CARD_DRAWN") {
+        setHand((prev) => [...prev, message.card]);
+      } else if (message.type === "PLAYER_DREW_CARD") {
+        // Show a cardback in that player's hand area
       } else if (message.type === "USER_LEFT") {
         setPositions(message.positions);
         setDecks((prevDecks) =>
@@ -207,6 +213,7 @@ function Room() {
             ))}
           </Layer>
         </Stage>
+        <Hand hand={hand} />
       </div>
     </div>
   );

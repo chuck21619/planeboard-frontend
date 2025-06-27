@@ -151,3 +151,20 @@ button:focus-visible {
   opacity: 1;
   pointer-events: auto;
 }
+
+.hand-container {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.card-in-hand img {
+  height: 100px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
