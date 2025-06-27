@@ -2,6 +2,7 @@ let socket;
 let onMessageHandler = null;
 
 const WS_BASE_URL = import.meta.env.VITE_WS_BASE_URL;
+let intentionalDisconnect = false;
 
 export function connectToRoom() {
   const username = localStorage.getItem("username");
@@ -14,6 +15,7 @@ export function connectToRoom() {
   );
 
   socket.onopen = () => {
+    intentionalDisconnect = false;
     console.log("✅ WebSocket connected");
     socket.send(
       JSON.stringify({
@@ -35,6 +37,9 @@ export function connectToRoom() {
 
   socket.onclose = () => {
     console.log("❌ WebSocket disconnected");
+    if (!intentionalDisconnect) {
+      alert("Connection lost. Please refresh or try again later.");
+    }
   };
 
   socket.onerror = (error) => {
@@ -56,5 +61,6 @@ export function setOnMessageHandler(handler) {
 }
 
 export function disconnect() {
+  intentionalDisconnect = true;
   if (socket) socket.close();
 }
