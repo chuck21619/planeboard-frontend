@@ -17,7 +17,6 @@ export default function Card({ card, isGhost = false }) {
           opacity={isGhost ? 0.5 : 1}
           draggable={!isGhost}
           listening={!isGhost}
-          shadowBlur={5}
           onDragEnd={
             isGhost
               ? undefined
@@ -41,8 +40,7 @@ export default function Card({ card, isGhost = false }) {
           fill="white"
           stroke="black"
           strokeWidth={2}
-          cornerRadius={8}
-          shadowBlur={5}
+          cornerRadius={5}
           opacity={isGhost ? 0.5 : 1}
           draggable={!isGhost}
           listening={!isGhost}

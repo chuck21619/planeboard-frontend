@@ -18,7 +18,6 @@ export default function Deck({ deck, setDecks, decks }) {
         height={89}
         fill="darkgreen"
         cornerRadius={8}
-        shadowBlur={5}
         onClick={handleClick}
       />
       <Text
