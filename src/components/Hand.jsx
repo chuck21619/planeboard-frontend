@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
+import { useSharedImage } from "../hooks/useSharedImage";
 
-export default function Hand({ hand }) {
+export default function Hand({ hand, setDraggingCard, setDragPos }) {
   const cardWidth = 64;
   const maxWidth = window.innerWidth - 40;
   const totalCardWidth = hand.length * cardWidth;
@@ -20,6 +21,13 @@ export default function Hand({ hand }) {
             marginLeft: i === 0 ? 0 : -overlapAmount,
             zIndex: i,
           }}
+          onMouseDown={(e) => {
+            const rect = e.target.getBoundingClientRect();
+            const x = rect.left + rect.width / 2;
+            const y = rect.top + rect.height / 2;
+            setDraggingCard(card);
+            setDragPos({ x, y });
+          }}
         >
           <CardWithPreload card={card} cardWidth={cardWidth} />
         </div>
@@ -31,6 +39,7 @@ export default function Hand({ hand }) {
 function CardWithPreload({ card, cardWidth }) {
   const [loaded, setLoaded] = useState(false);
   const [wasCached, setWasCached] = useState(false);
+  const image = useSharedImage(card.imageUrl);
 
   useEffect(() => {
     const img = new Image();
@@ -50,13 +59,15 @@ function CardWithPreload({ card, cardWidth }) {
 
   return (
     <div className="card-in-hand">
-      {!loaded && <div className="card-placeholder">{card.name}</div>}
-      <img
-        src={card.imageUrl}
-        alt={card.name}
-        className={classNames}
-        style={{ width: cardWidth, height: 89 }}
-      />
+      {!image && <div className="card-placeholder">{card.name}</div>}
+      {image && (
+        <img
+          src={card.imageUrl}
+          alt={card.name}
+          className={image ? "visible" : "hidden"}
+          style={{ width: cardWidth, height: 89 }}
+        />
+      )}
     </div>
   );
 }

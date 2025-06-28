@@ -12,6 +12,8 @@ import { useCardImagePreloader } from "./hooks/useCardImagePreloader";
 import useImage from "use-image";
 
 const username = localStorage.getItem("username");
+const cardWidth = 64;
+const cardHeight = 89;
 
 function Room() {
   const navigate = useNavigate();
@@ -23,6 +25,9 @@ function Room() {
   const [cards, setCards] = useState([]);
   const [decks, setDecks] = useState([]);
   const [hand, setHand] = useState([]);
+  const [draggingCard, setDraggingCard] = useState(null);
+  const [dragPos, setDragPos] = useState({ x: 0, y: 0 });
+  const canvasRef = useRef(null);
   const [handSizes, setHandSizes] = useState({});
   const [cardBackImage] = useImage("/defaultCardBack.jpg");
   const [positions, setPositions] = useState({});
@@ -63,6 +68,66 @@ function Room() {
     const timer = setTimeout(() => setMinLoadingDone(true), 500);
     return () => clearTimeout(timer);
   }, []);
+  useEffect(() => {
+    const onMouseMove = (e) => {
+      if (draggingCard) {
+        const stage = canvasRef.current?.getBoundingClientRect();
+        if (stage) {
+          const x =
+            (e.clientX - stage.left - stagePosition.x) / stageScale -
+            cardWidth / 2;
+          const y =
+            (e.clientY - stage.top - stagePosition.y) / stageScale -
+            cardHeight / 2;
+          setDragPos({ x, y });
+        }
+      }
+    };
+    const onMouseDown = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
+    const onMouseUp = (e) => {
+      if (draggingCard) {
+        const rect = canvasRef.current?.getBoundingClientRect();
+        const isInsideCanvas =
+          rect &&
+          e.clientX >= rect.left &&
+          e.clientX <= rect.right &&
+          e.clientY >= rect.top &&
+          e.clientY <= rect.bottom;
+
+        if (isInsideCanvas) {
+          const x =
+            (e.clientX - rect.left - stagePosition.x) / stageScale -
+            cardWidth / 2;
+          const y =
+            (e.clientY - rect.top - stagePosition.y) / stageScale -
+            cardHeight / 2;
+
+          // Drop card
+          const card = draggingCard;
+          setCards((prev) => [...prev, { ...card, x, y }]);
+          setHand((prev) => prev.filter((c) => c.id !== card.id));
+
+          // Broadcast
+          // socket.send(...)
+        }
+
+        setDraggingCard(null);
+      }
+    };
+
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mousedown", onMouseDown);
+    window.addEventListener("mouseup", onMouseUp);
+    return () => {
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mousedown", onMouseDown);
+      window.removeEventListener("mouseup", onMouseUp);
+    };
+  }, [draggingCard]);
+
   useEffect(() => {
     const handleBeforeUnload = () => {
       disconnect();
@@ -141,6 +206,7 @@ function Room() {
         className={`room-container fade-in ${
           hasJoined && minLoadingDone ? "show" : ""
         }`}
+        ref={canvasRef}
       >
         <div className="player-bar player-bar-top">
           <div className="player-half">
@@ -231,6 +297,12 @@ function Room() {
             })}
           </Layer>
           <Layer>
+            {draggingCard && (
+              <Card
+                card={{ ...draggingCard, x: dragPos.x, y: dragPos.y }}
+                isGhost
+              />
+            )}
             {cards.map((card) => (
               <Card key={card.id} card={card} />
             ))}
@@ -244,7 +316,11 @@ function Room() {
             ))}
           </Layer>
         </Stage>
-        <Hand hand={hand} />
+        <Hand
+          hand={hand}
+          setDraggingCard={setDraggingCard}
+          setDragPos={setDragPos}
+        />
       </div>
     </div>
   );
