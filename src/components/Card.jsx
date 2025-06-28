@@ -1,7 +1,6 @@
 import { Image as KonvaImage, Rect } from "react-konva";
 import { sendMessage } from "../ws";
 import { useSharedImage } from "../hooks/useSharedImage";
-import useImage from "use-image";
 
 export default function Card({ card, isGhost = false }) {
   const image = useSharedImage(card.imageUrl);

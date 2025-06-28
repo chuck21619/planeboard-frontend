@@ -10,6 +10,7 @@ import OpponentHand from "./components/OpponentHand";
 import BoardBackground from "./components/BoardBackground";
 import { useCardImagePreloader } from "./hooks/useCardImagePreloader";
 import useImage from "use-image";
+import { sendMessage } from "./ws";
 
 const username = localStorage.getItem("username");
 const cardWidth = 64;
@@ -105,15 +106,15 @@ function Room() {
             (e.clientY - rect.top - stagePosition.y) / stageScale -
             cardHeight / 2;
 
-          // Drop card
           const card = draggingCard;
           setCards((prev) => [...prev, { ...card, x, y }]);
           setHand((prev) => prev.filter((c) => c.id !== card.id));
-
-          // Broadcast
-          // socket.send(...)
+          sendMessage({
+            type: "CARD_PLAYED",
+            card: { ...card, x, y },
+            player: username,
+          });
         }
-
         setDraggingCard(null);
       }
     };
@@ -166,6 +167,12 @@ function Room() {
       } else if (message.type === "CARD_DRAWN") {
         setHand((prev) => [...prev, message.card]);
       } else if (message.type === "PLAYER_DREW_CARD") {
+        setHandSizes((prev) => ({
+          ...prev,
+          [message.player]: message.handSize,
+        }));
+      } else if (message.type === "CARD_PLAYED") {
+        setCards((prev) => [...prev, message.card]);
         setHandSizes((prev) => ({
           ...prev,
           [message.player]: message.handSize,
