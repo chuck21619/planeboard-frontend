@@ -71,6 +71,9 @@ export function useRoomHandlers({
         }));
       } else if (message.type === "USER_LEFT") {
         setPositions(message.positions);
+        setCards((prevCards) =>
+          prevCards.filter((card) => card.owner !== message.user)
+        );
         setDecks((prevDecks) =>
           prevDecks.filter((deck) => deck.id !== message.user)
         );
