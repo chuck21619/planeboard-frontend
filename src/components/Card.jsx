@@ -1,6 +1,6 @@
 import { Rect } from "react-konva";
 import { useSharedImage } from "../hooks/useSharedImage";
-import { Image as KonvaImage, Group } from "react-konva";
+import { Image as KonvaImage } from "react-konva";
 import { sendMessage } from "../ws";
 
 export default function Card({
@@ -8,6 +8,7 @@ export default function Card({
   isGhost = false,
   onDragStart,
   onReturnToHand,
+  onCardMove, // <- new prop
 }) {
   const image = useSharedImage(card.imageUrl);
 
@@ -16,11 +17,10 @@ export default function Card({
     const pointerPosition = stage?.getPointerPosition();
     if (!pointerPosition) return;
 
-    // Convert stage coords to screen coords
     const clientY =
       stage.container().getBoundingClientRect().top + pointerPosition.y;
 
-    const droppedInHand = clientY > window.innerHeight - 100; // adjust based on hand height
+    const droppedInHand = clientY > window.innerHeight - 100;
 
     const x = e.target.x();
     const y = e.target.y();
@@ -28,6 +28,11 @@ export default function Card({
     if (droppedInHand && onReturnToHand) {
       onReturnToHand(card.id);
     } else {
+      // Optimistically update local card position
+      if (onCardMove) {
+        onCardMove(card.id, x, y);
+      }
+
       sendMessage({
         type: "MOVE_CARD",
         id: card.id,
