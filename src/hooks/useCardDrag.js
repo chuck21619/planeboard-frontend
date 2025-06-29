@@ -40,29 +40,31 @@ export function useCardDrag({
       const rect = canvasRef.current?.getBoundingClientRect();
       if (!rect) return;
 
-      const isInsideCanvas =
-        e.clientX >= rect.left &&
-        e.clientX <= rect.right &&
-        e.clientY >= rect.top &&
-        e.clientY <= rect.bottom;
+      const dropY = e.clientY;
 
-      if (isInsideCanvas) {
-        const x =
-          (e.clientX - rect.left - stagePosition.x) / stageScale -
-          cardWidth / 2;
-        const y =
-          (e.clientY - rect.top - stagePosition.y) / stageScale -
-          cardHeight / 2;
+      const handThreshold = window.innerHeight - 100; // 150px from bottom = hand area
+      const isDroppingInHand = dropY > handThreshold;
 
-        const card = draggingCard;
-        setCards((prev) => [...prev, { ...card, x, y }]);
-        setHand((prev) => prev.filter((c) => c.id !== card.id));
-        sendMessage({
-          type: "CARD_PLAYED",
-          card: { ...card, x, y },
-          username: username,
-        });
+      // ✅ Cancel if dropped in hand
+      if (isDroppingInHand) {
+        setDraggingCard(null);
+        return;
       }
+
+      // ✅ Otherwise, play the card onto the board
+      const x =
+        (e.clientX - rect.left - stagePosition.x) / stageScale - cardWidth / 2;
+      const y =
+        (e.clientY - rect.top - stagePosition.y) / stageScale - cardHeight / 2;
+
+      const card = draggingCard;
+      setCards((prev) => [...prev, { ...card, x, y }]);
+      setHand((prev) => prev.filter((c) => c.id !== card.id));
+      sendMessage({
+        type: "CARD_PLAYED",
+        card: { ...card, x, y },
+        username: username,
+      });
 
       setDraggingCard(null);
     };
