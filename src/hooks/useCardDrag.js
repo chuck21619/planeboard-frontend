@@ -60,7 +60,7 @@ export function useCardDrag({
         sendMessage({
           type: "CARD_PLAYED",
           card: { ...card, x, y },
-          player: username,
+          username: username,
         });
       }
 

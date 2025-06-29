@@ -1,63 +1,60 @@
-import { Image as KonvaImage, Rect } from "react-konva";
-import { sendMessage } from "../ws";
+import { Rect } from "react-konva";
 import { useSharedImage } from "../hooks/useSharedImage";
+import { Image as KonvaImage, Group } from "react-konva";
+import { sendMessage } from "../ws";
 
-export default function Card({ card, isGhost = false }) {
+export default function Card({
+  card,
+  isGhost = false,
+  onDragStart,
+  onReturnToHand,
+}) {
   const image = useSharedImage(card.imageUrl);
-  return (
-    <>
-      {image ? (
-        <KonvaImage
-          image={image}
-          x={card.x}
-          y={card.y}
-          width={64}
-          height={89}
-          cornerRadius={4}
-          opacity={isGhost ? 0.5 : 1}
-          draggable={!isGhost}
-          listening={!isGhost}
-          onDragEnd={
-            isGhost
-              ? undefined
-              : (e) => {
-                  sendMessage({
-                    type: "MOVE_CARD",
-                    id: card.id,
-                    x: e.target.x(),
-                    y: e.target.y(),
-                  });
-                }
-          }
-        />
-      ) : (
-        // Fallback rectangle while loading image
-        <Rect
-          x={card.x}
-          y={card.y}
-          width={64}
-          height={89}
-          fill="white"
-          stroke="black"
-          strokeWidth={2}
-          cornerRadius={4}
-          opacity={isGhost ? 0.5 : 1}
-          draggable={!isGhost}
-          listening={!isGhost}
-          onDragEnd={
-            isGhost
-              ? undefined
-              : (e) => {
-                  sendMessage({
-                    type: "MOVE_CARD",
-                    id: card.id,
-                    x: e.target.x(),
-                    y: e.target.y(),
-                  });
-                }
-          }
-        />
-      )}
-    </>
+
+  const handleDragEnd = (e) => {
+    const stage = e.target.getStage();
+    const pointerPosition = stage?.getPointerPosition();
+    if (!pointerPosition) return;
+
+    // Convert stage coords to screen coords
+    const clientY =
+      stage.container().getBoundingClientRect().top + pointerPosition.y;
+
+    const droppedInHand = clientY > window.innerHeight - 100; // adjust based on hand height
+
+    const x = e.target.x();
+    const y = e.target.y();
+
+    if (droppedInHand && onReturnToHand) {
+      onReturnToHand(card.id);
+    } else {
+      sendMessage({
+        type: "MOVE_CARD",
+        id: card.id,
+        x,
+        y,
+      });
+    }
+  };
+
+  const commonProps = {
+    x: card.x,
+    y: card.y,
+    width: 64,
+    height: 89,
+    cornerRadius: 4,
+    opacity: isGhost ? 0.5 : 1,
+    draggable: !isGhost,
+    listening: !isGhost,
+    onDragStart: () => {
+      if (!isGhost && onDragStart) onDragStart(card);
+    },
+    onDragEnd: isGhost ? undefined : handleDragEnd,
+  };
+
+  return image ? (
+    <KonvaImage image={image} {...commonProps} />
+  ) : (
+    <Rect fill="white" stroke="black" strokeWidth={2} {...commonProps} />
   );
 }

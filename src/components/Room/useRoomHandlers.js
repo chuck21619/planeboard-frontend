@@ -9,7 +9,7 @@ export function useRoomHandlers({
   setHandSizes,
   setPositions,
   setHasJoined,
-  setStagePosition, 
+  setStagePosition,
   username,
   navigate,
 }) {
@@ -57,6 +57,14 @@ export function useRoomHandlers({
         }));
       } else if (message.type === "CARD_PLAYED") {
         setCards((prev) => [...prev, message.card]);
+        setHandSizes((prev) => ({
+          ...prev,
+          [message.player]: message.handSize,
+        }));
+      } else if (message.type === "CARD_RETURNED") {
+        setCards((prevCards) =>
+          prevCards.filter((card) => card.id !== message.id)
+        );
         setHandSizes((prev) => ({
           ...prev,
           [message.player]: message.handSize,

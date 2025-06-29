@@ -13,6 +13,7 @@ import { useCardDrag } from "../../hooks/useCardDrag";
 import { useRoomHandlers } from "./useRoomHandlers";
 import { useStageEvents } from "./useStageEvents";
 import PlayerBars from "./PlayerBars";
+import { sendMessage } from "../../ws";
 
 const username = localStorage.getItem("username");
 const size = 5000;
@@ -148,7 +149,23 @@ function Room() {
               />
             )}
             {cards.map((card) => (
-              <Card key={card.id} card={card} />
+              <Card
+                key={card.id}
+                card={card}
+                onReturnToHand={(cardId) => {
+                  // Move card from board to hand
+                  setCards((prev) => prev.filter((c) => c.id !== cardId));
+                  const cardToReturn = cards.find((c) => c.id === cardId);
+                  if (cardToReturn) {
+                    setHand((prev) => [...prev, cardToReturn]);
+                    sendMessage({
+                      type: "CARD_RETURNED",
+                      id: cardId,
+                      username: username,
+                    });
+                  }
+                }}
+              />
             ))}
             {decks.map((deck) => (
               <Deck
