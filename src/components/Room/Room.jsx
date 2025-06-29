@@ -12,7 +12,6 @@ import useImage from "use-image";
 import { useCardDrag } from "../../hooks/useCardDrag";
 import { useRoomHandlers } from "./useRoomHandlers";
 import { useStageEvents } from "./useStageEvents";
-import PlayerBars from "./PlayerBars";
 import { sendMessage } from "../../ws";
 
 const username = localStorage.getItem("username");
@@ -112,7 +111,6 @@ function Room() {
         }`}
         ref={canvasRef}
       >
-        <PlayerBars positions={positions} />
         <Stage
           width={window.innerWidth}
           height={window.innerHeight}
