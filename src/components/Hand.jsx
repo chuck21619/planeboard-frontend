@@ -7,6 +7,7 @@ export default function Hand({
   setDraggingCard,
   setDragPos,
   setHoveredCard,
+  setHoveredHandCard,
 }) {
   const cardWidth = 64;
   const maxWidth = window.innerWidth - 40;
@@ -17,12 +18,10 @@ export default function Hand({
     ? (totalCardWidth - maxWidth) / (hand.length - 1)
     : 0;
   function handleMouseEnter(card) {
-    setHoveredCard(card);
+    setHoveredHandCard(card);
   }
   function handleMouseLeave(card) {
-    if (!draggingCard || draggingCard.id !== card.id) {
-      setHoveredCard(null);
-    }
+    setHoveredHandCard(null);
   }
   return (
     <div className="hand-container">

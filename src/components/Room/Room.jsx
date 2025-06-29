@@ -28,6 +28,7 @@ function Room() {
   const [decks, setDecks] = useState([]);
   const [hand, setHand] = useState([]);
   const [hoveredCard, setHoveredCard] = useState(null);
+  const [hoveredHandCard, setHoveredHandCard] = useState(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [draggingCard, setDraggingCard] = useState(null);
   const [dragPos, setDragPos] = useState({ x: 0, y: 0 });
@@ -79,6 +80,10 @@ function Room() {
       setHoveredCard(draggingCard);
       return;
     }
+    if (hoveredHandCard) {
+      setHoveredCard(hoveredHandCard);
+      return;
+    }
 
     const hovered = cards.find((card) => {
       return (
@@ -90,7 +95,7 @@ function Room() {
     });
 
     setHoveredCard(hovered || null);
-  }, [mousePos, cards, draggingCard]);
+  }, [mousePos, cards, draggingCard, hoveredHandCard]);
 
   useEffect(() => {
     console.log("Hovered card:", hoveredCard?.name || null);
@@ -235,6 +240,7 @@ function Room() {
             setDraggingCard={setDraggingCard}
             setDragPos={setDragPos}
             setHoveredCard={setHoveredCard}
+            setHoveredHandCard={setHoveredHandCard}
           />
         </div>
         <div
