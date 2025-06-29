@@ -16,7 +16,6 @@ import PlayerBars from "./PlayerBars";
 import { sendMessage } from "../../ws";
 
 const username = localStorage.getItem("username");
-const size = 5000;
 
 function Room() {
   const navigate = useNavigate();
@@ -126,7 +125,7 @@ function Room() {
           onWheel={(e) => handleWheel(e, stagePosition, stageScale)}
         >
           <Layer>
-            <BoardBackground size={size} />
+            <BoardBackground />
           </Layer>
           <Layer>
             {Object.entries(handSizes).map(([playerName, count]) => {
