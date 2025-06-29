@@ -20,7 +20,7 @@ export default function Card({
     const clientY =
       stage.container().getBoundingClientRect().top + pointerPosition.y;
 
-    const droppedInHand = clientY > window.innerHeight - 100;
+    const droppedInHand = clientY > window.innerHeight - 80;
 
     const x = e.target.x();
     const y = e.target.y();

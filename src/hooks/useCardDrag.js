@@ -39,7 +39,7 @@ export function useCardDrag({
       const rect = canvasRef.current?.getBoundingClientRect();
       if (!rect) return;
       const dropY = e.clientY;
-      const handThreshold = window.innerHeight - 100;
+      const handThreshold = window.innerHeight - 80;
       const isDroppingInHand = dropY > handThreshold;
       if (isDroppingInHand) {
         setDraggingCard(null);
