@@ -5,14 +5,7 @@ const watermarkFontSize = 300;
 const watermarkOffset = 100;
 const size = 5000;
 
-export default function BoardBackground({}) {
-  const positions = {
-    Alice: "topLeft",
-    Bob: "topRight",
-    Charlie: "bottomLeft",
-    Dana: "bottomRight",
-  };
-
+export default function BoardBackground({ positions = {} }) {
   const getUsernameForPosition = (targetPos) =>
     Object.entries(positions).find(([_, pos]) => pos === targetPos)?.[0] || "";
 

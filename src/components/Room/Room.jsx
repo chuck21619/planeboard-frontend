@@ -123,7 +123,7 @@ function Room() {
           onWheel={(e) => handleWheel(e, stagePosition, stageScale)}
         >
           <Layer>
-            <BoardBackground />
+            <BoardBackground positions={positions} />
           </Layer>
           <Layer>
             {Object.entries(handSizes).map(([playerName, count]) => {
