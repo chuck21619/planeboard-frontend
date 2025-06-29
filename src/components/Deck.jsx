@@ -1,7 +1,10 @@
-import { Rect, Text } from "react-konva";
+import { Image as KonvaImage } from "react-konva";
+import useImage from "use-image";
 import { sendMessage } from "../ws";
 
-export default function Deck({ deck, setDecks, decks }) {
+export default function Deck({ deck }) {
+  const [deckImage] = useImage("/deck.png");
+
   const handleClick = () => {
     const username = localStorage.getItem("username");
     if (deck.id === username) {
@@ -11,24 +14,16 @@ export default function Deck({ deck, setDecks, decks }) {
 
   return (
     <>
-      <Rect
-        x={deck.x}
-        y={deck.y}
-        width={64}
-        height={89}
-        fill="darkgreen"
-        cornerRadius={4}
-        onClick={handleClick}
-      />
-      <Text
-        text={`${deck.id}'s Deck`}
-        x={deck.x}
-        y={deck.y - 20}
-        fontSize={14}
-        fill="white"
-        align="center"
-        width={64}
-      />
+      {deckImage && (
+        <KonvaImage
+          image={deckImage}
+          x={deck.x}
+          y={deck.y}
+          width={70}
+          height={94}
+          onClick={handleClick}
+        />
+      )}
     </>
   );
 }
