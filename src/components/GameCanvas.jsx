@@ -1,0 +1,111 @@
+import { Stage, Layer } from "react-konva";
+import Card from "./Card";
+import Deck from "./Deck";
+import OpponentHand from "./OpponentHand";
+import BoardBackground from "./BoardBackground";
+import Hand from "./Hand";
+import { sendMessage } from "../ws";
+
+export default function GameCanvas({
+  stageRef,
+  canvasRef,
+  windowSize,
+  stageScale,
+  stagePosition,
+  handleDragEnd,
+  handleWheel,
+  onMouseMove,
+  cards,
+  decks,
+  draggingCard,
+  dragPos,
+  handSizes,
+  positions,
+  setCards,
+  setHand,
+  setHoveredCard,
+  cardBackImage,
+  username,
+  setDecks,
+  setStagePosition
+}) {
+  return (
+    <>
+      <Stage
+        ref={stageRef}
+        width={windowSize.width}
+        height={windowSize.height}
+        scaleX={stageScale}
+        scaleY={stageScale}
+        x={stagePosition.x}
+        y={stagePosition.y}
+        draggable
+        onDragEnd={(e) => handleDragEnd(e, setStagePosition)}
+        onWheel={(e) => handleWheel(e, stagePosition, stageScale)}
+        onMouseMove={onMouseMove}
+      >
+        <Layer>
+          <BoardBackground positions={positions} />
+        </Layer>
+
+        <Layer>
+          {Object.entries(handSizes).map(([playerName, count]) => {
+            if (playerName === username) return null;
+            return (
+              <OpponentHand
+                key={playerName}
+                count={count}
+                quadrant={positions[playerName]}
+                cardBackImage={cardBackImage}
+              />
+            );
+          })}
+        </Layer>
+
+        <Layer>
+          {draggingCard && (
+            <Card
+              card={{ ...draggingCard, x: dragPos.x, y: dragPos.y }}
+              isGhost
+            />
+          )}
+          {cards.map((card) => (
+            <Card
+              key={card.id}
+              card={card}
+              onReturnToHand={(cardId) => {
+                setCards((prev) => prev.filter((c) => c.id !== cardId));
+                const cardToReturn = cards.find((c) => c.id === cardId);
+                if (cardToReturn) {
+                  setHand((prev) => [...prev, cardToReturn]);
+                  sendMessage({
+                    type: "CARD_RETURNED",
+                    id: cardId,
+                    username,
+                  });
+                }
+              }}
+              onCardMove={(id, x, y) => {
+                setCards((prev) =>
+                  prev.map((c) => (c.id === id ? { ...c, x, y } : c))
+                );
+                const stage = stageRef.current;
+                const pointer = stage?.getPointerPosition();
+                if (pointer) {
+                  const scale = stage.scaleX();
+                  const stagePos = stage.position();
+                  const correctedX = (pointer.x - stagePos.x) / scale;
+                  const correctedY = (pointer.y - stagePos.y) / scale;
+                  setHoveredCard({ x: correctedX, y: correctedY });
+                }
+              }}
+            />
+          ))}
+          {decks.map((deck) => (
+            <Deck key={deck.id} deck={deck} decks={decks} setDecks={setDecks} />
+          ))}
+        </Layer>
+      </Stage>
+    </>
+  );
+}

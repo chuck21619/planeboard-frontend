@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 export function useLoadingFade(hasJoined) {
   const [showSpinner, setShowSpinner] = useState(false);
   const [minLoadingDone, setMinLoadingDone] = useState(false);
+  const [showRoom, setShowRoom] = useState(false);
 
   useEffect(() => {
     const spinnerTimer = setTimeout(() => setShowSpinner(true), 10);
