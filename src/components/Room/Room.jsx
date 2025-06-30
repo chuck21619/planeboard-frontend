@@ -33,12 +33,8 @@ function Room() {
   const [positions, setPositions] = useState({});
   const [stageScale, setStageScale] = useState(1);
   const [stagePosition, setStagePosition] = useState({ x: 0, y: 0 });
-  const [mousePos, onMouseMove] = useStageMousePos(
-    stageRef,
-    stageScale,
-    stagePosition
-  );
-  const { hoveredCard, setHoveredCard } = useHoveredCard(
+  const [mousePos, onMouseMove] = useStageMousePos();
+  const { hoveredCard, setHoveredCard, ignoreNextChange } = useHoveredCard(
     mousePos,
     cards,
     draggingCard,
@@ -93,7 +89,6 @@ function Room() {
         >
           <GameCanvas
             stageRef={stageRef}
-            canvasRef={canvasRef}
             windowSize={windowSize}
             stageScale={stageScale}
             stagePosition={stagePosition}
@@ -108,10 +103,9 @@ function Room() {
             positions={positions}
             setCards={setCards}
             setHand={setHand}
-            setHoveredCard={setHoveredCard}
+            ignoreNextChange={ignoreNextChange}
             cardBackImage={cardBackImage}
             username={username}
-            hand={hand}
             setDecks={setDecks}
             setStagePosition={setStagePosition}
           />

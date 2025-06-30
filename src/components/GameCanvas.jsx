@@ -3,12 +3,10 @@ import Card from "./Card";
 import Deck from "./Deck";
 import OpponentHand from "./OpponentHand";
 import BoardBackground from "./BoardBackground";
-import Hand from "./Hand";
 import { sendMessage } from "../ws";
 
 export default function GameCanvas({
   stageRef,
-  canvasRef,
   windowSize,
   stageScale,
   stagePosition,
@@ -23,11 +21,11 @@ export default function GameCanvas({
   positions,
   setCards,
   setHand,
-  setHoveredCard,
+  ignoreNextChange,
   cardBackImage,
   username,
   setDecks,
-  setStagePosition
+  setStagePosition,
 }) {
   return (
     <>
@@ -89,15 +87,8 @@ export default function GameCanvas({
                 setCards((prev) =>
                   prev.map((c) => (c.id === id ? { ...c, x, y } : c))
                 );
-                const stage = stageRef.current;
-                const pointer = stage?.getPointerPosition();
-                if (pointer) {
-                  const scale = stage.scaleX();
-                  const stagePos = stage.position();
-                  const correctedX = (pointer.x - stagePos.x) / scale;
-                  const correctedY = (pointer.y - stagePos.y) / scale;
-                  setHoveredCard({ x: correctedX, y: correctedY });
-                }
+
+                ignoreNextChange.current = true;
               }}
             />
           ))}

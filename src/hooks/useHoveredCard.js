@@ -1,9 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export function useHoveredCard(mousePos, cards, draggingCard, hoveredHandCard) {
   const [hoveredCard, setHoveredCard] = useState(null);
+  const ignoreNextChange = useRef(false);
 
   useEffect(() => {
+    if (ignoreNextChange.current) {
+      ignoreNextChange.current = false;
+      return;
+    }
     if (draggingCard) {
       setHoveredCard(draggingCard);
       return;
@@ -25,5 +30,5 @@ export function useHoveredCard(mousePos, cards, draggingCard, hoveredHandCard) {
     setHoveredCard(hovered || null);
   }, [mousePos, cards, draggingCard, hoveredHandCard]);
 
-  return { hoveredCard, setHoveredCard };
+  return { hoveredCard, setHoveredCard, ignoreNextChange };
 }

@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export function useStageMousePos(stageRef, stageScale, stagePosition) {
+export function useStageMousePos() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
   function onMouseMove(e) {
