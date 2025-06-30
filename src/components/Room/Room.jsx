@@ -245,17 +245,7 @@ function Room() {
         <div className={`hover-preview ${hoveredCard ? "" : "hidden"}`}>
           {hoveredCard && (
             <>
-              <img
-                src={hoveredCard?.imageUrl}
-                alt={hoveredCard?.name}
-                style={{
-                  width: "100%",
-                  height: "auto",
-                  borderRadius: 14,
-                  userSelect: "none",
-                  pointerEvents: "none",
-                }}
-              />
+              <img src={hoveredCard?.imageUrl} alt={hoveredCard?.name} />
             </>
           )}
         </div>

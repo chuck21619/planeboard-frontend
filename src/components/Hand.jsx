@@ -3,10 +3,8 @@ import { useSharedImage } from "../hooks/useSharedImage";
 
 export default function Hand({
   hand,
-  draggingCard,
   setDraggingCard,
   setDragPos,
-  setHoveredCard,
   setHoveredHandCard,
 }) {
   const cardWidth = 64;
@@ -43,14 +41,14 @@ export default function Hand({
           onMouseEnter={() => handleMouseEnter(card)}
           onMouseLeave={() => handleMouseLeave(card)}
         >
-          <CardWithPreload card={card} cardWidth={cardWidth} />
+          <CardWithPreload card={card} />
         </div>
       ))}
     </div>
   );
 }
 
-function CardWithPreload({ card, cardWidth }) {
+function CardWithPreload({ card }) {
   const [loaded, setLoaded] = useState(false);
   const [wasCached, setWasCached] = useState(false);
   const image = useSharedImage(card.imageUrl);
@@ -77,7 +75,6 @@ function CardWithPreload({ card, cardWidth }) {
           className={`card-img ${loaded ? "visible" : "hidden"} ${
             wasCached ? "no-fade" : ""
           }`}
-          style={{ width: cardWidth, height: 89 }}
         />
       )}
     </div>

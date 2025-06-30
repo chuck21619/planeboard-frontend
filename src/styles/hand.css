@@ -1,0 +1,21 @@
+.card-wrapper {
+  position: relative;
+}
+
+.card-img {
+  width: 64px;
+  height: 89px;
+}
+
+.card-img.visible {
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.card-img.hidden {
+  opacity: 0;
+}
+
+.card-img.no-fade {
+  transition: none;
+}
