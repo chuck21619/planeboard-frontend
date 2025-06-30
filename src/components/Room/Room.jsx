@@ -134,13 +134,12 @@ function Room() {
       >
         <div className="spinner"></div>
       </div>
-      <div style={{ display: "flex", width: "100vw", height: "100vh" }}>
+      <div className="fullscreen-flex">
         <div
           className={`room-container fade-in ${
             hasJoined && minLoadingDone ? "show" : ""
           }`}
           ref={canvasRef}
-          style={{ flex: 1, position: "relative" }}
         >
           <Stage
             ref={stageRef}
@@ -243,21 +242,7 @@ function Room() {
             setHoveredHandCard={setHoveredHandCard}
           />
         </div>
-        <div
-          style={{
-            position: "fixed",
-            top: "50%", // vertical center
-            right: 0,
-            transform: "translateY(-50%)", // center vertically
-            width: 300,
-            maxHeight: "90vh",
-            padding: 12,
-            zIndex: 9999,
-            display: hoveredCard ? "flex" : "none",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
+        <div className={`hover-preview ${hoveredCard ? "" : "hidden"}`}>
           {hoveredCard && (
             <>
               <img

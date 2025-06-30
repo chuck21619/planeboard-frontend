@@ -25,39 +25,38 @@ export default function Login() {
   };
 
   return (
-    <div
-      className={`fade-in ${!isFadingOut ? "show" : ""}`}
-      style={{ textAlign: "center", marginTop: "100px" }}
-    >
-      <h1>Planeboard</h1>
-      <input
-        type="text"
-        placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        style={{ padding: "0.5rem", fontSize: "1rem", width: "300px" }}
-      />
-      <br />
-      <br />
-      <input
-        type="text"
-        value={roomId}
-        onChange={(e) => setRoomId(e.target.value)}
-        placeholder="Room Name"
-        style={{ padding: "0.5rem", fontSize: "1rem", width: "300px" }}
-      />
-      <br />
-      <br />
-      <input
-        type="text"
-        value={deckUrl}
-        onChange={(e) => setDeckUrl(e.target.value)}
-        placeholder="Archidekt URL"
-        style={{ padding: "0.5rem", fontSize: "1rem", width: "300px" }}
-      />
-      <br />
-      <br />
-      <button onClick={handleJoinRoom}>Join Room</button>
+    <div className={`fade-in ${!isFadingOut ? "show" : ""}`}>
+      <div className="login-wrapper">
+        <h1>Planeboard</h1>
+        <input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          className="login-input"
+        />
+        <br />
+        <br />
+        <input
+          type="text"
+          value={roomId}
+          onChange={(e) => setRoomId(e.target.value)}
+          placeholder="Room Name"
+          className="login-input"
+        />
+        <br />
+        <br />
+        <input
+          type="text"
+          value={deckUrl}
+          onChange={(e) => setDeckUrl(e.target.value)}
+          placeholder="Archidekt URL"
+          className="login-input"
+        />
+        <br />
+        <br />
+        <button onClick={handleJoinRoom}>Join Room</button>
+      </div>
     </div>
   );
 }
