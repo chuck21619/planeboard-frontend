@@ -15,6 +15,7 @@ import { useStageEvents } from "./useStageEvents";
 import { sendMessage } from "../../ws";
 import { useWindowSize } from "../../hooks/useWindowSize";
 import { useHoveredCard } from "../../hooks/useHoveredCard";
+import { useLoadingFade } from "../../hooks/useLoadingFade";
 
 const username = localStorage.getItem("username");
 
@@ -23,9 +24,7 @@ function Room() {
   const stageRef = useRef();
   const { roomId } = useParams();
   const [hasJoined, setHasJoined] = useState(false);
-  const [showSpinner, setShowSpinner] = useState(false);
-  const [minLoadingDone, setMinLoadingDone] = useState(false);
-  const [showRoom, setShowRoom] = useState(false);
+  const { showSpinner, minLoadingDone } = useLoadingFade(hasJoined);
   const [cards, setCards] = useState([]);
   const [decks, setDecks] = useState([]);
   const [hand, setHand] = useState([]);
@@ -52,24 +51,6 @@ function Room() {
   const windowSize = useWindowSize();
 
   useCardImagePreloader(decks);
-
-  useEffect(() => {
-    const spinnerTimer = setTimeout(() => setShowSpinner(true), 10);
-    const minLoadTimer = setTimeout(() => setMinLoadingDone(true), 500);
-    let showRoomTimer;
-    if (hasJoined) {
-      showRoomTimer = setTimeout(() => setShowRoom(true), 10);
-    }
-    return () => {
-      clearTimeout(spinnerTimer);
-      clearTimeout(minLoadTimer);
-      clearTimeout(showRoomTimer);
-    };
-  }, [hasJoined]);
-
-  useEffect(() => {
-    console.log("Hovered card:", hoveredCard?.name || null);
-  }, [hoveredCard]);
   useCardDrag({
     canvasRef,
     stageScale,
@@ -81,7 +62,6 @@ function Room() {
     setHand,
     username,
   });
-
   useRoomHandlers({
     roomId,
     setCards,
