@@ -13,6 +13,8 @@ import { useCardDrag } from "../../hooks/useCardDrag";
 import { useRoomHandlers } from "./useRoomHandlers";
 import { useStageEvents } from "./useStageEvents";
 import { sendMessage } from "../../ws";
+import { useWindowSize } from "../../hooks/useWindowSize";
+import { useHoveredCard } from "../../hooks/useHoveredCard";
 
 const username = localStorage.getItem("username");
 
@@ -27,10 +29,15 @@ function Room() {
   const [cards, setCards] = useState([]);
   const [decks, setDecks] = useState([]);
   const [hand, setHand] = useState([]);
-  const [hoveredCard, setHoveredCard] = useState(null);
-  const [hoveredHandCard, setHoveredHandCard] = useState(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [draggingCard, setDraggingCard] = useState(null);
+  const [hoveredHandCard, setHoveredHandCard] = useState(null);
+  const { hoveredCard, setHoveredCard } = useHoveredCard(
+    mousePos,
+    cards,
+    draggingCard,
+    hoveredHandCard
+  );
   const [dragPos, setDragPos] = useState({ x: 0, y: 0 });
   const canvasRef = useRef(null);
   const [handSizes, setHandSizes] = useState({});
@@ -42,24 +49,9 @@ function Room() {
     setStageScale,
     setStagePosition
   );
-  const [windowSize, setWindowSize] = useState({
-    width: window.innerWidth,
-    height: window.innerHeight,
-  });
+  const windowSize = useWindowSize();
 
   useCardImagePreloader(decks);
-  useEffect(() => {
-    const handleResize = () => {
-      console.log("Window resized:", window.innerWidth, window.innerHeight);
-      setWindowSize({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   useEffect(() => {
     const spinnerTimer = setTimeout(() => setShowSpinner(true), 10);
@@ -74,28 +66,6 @@ function Room() {
       clearTimeout(showRoomTimer);
     };
   }, [hasJoined]);
-
-  useEffect(() => {
-    if (draggingCard) {
-      setHoveredCard(draggingCard);
-      return;
-    }
-    if (hoveredHandCard) {
-      setHoveredCard(hoveredHandCard);
-      return;
-    }
-
-    const hovered = cards.find((card) => {
-      return (
-        mousePos.x >= card.x &&
-        mousePos.x <= card.x + 64 &&
-        mousePos.y >= card.y &&
-        mousePos.y <= card.y + 89
-      );
-    });
-
-    setHoveredCard(hovered || null);
-  }, [mousePos, cards, draggingCard, hoveredHandCard]);
 
   useEffect(() => {
     console.log("Hovered card:", hoveredCard?.name || null);
@@ -143,8 +113,8 @@ function Room() {
         >
           <Stage
             ref={stageRef}
-            width={window.innerWidth}
-            height={window.innerHeight}
+            width={windowSize.width}
+            height={windowSize.height}
             scaleX={stageScale}
             scaleY={stageScale}
             x={stagePosition.x}
