@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { connectToRoom, setOnMessageHandler, disconnect } from "../../ws";
+import { connectToRoom, setOnMessageHandler, disconnect } from "../ws";
 
 export function useRoomHandlers({
   roomId,

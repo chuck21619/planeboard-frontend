@@ -1,17 +1,17 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
-import Hand from "../Hand";
-import { useCardImagePreloader } from "../../hooks/useCardImagePreloader";
+import Hand from "./Hand";
+import { useCardImagePreloader } from "../hooks/useCardImagePreloader";
 import useImage from "use-image";
-import { useCardDrag } from "../../hooks/useCardDrag";
-import { useRoomHandlers } from "./useRoomHandlers";
-import { useStageEvents } from "./useStageEvents";
-import { useWindowSize } from "../../hooks/useWindowSize";
-import { useHoveredCard } from "../../hooks/useHoveredCard";
-import { useLoadingFade } from "../../hooks/useLoadingFade";
-import { useStageMousePos } from "../../hooks/useStageMousePos";
-import GameCanvas from "../GameCanvas";
+import { useCardDrag } from "../hooks/useCardDrag";
+import { useRoomHandlers } from "../hooks/useRoomHandlers";
+import { useStageEvents } from "../hooks/useStageEvents";
+import { useWindowSize } from "../hooks/useWindowSize";
+import { useHoveredCard } from "../hooks/useHoveredCard";
+import { useLoadingFade } from "../hooks/useLoadingFade";
+import { useStageMousePos } from "../hooks/useStageMousePos";
+import GameCanvas from "./GameCanvas";
 
 const username = localStorage.getItem("username");
 
