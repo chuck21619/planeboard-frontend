@@ -26,7 +26,9 @@ export default function GameCanvas({
   username,
   setDecks,
   setStagePosition,
+  tapCard
 }) {
+
   return (
     <>
       <Stage
@@ -71,6 +73,7 @@ export default function GameCanvas({
             <Card
               key={card.id}
               card={card}
+              onTapCard={tapCard}
               onReturnToHand={(cardId) => {
                 setCards((prev) => prev.filter((c) => c.id !== cardId));
                 const cardToReturn = cards.find((c) => c.id === cardId);

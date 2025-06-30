@@ -61,6 +61,12 @@ export function useRoomHandlers({
           ...prev,
           [message.player]: message.handSize,
         }));
+      } else if (message.type === "CARD_TAPPED") {
+        setCards((prevCards) =>
+          prevCards.map((card) =>
+            card.id === message.id ? { ...card, tapped: message.tapped } : card
+          )
+        );
       } else if (message.type === "CARD_RETURNED") {
         setCards((prevCards) =>
           prevCards.filter((card) => card.id !== message.id)

@@ -5,6 +5,7 @@ import Hand from "./Hand";
 import { useCardImagePreloader } from "../hooks/useCardImagePreloader";
 import useImage from "use-image";
 import { useCardDrag } from "../hooks/useCardDrag";
+import { useCardTap } from "../hooks/useCardTap";
 import { useRoomHandlers } from "../hooks/useRoomHandlers";
 import { useStageEvents } from "../hooks/useStageEvents";
 import { useWindowSize } from "../hooks/useWindowSize";
@@ -46,6 +47,7 @@ function Room() {
   );
   const windowSize = useWindowSize();
   useCardImagePreloader(decks);
+  const { tapCard } = useCardTap(setCards);
   useCardDrag({
     canvasRef,
     stageScale,
@@ -108,6 +110,7 @@ function Room() {
             username={username}
             setDecks={setDecks}
             setStagePosition={setStagePosition}
+            tapCard={tapCard}
           />
           <Hand
             hand={hand}

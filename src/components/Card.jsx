@@ -8,7 +8,8 @@ export default function Card({
   isGhost = false,
   onDragStart,
   onReturnToHand,
-  onCardMove, // <- new prop
+  onCardMove,
+  onTapCard,
 }) {
   const image = useSharedImage(card.imageUrl);
 
@@ -16,19 +17,15 @@ export default function Card({
     const stage = e.target.getStage();
     const pointerPosition = stage?.getPointerPosition();
     if (!pointerPosition) return;
-
     const clientY =
       stage.container().getBoundingClientRect().top + pointerPosition.y;
-
     const droppedInHand = clientY > window.innerHeight - 80;
-
     const x = e.target.x();
     const y = e.target.y();
 
     if (droppedInHand && onReturnToHand) {
       onReturnToHand(card.id);
     } else {
-      // Optimistically update local card position
       if (onCardMove) {
         onCardMove(card.id, x, y);
       }
@@ -42,6 +39,10 @@ export default function Card({
     }
   };
 
+  const handleClick = () => {
+    onTapCard(card.id);
+  };
+
   const commonProps = {
     x: card.x,
     y: card.y,
@@ -51,6 +52,8 @@ export default function Card({
     opacity: isGhost ? 0.5 : 1,
     draggable: !isGhost,
     listening: !isGhost,
+    rotation: card.tapped ? 90 : 0,
+    onClick: handleClick,
     onDragStart: () => {
       if (!isGhost && onDragStart) onDragStart(card);
     },

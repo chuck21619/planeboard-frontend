@@ -35,8 +35,6 @@ export default function Login() {
           onChange={(e) => setUsername(e.target.value)}
           className="login-input"
         />
-        <br />
-        <br />
         <input
           type="text"
           value={roomId}
@@ -44,8 +42,6 @@ export default function Login() {
           placeholder="Room Name"
           className="login-input"
         />
-        <br />
-        <br />
         <input
           type="text"
           value={deckUrl}
@@ -53,7 +49,6 @@ export default function Login() {
           placeholder="Archidekt URL"
           className="login-input"
         />
-        <br />
         <br />
         <button onClick={handleJoinRoom}>Join Room</button>
       </div>

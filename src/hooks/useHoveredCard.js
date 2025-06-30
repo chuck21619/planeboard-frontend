@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 export function useHoveredCard(mousePos, cards, draggingCard, hoveredHandCard) {
   const [hoveredCard, setHoveredCard] = useState(null);
   const ignoreNextChange = useRef(false);
-  const lastCardId = useRef(null); // ← Track last hovered card ID
+  const lastCardId = useRef(null);
 
   useEffect(() => {
     if (ignoreNextChange.current) {
