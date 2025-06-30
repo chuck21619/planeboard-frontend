@@ -14,6 +14,7 @@ export function useCardDrag({
   setCards,
   setHand,
   username,
+  ignoreNextChange,
 }) {
   useEffect(() => {
     const onMouseMove = (e) => {
@@ -58,6 +59,7 @@ export function useCardDrag({
         username: username,
       });
       setDraggingCard(null);
+      ignoreNextChange.current = true;
     };
 
     window.addEventListener("mousemove", onMouseMove);

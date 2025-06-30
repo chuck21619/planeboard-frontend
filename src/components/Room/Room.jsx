@@ -45,7 +45,6 @@ function Room() {
     setStagePosition
   );
   const windowSize = useWindowSize();
-
   useCardImagePreloader(decks);
   useCardDrag({
     canvasRef,
@@ -57,6 +56,7 @@ function Room() {
     setCards,
     setHand,
     username,
+    ignoreNextChange,
   });
   useRoomHandlers({
     roomId,
