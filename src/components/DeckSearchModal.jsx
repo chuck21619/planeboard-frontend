@@ -1,12 +1,15 @@
 import { useState } from "react";
 
 export default function DeckSearchModal({
-  cards,
+  deckId,
+  decks,
   onClose,
   setHoveredCard,
   getCardMouseDownHandler,
 }) {
   const [query, setQuery] = useState("");
+  const deck = decks[deckId];
+  const cards = deck?.cards || [];
   const filteredCards = cards.filter((card) =>
     card.name.toLowerCase().includes(query.toLowerCase())
   );

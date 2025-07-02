@@ -23,7 +23,7 @@ function Room() {
   const [menuVisible, setMenuVisible] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
   const [searchModalVisible, setSearchModalVisible] = useState(false);
-  const [searchDeckCards, setSearchDeckCards] = useState([]);
+  const [searchDeckId, setSearchDeckId] = useState(null);
   const [menuDeckId, setMenuDeckId] = useState(null);
   const { roomId } = useParams();
   const [hasJoined, setHasJoined] = useState(false);
@@ -74,7 +74,7 @@ function Room() {
     setHand,
     username,
     ignoreNextChange,
-    setDecks
+    setDecks,
   });
   useRoomHandlers({
     roomId,
@@ -160,7 +160,8 @@ function Room() {
         </div>
         {searchModalVisible && (
           <DeckSearchModal
-            cards={searchDeckCards}
+            deckId={searchDeckId}
+            decks={decks}
             onClose={() => setSearchModalVisible(false)}
             setHoveredCard={setHoveredCard}
             getCardMouseDownHandler={getCardMouseDownHandler}
@@ -208,7 +209,7 @@ function Room() {
               onClick={() => {
                 console.log("Search clicked for deck", menuDeckId);
                 setMenuVisible(false);
-                setSearchDeckCards(decks[menuDeckId].cards || []);
+                setSearchDeckId(menuDeckId);
                 setSearchModalVisible(true);
               }}
             >
