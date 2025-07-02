@@ -26,9 +26,9 @@ export default function GameCanvas({
   username,
   setDecks,
   setStagePosition,
-  tapCard
+  tapCard,
+  onDeckRightClick,
 }) {
-
   return (
     <>
       <Stage
@@ -96,7 +96,15 @@ export default function GameCanvas({
             />
           ))}
           {decks.map((deck) => (
-            <Deck key={deck.id} deck={deck} decks={decks} setDecks={setDecks} />
+            <Deck
+              key={deck.id}
+              deck={deck}
+              decks={decks}
+              setDecks={setDecks}
+              onRightClick={(e) =>
+                onDeckRightClick(e.evt.clientX, e.evt.clientY, deck.id)
+              }
+            />
           ))}
         </Layer>
       </Stage>

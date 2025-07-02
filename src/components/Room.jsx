@@ -13,12 +13,18 @@ import { useHoveredCard } from "../hooks/useHoveredCard";
 import { useLoadingFade } from "../hooks/useLoadingFade";
 import { useStageMousePos } from "../hooks/useStageMousePos";
 import GameCanvas from "./GameCanvas";
+import DeckSearchModal from "./DeckSearchModal";
 
 const username = localStorage.getItem("username");
 
 function Room() {
   const navigate = useNavigate();
   const stageRef = useRef();
+  const [menuVisible, setMenuVisible] = useState(false);
+  const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+  const [searchModalVisible, setSearchModalVisible] = useState(false);
+  const [searchDeckCards, setSearchDeckCards] = useState([]);
+  const [menuDeckId, setMenuDeckId] = useState(null);
   const { roomId } = useParams();
   const [hasJoined, setHasJoined] = useState(false);
   const { showSpinner, minLoadingDone } = useLoadingFade(hasJoined);
@@ -72,6 +78,11 @@ function Room() {
     username,
     navigate,
   });
+  const handleDeckRightClick = (clientX, clientY, deckId) => {
+    setMenuVisible(true);
+    setMenuPosition({ x: clientX, y: clientY });
+    setMenuDeckId(deckId);
+  };
 
   return (
     <div>
@@ -111,6 +122,7 @@ function Room() {
             setDecks={setDecks}
             setStagePosition={setStagePosition}
             tapCard={tapCard}
+            onDeckRightClick={handleDeckRightClick}
           />
           <Hand
             hand={hand}
@@ -121,6 +133,12 @@ function Room() {
             setHoveredHandCard={setHoveredHandCard}
           />
         </div>
+        {searchModalVisible && (
+          <DeckSearchModal
+            cards={searchDeckCards}
+            onClose={() => setSearchModalVisible(false)}
+          />
+        )}
         <div className={`hover-preview ${hoveredCard ? "" : "hidden"}`}>
           {hoveredCard && (
             <>
@@ -128,6 +146,37 @@ function Room() {
             </>
           )}
         </div>
+        {menuVisible && (
+          <div
+            style={{
+              position: "absolute",
+              top: menuPosition.y,
+              left: menuPosition.x,
+              backgroundColor: "white",
+              border: "1px solid #ccc",
+              padding: "6px",
+              zIndex: 9999,
+            }}
+            onMouseLeave={() => setMenuVisible(false)}
+          >
+            <div
+              style={{ cursor: "pointer" }}
+              onClick={() => {
+                console.log("Search clicked for deck", menuDeckId);
+                setMenuVisible(false);
+
+                // Find the deck by id and get cards
+                const deck = decks.find((d) => d.id === menuDeckId);
+                if (deck) {
+                  setSearchDeckCards(deck.Cards || deck.cards || []); // Adjust key if needed
+                  setSearchModalVisible(true);
+                }
+              }}
+            >
+              🔍 Search
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
