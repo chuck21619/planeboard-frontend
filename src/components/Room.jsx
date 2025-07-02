@@ -41,7 +41,7 @@ function Room() {
   const [positions, setPositions] = useState({});
   const [stageScale, setStageScale] = useState(1);
   const [stagePosition, setStagePosition] = useState({ x: 0, y: 0 });
-  const [mousePos, onMouseMove] = useStageMousePos();
+  const [mousePos, stageMouseMove] = useStageMousePos();
   const [pointerPos, setPointerPos] = useState({ x: 0, y: 0 });
   const { hoveredCard, setHoveredCard, ignoreNextChange } = useHoveredCard(
     mousePos,
@@ -56,11 +56,18 @@ function Room() {
   const windowSize = useWindowSize();
   useCardImagePreloader(decks);
   const { tapCard } = useCardTap(setCards);
-  useCardDrag({
+  const {
+    onMouseDown: dragMouseDown,
+    onMouseMove: dragMouseMove,
+    onMouseUp: dragMouseUp,
+    getCardMouseDownHandler,
+  } = useCardDrag({
     canvasRef,
     stageScale,
     stagePosition,
     draggingCard,
+    dragSource,
+    setDragSource,
     setDraggingCard,
     setDragPos,
     setCards,
@@ -90,7 +97,7 @@ function Room() {
       setPointerPos({ x: e.clientX, y: e.clientY });
     }
 
-    if (draggingCard && dragSource === "modal") {
+    if (draggingCard && dragSource === "deckSearch") {
       window.addEventListener("mousemove", handleMouseMove);
       return () => window.removeEventListener("mousemove", handleMouseMove);
     }
@@ -118,7 +125,12 @@ function Room() {
             stagePosition={stagePosition}
             handleDragEnd={handleDragEnd}
             handleWheel={handleWheel}
-            onMouseMove={onMouseMove}
+            onMouseDown={dragMouseDown}
+            onMouseUp={dragMouseUp}
+            onMouseMove={(e) => {
+              dragMouseMove(e);
+              stageMouseMove(e);
+            }}
             cards={cards}
             decks={decks}
             draggingCard={draggingCard}
@@ -127,6 +139,7 @@ function Room() {
             positions={positions}
             setCards={setCards}
             setHand={setHand}
+            stageDraggable={!draggingCard}
             ignoreNextChange={ignoreNextChange}
             cardBackImage={cardBackImage}
             username={username}
@@ -135,15 +148,13 @@ function Room() {
             tapCard={tapCard}
             onDeckRightClick={handleDeckRightClick}
             dragSource={dragSource}
+            getCardMouseDownHandler={getCardMouseDownHandler}
           />
           <Hand
             hand={hand}
-            draggingCard={draggingCard}
-            setDraggingCard={setDraggingCard}
-            setDragPos={setDragPos}
-            setDragSource={setDragSource}
             setHoveredCard={setHoveredCard}
             setHoveredHandCard={setHoveredHandCard}
+            getCardMouseDownHandler={getCardMouseDownHandler}
           />
         </div>
         {searchModalVisible && (
@@ -151,20 +162,18 @@ function Room() {
             cards={searchDeckCards}
             onClose={() => setSearchModalVisible(false)}
             setHoveredCard={setHoveredCard}
-            setDraggingCard={setDraggingCard}
-            setDragSource={setDragSource}
-            setPointerPos={setPointerPos}
+            getCardMouseDownHandler={getCardMouseDownHandler}
           />
         )}
-        {draggingCard && dragSource === "modal" && (
+        {draggingCard && dragSource === "deckSearch" && (
           <img
             src={draggingCard.imageUrl}
             alt={draggingCard.name}
             style={{
               position: "fixed",
               pointerEvents: "none",
-              top: pointerPos.y - 45, // half card height offset
-              left: pointerPos.x - 32, // half card width offset
+              top: pointerPos.y - 45,
+              left: pointerPos.x - 32,
               width: 64,
               borderRadius: 8,
               zIndex: 11000,

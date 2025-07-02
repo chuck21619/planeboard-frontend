@@ -4,26 +4,12 @@ export default function DeckSearchModal({
   cards,
   onClose,
   setHoveredCard,
-  setDraggingCard,
-  setDragSource,
-  setPointerPos,
+  getCardMouseDownHandler,
 }) {
   const [query, setQuery] = useState("");
   const filteredCards = cards.filter((card) =>
     card.name.toLowerCase().includes(query.toLowerCase())
   );
-  const handleMouseDown = (e, card) => {
-    e.preventDefault();
-    const { clientX, clientY } = e;
-    // const rect = e.target.getBoundingClientRect();
-    // const x = rect.left + rect.width / 2;
-    // const y = rect.top + rect.height / 2;
-
-    setDragSource("modal");
-    setDraggingCard(card);
-    setPointerPos({ x: clientX, y: clientY });
-    // setDragPos({ x, y });
-  };
   return (
     <div
       className="deck-search-modal"
@@ -76,7 +62,7 @@ export default function DeckSearchModal({
               height: 94,
               objectFit: "contain",
             }}
-            onMouseDown={(e) => handleMouseDown(e, card)}
+            onMouseDown={getCardMouseDownHandler(card, "deckSearch")}
             onMouseEnter={() => setHoveredCard(card)}
             onMouseLeave={() => setHoveredCard(null)}
           />

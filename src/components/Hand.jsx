@@ -1,13 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSharedImage } from "../hooks/useSharedImage";
 
-export default function Hand({
-  hand,
-  setDraggingCard,
-  setDragPos,
-  setHoveredHandCard,
-  setDragSource
-}) {
+export default function Hand({ hand, setHoveredHandCard, getCardMouseDownHandler }) {
   const cardWidth = 64;
   const maxWidth = window.innerWidth - 40;
   const totalCardWidth = hand.length * cardWidth;
@@ -32,14 +26,7 @@ export default function Hand({
             marginLeft: i === 0 ? 0 : -overlapAmount,
             zIndex: i,
           }}
-          onMouseDown={(e) => {
-            const rect = e.target.getBoundingClientRect();
-            const x = rect.left + rect.width / 2;
-            const y = rect.top + rect.height / 2;
-            setDraggingCard(card);
-            setDragSource("hand");
-            setDragPos({ x, y });
-          }}
+          onMouseDown={getCardMouseDownHandler(card, "hand")}
           onMouseEnter={() => handleMouseEnter(card)}
           onMouseLeave={() => handleMouseLeave(card)}
         >

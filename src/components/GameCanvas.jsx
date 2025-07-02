@@ -3,7 +3,6 @@ import Card from "./Card";
 import Deck from "./Deck";
 import OpponentHand from "./OpponentHand";
 import BoardBackground from "./BoardBackground";
-import { sendMessage } from "../ws";
 
 export default function GameCanvas({
   stageRef,
@@ -12,6 +11,8 @@ export default function GameCanvas({
   stagePosition,
   handleDragEnd,
   handleWheel,
+  onMouseDown,
+  onMouseUp,
   onMouseMove,
   cards,
   decks,
@@ -19,9 +20,6 @@ export default function GameCanvas({
   dragPos,
   handSizes,
   positions,
-  setCards,
-  setHand,
-  ignoreNextChange,
   cardBackImage,
   username,
   setDecks,
@@ -29,6 +27,8 @@ export default function GameCanvas({
   tapCard,
   onDeckRightClick,
   dragSource,
+  getCardMouseDownHandler,
+  stageDraggable
 }) {
   return (
     <>
@@ -40,9 +40,11 @@ export default function GameCanvas({
         scaleY={stageScale}
         x={stagePosition.x}
         y={stagePosition.y}
-        draggable
+        draggable={stageDraggable}
         onDragEnd={(e) => handleDragEnd(e, setStagePosition)}
         onWheel={(e) => handleWheel(e, stagePosition, stageScale)}
+        onMouseDown={onMouseDown}
+        onMouseUp={onMouseUp}
         onMouseMove={onMouseMove}
       >
         <Layer>
@@ -64,7 +66,7 @@ export default function GameCanvas({
         </Layer>
 
         <Layer>
-          {draggingCard && dragSource !== "modal" && (
+          {draggingCard && dragSource !== "deckSearch" && (
             <Card
               card={{ ...draggingCard, x: dragPos.x, y: dragPos.y }}
               isGhost
@@ -75,26 +77,7 @@ export default function GameCanvas({
               key={card.id}
               card={card}
               onTapCard={tapCard}
-              dragSource={dragSource}
-              onReturnToHand={(cardId) => {
-                setCards((prev) => prev.filter((c) => c.id !== cardId));
-                const cardToReturn = cards.find((c) => c.id === cardId);
-                if (cardToReturn) {
-                  setHand((prev) => [...prev, cardToReturn]);
-                  sendMessage({
-                    type: "CARD_RETURNED",
-                    id: cardId,
-                    username,
-                  });
-                }
-              }}
-              onCardMove={(id, x, y) => {
-                setCards((prev) =>
-                  prev.map((c) => (c.id === id ? { ...c, x, y } : c))
-                );
-
-                ignoreNextChange.current = true;
-              }}
+              onMouseDown={getCardMouseDownHandler(card, "board")}
             />
           ))}
           {decks.map((deck) => (
