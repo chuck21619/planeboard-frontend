@@ -137,6 +137,9 @@ function Room() {
           <DeckSearchModal
             cards={searchDeckCards}
             onClose={() => setSearchModalVisible(false)}
+            setHoveredCard={setHoveredCard}
+            setDraggingCard={setDraggingCard}
+            setDragPos={setDragPos}
           />
         )}
         <div className={`hover-preview ${hoveredCard ? "" : "hidden"}`}>

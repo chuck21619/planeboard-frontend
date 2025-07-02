@@ -1,11 +1,24 @@
 import { useState } from "react";
 
-export default function DeckSearchModal({ cards, onClose }) {
+export default function DeckSearchModal({
+  cards,
+  onClose,
+  setHoveredCard,
+  setDraggingCard,
+  setDragPos,
+}) {
   const [query, setQuery] = useState("");
   const filteredCards = cards.filter((card) =>
     card.name.toLowerCase().includes(query.toLowerCase())
   );
-
+  const handleMouseDown = (e, card) => {
+    e.preventDefault();
+    const rect = e.target.getBoundingClientRect();
+    const x = rect.left + rect.width / 2;
+    const y = rect.top + rect.height / 2;
+    setDraggingCard(card);
+    setDragPos({ x, y });
+  };
   return (
     <div
       style={{
@@ -13,12 +26,12 @@ export default function DeckSearchModal({ cards, onClose }) {
         top: "10%",
         left: "50%",
         transform: "translateX(-50%)",
-        width: "400px",
-        maxHeight: "60vh",
+        width: "90vh",
+        maxHeight: "80vh",
         overflowY: "auto",
-        backgroundColor: "white",
+        overflowX: "hidden",
+        backgroundColor: "black",
         border: "1px solid #ccc",
-        boxShadow: "0 0 10px rgba(0,0,0,0.25)",
         padding: "12px",
         zIndex: 10000,
       }}
@@ -51,7 +64,15 @@ export default function DeckSearchModal({ cards, onClose }) {
             key={card.id}
             src={card.imageUrl}
             alt={card.name}
-            style={{ width: 70, height: 94, objectFit: "contain" }}
+            style={{
+              borderRadius: "8px",
+              width: 70,
+              height: 94,
+              objectFit: "contain",
+            }}
+            onMouseDown={(e) => handleMouseDown(e, card)}
+            onMouseEnter={() => setHoveredCard(card)}
+            onMouseLeave={() => setHoveredCard(null)}
           />
         ))}
       </div>
