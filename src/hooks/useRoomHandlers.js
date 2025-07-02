@@ -45,6 +45,7 @@ export function useRoomHandlers({
       } else if (message.type === "USER_JOINED") {
         setDecks(Object.values(message.decks));
         setPositions(message.positions);
+        setCards((prevCards) => [...prevCards, ...message.commanders]);
         if (message.users.includes(username)) {
           setHasJoined(true);
         }
