@@ -56,19 +56,21 @@ export function useRoomHandlers({
           ...prev,
           [message.player]: message.handSize,
         }));
-      } else if (message.type === "CARD_PLAYED") {
+      } else if (message.type === "CARD_PLAYED_FROM_HAND") {
         setCards((prev) => [...prev, message.card]);
         setHandSizes((prev) => ({
           ...prev,
           [message.player]: message.handSize,
         }));
+      } else if (message.type === "CARD_PLAYED_FROM_LIBRARY") {
+        setCards((prev) => [...prev, message.card]);
       } else if (message.type === "CARD_TAPPED") {
         setCards((prevCards) =>
           prevCards.map((card) =>
             card.id === message.id ? { ...card, tapped: message.tapped } : card
           )
         );
-      } else if (message.type === "CARD_RETURNED") {
+      } else if (message.type === "RETURN_TO_HAND") {
         setCards((prevCards) =>
           prevCards.filter((card) => card.id !== message.id)
         );
