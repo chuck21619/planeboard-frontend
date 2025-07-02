@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { sendMessage } from "../ws";
 
 const cardWidth = 64;
@@ -18,6 +18,13 @@ export function useCardDrag({
   username,
   ignoreNextChange,
 }) {
+  const onMouseMove = useCallback((e) => {
+    // Intentionally empty — mousemove handled globally on window
+  });
+  const onMouseUp = useCallback((e) => {
+    // Intentionally empty — mouseup handled globally on window
+  }, []);
+
   function getCardMouseDownHandler(card, source) {
     return (e) => {
       const clientX = "clientX" in e ? e.clientX : e.evt.clientX;
@@ -40,79 +47,63 @@ export function useCardDrag({
       }
     };
   }
-
-  const onMouseMove = useCallback(
-    (e) => {
+  useEffect(() => {
+    function handleGlobalMouseMove(e) {
       if (!draggingCard) return;
-      e.evt.preventDefault();
+
       const rect = canvasRef.current?.getBoundingClientRect();
       if (!rect) return;
+
       const x =
-        (e.evt.clientX - rect.left - stagePosition.x) / stageScale -
-        cardWidth / 2;
+        (e.clientX - rect.left - stagePosition.x) / stageScale - cardWidth / 2;
       const y =
-        (e.evt.clientY - rect.top - stagePosition.y) / stageScale -
-        cardHeight / 2;
+        (e.clientY - rect.top - stagePosition.y) / stageScale - cardHeight / 2;
+
       setDragPos({ x, y });
-    },
-    [draggingCard, canvasRef, stagePosition, stageScale, setDragPos]
-  );
+    }
+
+    window.addEventListener("mousemove", handleGlobalMouseMove);
+    return () => window.removeEventListener("mousemove", handleGlobalMouseMove);
+  }, [draggingCard, canvasRef, stagePosition, stageScale, setDragPos]);
 
   const onMouseDown = useCallback((e) => {
     e.evt.preventDefault();
     e.evt.stopPropagation();
   }, []);
 
-  const onMouseUp = useCallback(
-    (e) => {
+  useEffect(() => {
+    function handleGlobalMouseUp(e) {
       if (!draggingCard) return;
-
-      const elementUnderCursor = document.elementFromPoint(
-        e.evt.clientX,
-        e.evt.clientY
-      );
-      if (elementUnderCursor?.closest(".deck-search-modal")) {
-        setDraggingCard(null);
-        setDragSource(null);
-        return;
-      }
 
       const rect = canvasRef.current?.getBoundingClientRect();
       if (!rect) return;
-      const dropY = e.evt.clientY;
+
+      const dropY = e.clientY;
       const handThreshold = window.innerHeight - 80;
       const isDroppingInHand = dropY > handThreshold;
+
       const x =
-        (e.evt.clientX - rect.left - stagePosition.x) / stageScale -
-        cardWidth / 2;
+        (e.clientX - rect.left - stagePosition.x) / stageScale - cardWidth / 2;
       const y =
-        (e.evt.clientY - rect.top - stagePosition.y) / stageScale -
-        cardHeight / 2;
+        (e.clientY - rect.top - stagePosition.y) / stageScale - cardHeight / 2;
+
       const card = draggingCard;
 
+      // Same logic as in onMouseUp:
       if (dragSource === "board") {
         if (isDroppingInHand) {
           setHand((prev) => [...prev, card]);
           setCards((prev) => prev.filter((c) => c.id !== card.id));
-          sendMessage({
-            type: "RETURN_TO_HAND",
-            id: card.id,
-            username,
-          });
+          sendMessage({ type: "RETURN_TO_HAND", id: card.id, username });
         } else {
           setCards((prev) =>
             prev.map((c) => (c.id === card.id ? { ...c, x, y } : c))
           );
-          sendMessage({
-            type: "MOVE_CARD",
-            id: card.id,
-            x,
-            y,
-          });
+          sendMessage({ type: "MOVE_CARD", id: card.id, x, y });
         }
       } else if (dragSource === "deckSearch") {
         if (isDroppingInHand) {
-          //handle this
+          // handle if needed
         } else {
           setCards((prev) => [...prev, { ...card, x, y }]);
           sendMessage({
@@ -136,20 +127,21 @@ export function useCardDrag({
       }
       setDraggingCard(null);
       setDragSource(null);
-    },
-    [
-      draggingCard,
-      dragSource,
-      canvasRef,
-      stagePosition,
-      stageScale,
-      setCards,
-      setHand,
-      username,
-      ignoreNextChange,
-    ]
-  );
+    }
 
+    window.addEventListener("mouseup", handleGlobalMouseUp);
+    return () => window.removeEventListener("mouseup", handleGlobalMouseUp);
+  }, [
+    draggingCard,
+    dragSource,
+    canvasRef,
+    stagePosition,
+    stageScale,
+    setCards,
+    setHand,
+    username,
+    ignoreNextChange,
+  ]);
   return {
     onMouseDown,
     onMouseMove,
