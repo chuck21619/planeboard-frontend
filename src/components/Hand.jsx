@@ -6,6 +6,7 @@ export default function Hand({
   setDraggingCard,
   setDragPos,
   setHoveredHandCard,
+  setDragSource
 }) {
   const cardWidth = 64;
   const maxWidth = window.innerWidth - 40;
@@ -36,6 +37,7 @@ export default function Hand({
             const x = rect.left + rect.width / 2;
             const y = rect.top + rect.height / 2;
             setDraggingCard(card);
+            setDragSource("hand");
             setDragPos({ x, y });
           }}
           onMouseEnter={() => handleMouseEnter(card)}

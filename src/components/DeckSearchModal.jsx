@@ -5,7 +5,8 @@ export default function DeckSearchModal({
   onClose,
   setHoveredCard,
   setDraggingCard,
-  setDragPos,
+  setDragSource,
+  setPointerPos,
 }) {
   const [query, setQuery] = useState("");
   const filteredCards = cards.filter((card) =>
@@ -13,14 +14,19 @@ export default function DeckSearchModal({
   );
   const handleMouseDown = (e, card) => {
     e.preventDefault();
-    const rect = e.target.getBoundingClientRect();
-    const x = rect.left + rect.width / 2;
-    const y = rect.top + rect.height / 2;
+    const { clientX, clientY } = e;
+    // const rect = e.target.getBoundingClientRect();
+    // const x = rect.left + rect.width / 2;
+    // const y = rect.top + rect.height / 2;
+
+    setDragSource("modal");
     setDraggingCard(card);
-    setDragPos({ x, y });
+    setPointerPos({ x: clientX, y: clientY });
+    // setDragPos({ x, y });
   };
   return (
     <div
+      className="deck-search-modal"
       style={{
         position: "fixed",
         top: "10%",

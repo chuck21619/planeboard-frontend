@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import Hand from "./Hand";
@@ -32,6 +32,7 @@ function Room() {
   const [decks, setDecks] = useState([]);
   const [hand, setHand] = useState([]);
   const [draggingCard, setDraggingCard] = useState(null);
+  const [dragSource, setDragSource] = useState(null);
   const [hoveredHandCard, setHoveredHandCard] = useState(null);
   const [dragPos, setDragPos] = useState({ x: 0, y: 0 });
   const canvasRef = useRef(null);
@@ -41,6 +42,7 @@ function Room() {
   const [stageScale, setStageScale] = useState(1);
   const [stagePosition, setStagePosition] = useState({ x: 0, y: 0 });
   const [mousePos, onMouseMove] = useStageMousePos();
+  const [pointerPos, setPointerPos] = useState({ x: 0, y: 0 });
   const { hoveredCard, setHoveredCard, ignoreNextChange } = useHoveredCard(
     mousePos,
     cards,
@@ -83,7 +85,16 @@ function Room() {
     setMenuPosition({ x: clientX, y: clientY });
     setMenuDeckId(deckId);
   };
+  useEffect(() => {
+    function handleMouseMove(e) {
+      setPointerPos({ x: e.clientX, y: e.clientY });
+    }
 
+    if (draggingCard && dragSource === "modal") {
+      window.addEventListener("mousemove", handleMouseMove);
+      return () => window.removeEventListener("mousemove", handleMouseMove);
+    }
+  }, [draggingCard, dragSource]);
   return (
     <div>
       <div
@@ -123,12 +134,14 @@ function Room() {
             setStagePosition={setStagePosition}
             tapCard={tapCard}
             onDeckRightClick={handleDeckRightClick}
+            dragSource={dragSource}
           />
           <Hand
             hand={hand}
             draggingCard={draggingCard}
             setDraggingCard={setDraggingCard}
             setDragPos={setDragPos}
+            setDragSource={setDragSource}
             setHoveredCard={setHoveredCard}
             setHoveredHandCard={setHoveredHandCard}
           />
@@ -139,7 +152,25 @@ function Room() {
             onClose={() => setSearchModalVisible(false)}
             setHoveredCard={setHoveredCard}
             setDraggingCard={setDraggingCard}
-            setDragPos={setDragPos}
+            setDragSource={setDragSource}
+            setPointerPos={setPointerPos}
+          />
+        )}
+        {draggingCard && dragSource === "modal" && (
+          <img
+            src={draggingCard.imageUrl}
+            alt={draggingCard.name}
+            style={{
+              position: "fixed",
+              pointerEvents: "none",
+              top: pointerPos.y - 45, // half card height offset
+              left: pointerPos.x - 32, // half card width offset
+              width: 64,
+              borderRadius: 8,
+              zIndex: 11000,
+              opacity: 0.8,
+              userSelect: "none",
+            }}
           />
         )}
         <div className={`hover-preview ${hoveredCard ? "" : "hidden"}`}>

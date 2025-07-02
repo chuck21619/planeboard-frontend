@@ -37,6 +37,14 @@ export function useCardDrag({
 
     const onMouseUp = (e) => {
       if (!draggingCard) return;
+      const elementUnderCursor = document.elementFromPoint(
+        e.clientX,
+        e.clientY
+      );
+      if (elementUnderCursor?.closest(".deck-search-modal")) {
+        setDraggingCard(null);
+        return;
+      }
       const rect = canvasRef.current?.getBoundingClientRect();
       if (!rect) return;
       const dropY = e.clientY;

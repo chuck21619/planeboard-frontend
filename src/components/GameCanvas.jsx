@@ -28,6 +28,7 @@ export default function GameCanvas({
   setStagePosition,
   tapCard,
   onDeckRightClick,
+  dragSource,
 }) {
   return (
     <>
@@ -63,7 +64,7 @@ export default function GameCanvas({
         </Layer>
 
         <Layer>
-          {draggingCard && (
+          {draggingCard && dragSource !== "modal" && (
             <Card
               card={{ ...draggingCard, x: dragPos.x, y: dragPos.y }}
               isGhost
@@ -74,6 +75,7 @@ export default function GameCanvas({
               key={card.id}
               card={card}
               onTapCard={tapCard}
+              dragSource={dragSource}
               onReturnToHand={(cardId) => {
                 setCards((prev) => prev.filter((c) => c.id !== cardId));
                 const cardToReturn = cards.find((c) => c.id === cardId);
