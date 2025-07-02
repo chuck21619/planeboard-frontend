@@ -29,7 +29,7 @@ function Room() {
   const [hasJoined, setHasJoined] = useState(false);
   const { showSpinner, minLoadingDone } = useLoadingFade(hasJoined);
   const [cards, setCards] = useState([]);
-  const [decks, setDecks] = useState([]);
+  const [decks, setDecks] = useState({});
   const [hand, setHand] = useState([]);
   const [draggingCard, setDraggingCard] = useState(null);
   const [dragSource, setDragSource] = useState(null);
@@ -74,6 +74,7 @@ function Room() {
     setHand,
     username,
     ignoreNextChange,
+    setDecks
   });
   useRoomHandlers({
     roomId,
@@ -133,6 +134,7 @@ function Room() {
             }}
             cards={cards}
             decks={decks}
+            setDecks={setDecks}
             draggingCard={draggingCard}
             dragPos={dragPos}
             handSizes={handSizes}
@@ -143,7 +145,6 @@ function Room() {
             ignoreNextChange={ignoreNextChange}
             cardBackImage={cardBackImage}
             username={username}
-            setDecks={setDecks}
             setStagePosition={setStagePosition}
             tapCard={tapCard}
             onDeckRightClick={handleDeckRightClick}
@@ -207,13 +208,8 @@ function Room() {
               onClick={() => {
                 console.log("Search clicked for deck", menuDeckId);
                 setMenuVisible(false);
-
-                // Find the deck by id and get cards
-                const deck = decks.find((d) => d.id === menuDeckId);
-                if (deck) {
-                  setSearchDeckCards(deck.Cards || deck.cards || []); // Adjust key if needed
-                  setSearchModalVisible(true);
-                }
+                setSearchDeckCards(decks[menuDeckId].cards || []);
+                setSearchModalVisible(true);
               }}
             >
               🔍 Search

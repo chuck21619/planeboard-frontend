@@ -1,5 +1,6 @@
 import { useCallback, useEffect } from "react";
 import { sendMessage } from "../ws";
+import { removeCardFromDeck } from "../utils/deckUtils";
 
 const cardWidth = 64;
 const cardHeight = 89;
@@ -17,6 +18,7 @@ export function useCardDrag({
   setHand,
   username,
   ignoreNextChange,
+  setDecks,
 }) {
   const onMouseMove = useCallback((e) => {
     // Intentionally empty — mousemove handled globally on window
@@ -74,22 +76,17 @@ export function useCardDrag({
   useEffect(() => {
     function handleGlobalMouseUp(e) {
       if (!draggingCard) return;
-
       const rect = canvasRef.current?.getBoundingClientRect();
       if (!rect) return;
-
       const dropY = e.clientY;
       const handThreshold = window.innerHeight - 80;
       const isDroppingInHand = dropY > handThreshold;
-
       const x =
         (e.clientX - rect.left - stagePosition.x) / stageScale - cardWidth / 2;
       const y =
         (e.clientY - rect.top - stagePosition.y) / stageScale - cardHeight / 2;
-
       const card = draggingCard;
 
-      // Same logic as in onMouseUp:
       if (dragSource === "board") {
         if (isDroppingInHand) {
           setHand((prev) => [...prev, card]);
@@ -103,7 +100,9 @@ export function useCardDrag({
         }
       } else if (dragSource === "deckSearch") {
         if (isDroppingInHand) {
-          // handle if needed
+          setHand((prev) => [...prev, card]);
+          setCards((prev) => prev.filter((c) => c.id !== card.id));
+          sendMessage({ type: "TUTOR_TO_HAND", id: card.id, username });
         } else {
           setCards((prev) => [...prev, { ...card, x, y }]);
           sendMessage({
@@ -112,6 +111,9 @@ export function useCardDrag({
             username,
           });
         }
+        setDecks((prevDecks) =>
+          removeCardFromDeck(prevDecks, username, card.id)
+        );
       } else if (dragSource === "hand") {
         if (isDroppingInHand) {
           ignoreNextChange.current = true;

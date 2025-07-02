@@ -1,19 +1,23 @@
 import { Image as KonvaImage } from "react-konva";
 import useImage from "use-image";
 import { sendMessage } from "../ws";
+import { removeTopCardFromDeck } from "../utils/deckUtils";
 
-export default function Deck({ deck, onRightClick }) {
+export default function Deck({ deck, onRightClick, setHand, setDecks }) {
   const [deckImage] = useImage("/deck.png");
 
   const handleContextMenu = (e) => {
-    e.evt.preventDefault(); // ⛔ prevent browser menu just on this deck
-    onRightClick(e); // forward to parent
+    e.evt.preventDefault();
+    onRightClick(e);
   };
 
   const handleClick = (e) => {
     if (e.evt.button !== 0) return; // 0 = left button
     const username = localStorage.getItem("username");
     if (deck.id === username) {
+      const cardToDraw = deck.cards[0];
+      setHand((prev) => [...prev, cardToDraw]);
+      setDecks((prevDecks) => removeTopCardFromDeck(prevDecks, username));
       sendMessage({ type: "DRAW_CARD" });
     }
   };

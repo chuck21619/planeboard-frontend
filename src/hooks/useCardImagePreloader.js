@@ -8,7 +8,7 @@ export function useCardImagePreloader(decks) {
   const enqueueNewImages = () => {
     const currentUrls = new Set();
 
-    decks.forEach((deck) => {
+    Object.values(decks).forEach((deck) => {
       deck.cards?.forEach((card) => {
         const url = card.imageUrl;
         currentUrls.add(url);

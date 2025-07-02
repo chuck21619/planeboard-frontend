@@ -16,19 +16,20 @@ export default function GameCanvas({
   onMouseMove,
   cards,
   decks,
+  setDecks,
   draggingCard,
   dragPos,
   handSizes,
   positions,
   cardBackImage,
   username,
-  setDecks,
+  setHand,
   setStagePosition,
   tapCard,
   onDeckRightClick,
   dragSource,
   getCardMouseDownHandler,
-  stageDraggable
+  stageDraggable,
 }) {
   return (
     <>
@@ -80,12 +81,13 @@ export default function GameCanvas({
               onMouseDown={getCardMouseDownHandler(card, "board")}
             />
           ))}
-          {decks.map((deck) => (
+          {Object.values(decks).map((deck) => (
             <Deck
               key={deck.id}
               deck={deck}
               decks={decks}
               setDecks={setDecks}
+              setHand={setHand}
               onRightClick={(e) =>
                 onDeckRightClick(e.evt.clientX, e.evt.clientY, deck.id)
               }

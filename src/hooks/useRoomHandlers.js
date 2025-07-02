@@ -1,5 +1,10 @@
 import { useEffect } from "react";
 import { connectToRoom, setOnMessageHandler, disconnect } from "../ws";
+import {
+  removeCardFromDeck,
+  removeTopCardFromDeck,
+  removePlayerDeck,
+} from "../utils/deckUtils";
 
 export function useRoomHandlers({
   roomId,
@@ -43,19 +48,20 @@ export function useRoomHandlers({
           )
         );
       } else if (message.type === "USER_JOINED") {
-        setDecks(Object.values(message.decks));
+        setDecks(message.decks);
         setPositions(message.positions);
         setCards((prevCards) => [...prevCards, ...message.commanders]);
         if (message.users.includes(username)) {
           setHasJoined(true);
         }
-      } else if (message.type === "CARD_DRAWN") {
-        setHand((prev) => [...prev, message.card]);
       } else if (message.type === "PLAYER_DREW_CARD") {
         setHandSizes((prev) => ({
           ...prev,
           [message.player]: message.handSize,
         }));
+        setDecks((prevDecks) =>
+          removeTopCardFromDeck(prevDecks, message.player)
+        );
       } else if (message.type === "CARD_PLAYED_FROM_HAND") {
         setCards((prev) => [...prev, message.card]);
         setHandSizes((prev) => ({
@@ -64,6 +70,9 @@ export function useRoomHandlers({
         }));
       } else if (message.type === "CARD_PLAYED_FROM_LIBRARY") {
         setCards((prev) => [...prev, message.card]);
+        setDecks((prevDecks) =>
+          removeCardFromDeck(prevDecks, message.player, message.card.id)
+        );
       } else if (message.type === "CARD_TAPPED") {
         setCards((prevCards) =>
           prevCards.map((card) =>
@@ -78,14 +87,20 @@ export function useRoomHandlers({
           ...prev,
           [message.player]: message.handSize,
         }));
+      } else if (message.type === "TUTORED_TO_HAND") {
+        setHandSizes((prev) => ({
+          ...prev,
+          [message.player]: message.handSize,
+        }));
+        setDecks((prevDecks) =>
+          removeCardFromDeck(prevDecks, message.player, message.id)
+        );
       } else if (message.type === "USER_LEFT") {
         setPositions(message.positions);
         setCards((prevCards) =>
           prevCards.filter((card) => card.owner !== message.user)
         );
-        setDecks((prevDecks) =>
-          prevDecks.filter((deck) => deck.id !== message.user)
-        );
+        setDecks((prevDecks) => removePlayerDeck(prevDecks, message.user));
         setHandSizes((prevSizes) => {
           const updated = { ...prevSizes };
           delete updated[message.user];
@@ -102,5 +117,5 @@ export function useRoomHandlers({
       window.removeEventListener("popstate", handlePopState);
       disconnect();
     };
-  }, [roomId]);
+  }, [roomId, setCards, setDecks, setHandSizes]);
 }
