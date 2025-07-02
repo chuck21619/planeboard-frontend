@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { sendMessage } from "../ws";
 import { removeCardFromDeck } from "../utils/deckUtils";
 
@@ -26,9 +26,10 @@ export function useCardDrag({
   const onMouseUp = useCallback((e) => {
     // Intentionally empty — mouseup handled globally on window
   }, []);
-
+  const [hasMoved, setHasMoved] = useState(false);
   function getCardMouseDownHandler(card, source) {
     return (e) => {
+      setHasMoved(false);
       const clientX = "clientX" in e ? e.clientX : e.evt.clientX;
       const clientY = "clientY" in e ? e.clientY : e.evt.clientY;
       const rect = canvasRef.current?.getBoundingClientRect();
@@ -37,9 +38,9 @@ export function useCardDrag({
         (clientX - rect.left - stagePosition.x) / stageScale - cardWidth / 2;
       const y =
         (clientY - rect.top - stagePosition.y) / stageScale - cardHeight / 2;
+      setDragPos({ x, y });
       setDraggingCard(card);
       setDragSource(source);
-      setDragPos({ x, y });
       if ("evt" in e) {
         e.evt.preventDefault();
         e.evt.stopPropagation();
@@ -52,15 +53,13 @@ export function useCardDrag({
   useEffect(() => {
     function handleGlobalMouseMove(e) {
       if (!draggingCard) return;
-
+      if (!hasMoved) setHasMoved(true);
       const rect = canvasRef.current?.getBoundingClientRect();
       if (!rect) return;
-
       const x =
         (e.clientX - rect.left - stagePosition.x) / stageScale - cardWidth / 2;
       const y =
         (e.clientY - rect.top - stagePosition.y) / stageScale - cardHeight / 2;
-
       setDragPos({ x, y });
     }
 
@@ -149,5 +148,6 @@ export function useCardDrag({
     onMouseMove,
     onMouseUp,
     getCardMouseDownHandler,
+    hasMoved
   };
 }

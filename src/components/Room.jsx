@@ -61,6 +61,7 @@ function Room() {
     onMouseMove: dragMouseMove,
     onMouseUp: dragMouseUp,
     getCardMouseDownHandler,
+    hasMoved,
   } = useCardDrag({
     canvasRef,
     stageScale,
@@ -167,7 +168,7 @@ function Room() {
             getCardMouseDownHandler={getCardMouseDownHandler}
           />
         )}
-        {draggingCard && dragSource === "deckSearch" && (
+        {draggingCard && dragSource === "deckSearch" && hasMoved && (
           <img
             src={draggingCard.imageUrl}
             alt={draggingCard.name}
