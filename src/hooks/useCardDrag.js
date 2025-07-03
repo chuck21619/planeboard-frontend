@@ -94,10 +94,9 @@ export function useCardDrag({
       if (!isLeftClick) return;
       if (!hasMoved) {
         pendingDragRef.current = null;
-        setHasMoved(false);
         return;
       }
-      setHasMoved(false);
+      setHasMoved(true);
       if (!draggingCard) return;
       const rect = canvasRef.current?.getBoundingClientRect();
       if (!rect) return;
