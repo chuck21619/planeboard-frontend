@@ -1,7 +1,8 @@
 import { sendMessage } from "../ws";
 
-export function useCardTap(setCards) {
+export function useCardTap(setCards, hasMoved) {
   const tapCard = (id) => {
+    if (hasMoved) return;
     let tapped;
 
     setCards((prevCards) => {

@@ -55,7 +55,6 @@ function Room() {
   );
   const windowSize = useWindowSize();
   useCardImagePreloader(decks);
-  const { tapCard } = useCardTap(setCards);
   const {
     onMouseDown: dragMouseDown,
     onMouseMove: dragMouseMove,
@@ -79,6 +78,7 @@ function Room() {
     setDecks,
     searchDeckId,
   });
+  const { tapCard } = useCardTap(setCards, hasMoved);
   useRoomHandlers({
     roomId,
     setCards,
