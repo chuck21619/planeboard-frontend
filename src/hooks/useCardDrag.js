@@ -19,6 +19,7 @@ export function useCardDrag({
   username,
   ignoreNextChange,
   setDecks,
+  searchDeckId
 }) {
   const onMouseMove = useCallback((e) => {
     // Intentionally empty — mousemove handled globally on window
@@ -101,17 +102,17 @@ export function useCardDrag({
         if (isDroppingInHand) {
           setHand((prev) => [...prev, card]);
           setCards((prev) => prev.filter((c) => c.id !== card.id));
-          sendMessage({ type: "TUTOR_TO_HAND", id: card.id, username });
+          sendMessage({ type: "TUTOR_TO_HAND", id: card.id, username: searchDeckId });
         } else {
           setCards((prev) => [...prev, { ...card, x, y }]);
           sendMessage({
             type: "CARD_PLAYED_FROM_LIBRARY",
             card: { ...card, x, y },
-            username,
+            username: searchDeckId,
           });
         }
         setDecks((prevDecks) =>
-          removeCardFromDeck(prevDecks, username, card.id)
+          removeCardFromDeck(prevDecks, searchDeckId, card.id)
         );
       } else if (dragSource === "hand") {
         if (isDroppingInHand) {

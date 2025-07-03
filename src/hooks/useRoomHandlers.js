@@ -10,13 +10,13 @@ export function useRoomHandlers({
   roomId,
   setCards,
   setDecks,
-  setHand,
   setHandSizes,
   setPositions,
   setHasJoined,
   setStagePosition,
   username,
   navigate,
+  searchDeckId
 }) {
   useEffect(() => {
     const handleBeforeUnload = () => {

@@ -76,18 +76,19 @@ function Room() {
     username,
     ignoreNextChange,
     setDecks,
+    searchDeckId
   });
   useRoomHandlers({
     roomId,
     setCards,
     setDecks,
-    setHand,
     setHandSizes,
     setPositions,
     setHasJoined,
     setStagePosition,
     username,
     navigate,
+    searchDeckId
   });
   const handleDeckRightClick = (clientX, clientY, deckId) => {
     setMenuVisible(true);
