@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { sendMessage } from "../ws";
 import { removeCardFromDeck } from "../utils/deckUtils";
 
@@ -19,7 +19,7 @@ export function useCardDrag({
   username,
   ignoreNextChange,
   setDecks,
-  searchDeckId
+  searchDeckId,
 }) {
   const onMouseMove = useCallback((e) => {
     // Intentionally empty — mousemove handled globally on window
@@ -28,20 +28,12 @@ export function useCardDrag({
     // Intentionally empty — mouseup handled globally on window
   }, []);
   const [hasMoved, setHasMoved] = useState(false);
+  const pendingDragRef = useRef(null);
+
   function getCardMouseDownHandler(card, source) {
     return (e) => {
       setHasMoved(false);
-      const clientX = "clientX" in e ? e.clientX : e.evt.clientX;
-      const clientY = "clientY" in e ? e.clientY : e.evt.clientY;
-      const rect = canvasRef.current?.getBoundingClientRect();
-      if (!rect) return;
-      const x =
-        (clientX - rect.left - stagePosition.x) / stageScale - cardWidth / 2;
-      const y =
-        (clientY - rect.top - stagePosition.y) / stageScale - cardHeight / 2;
-      setDragPos({ x, y });
-      setDraggingCard(card);
-      setDragSource(source);
+      pendingDragRef.current = { card, source };
       if ("evt" in e) {
         e.evt.preventDefault();
         e.evt.stopPropagation();
@@ -53,20 +45,39 @@ export function useCardDrag({
   }
   useEffect(() => {
     function handleGlobalMouseMove(e) {
+      if (!hasMoved) {
+        setHasMoved(true);
+        if (pendingDragRef.current) {
+          const { card, source } = pendingDragRef.current;
+          pendingDragRef.current = null;
+          setHasMoved(true);
+          setDraggingCard(card);
+          setDragSource(source);
+        }
+      }
       if (!draggingCard) return;
-      if (!hasMoved) setHasMoved(true);
       const rect = canvasRef.current?.getBoundingClientRect();
       if (!rect) return;
+
       const x =
         (e.clientX - rect.left - stagePosition.x) / stageScale - cardWidth / 2;
       const y =
         (e.clientY - rect.top - stagePosition.y) / stageScale - cardHeight / 2;
+
       setDragPos({ x, y });
     }
 
     window.addEventListener("mousemove", handleGlobalMouseMove);
     return () => window.removeEventListener("mousemove", handleGlobalMouseMove);
-  }, [draggingCard, canvasRef, stagePosition, stageScale, setDragPos]);
+  }, [
+    canvasRef,
+    stagePosition,
+    stageScale,
+    setDragPos,
+    setDraggingCard,
+    setDragSource,
+    hasMoved,
+  ]);
 
   const onMouseDown = useCallback((e) => {
     e.evt.preventDefault();
@@ -75,6 +86,12 @@ export function useCardDrag({
 
   useEffect(() => {
     function handleGlobalMouseUp(e) {
+      if (!hasMoved) {
+        pendingDragRef.current = null;
+        setHasMoved(false);
+        return;
+      }
+      setHasMoved(false);
       if (!draggingCard) return;
       const rect = canvasRef.current?.getBoundingClientRect();
       if (!rect) return;
@@ -102,7 +119,11 @@ export function useCardDrag({
         if (isDroppingInHand) {
           setHand((prev) => [...prev, card]);
           setCards((prev) => prev.filter((c) => c.id !== card.id));
-          sendMessage({ type: "TUTOR_TO_HAND", id: card.id, username: searchDeckId });
+          sendMessage({
+            type: "TUTOR_TO_HAND",
+            id: card.id,
+            username: searchDeckId,
+          });
         } else {
           setCards((prev) => [...prev, { ...card, x, y }]);
           sendMessage({
@@ -144,11 +165,13 @@ export function useCardDrag({
     username,
     ignoreNextChange,
   ]);
+  const stageDraggable = !draggingCard && !pendingDragRef.current;
   return {
     onMouseDown,
     onMouseMove,
     onMouseUp,
     getCardMouseDownHandler,
-    hasMoved
+    hasMoved,
+    stageDraggable,
   };
 }

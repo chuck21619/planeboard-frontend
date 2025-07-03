@@ -62,6 +62,7 @@ function Room() {
     onMouseUp: dragMouseUp,
     getCardMouseDownHandler,
     hasMoved,
+    stageDraggable,
   } = useCardDrag({
     canvasRef,
     stageScale,
@@ -76,7 +77,7 @@ function Room() {
     username,
     ignoreNextChange,
     setDecks,
-    searchDeckId
+    searchDeckId,
   });
   useRoomHandlers({
     roomId,
@@ -88,7 +89,7 @@ function Room() {
     setStagePosition,
     username,
     navigate,
-    searchDeckId
+    searchDeckId,
   });
   const handleDeckRightClick = (clientX, clientY, deckId) => {
     setMenuVisible(true);
@@ -143,7 +144,7 @@ function Room() {
             positions={positions}
             setCards={setCards}
             setHand={setHand}
-            stageDraggable={!draggingCard}
+            stageDraggable={stageDraggable}
             ignoreNextChange={ignoreNextChange}
             cardBackImage={cardBackImage}
             username={username}
