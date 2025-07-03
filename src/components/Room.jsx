@@ -99,12 +99,12 @@ function Room() {
   });
   const handleDeckRightClick = (clientX, clientY, deckId) => {
     setDeckMenuVisible(true);
-    setContextMenuPosition({ x: clientX, y: clientY });
+    setContextMenuPosition({ x: clientX - 1, y: clientY - 1 });
     setMenuDeckId(deckId);
   };
   const handleCardRightCLick = (clientX, clientY, card) => {
     setCardMenuVisible(true);
-    setContextMenuPosition({ x: clientX, y: clientY });
+    setContextMenuPosition({ x: clientX - 1, y: clientY - 1 });
     setCardMenuCard(card);
   };
   useEffect(() => {
