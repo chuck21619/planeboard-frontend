@@ -27,6 +27,7 @@ export default function GameCanvas({
   setStagePosition,
   tapCard,
   onDeckRightClick,
+  onCardRightClick,
   dragSource,
   getCardMouseDownHandler,
   stageDraggable,
@@ -79,6 +80,9 @@ export default function GameCanvas({
               card={card}
               onTapCard={tapCard}
               onMouseDown={getCardMouseDownHandler(card, "board")}
+              onRightClick={(e) =>
+                onCardRightClick(e.evt.clientX, e.evt.clientY, card)
+              }
             />
           ))}
           {Object.values(decks).map((deck) => (

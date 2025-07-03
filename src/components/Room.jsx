@@ -20,11 +20,16 @@ const username = localStorage.getItem("username");
 function Room() {
   const navigate = useNavigate();
   const stageRef = useRef();
-  const [menuVisible, setMenuVisible] = useState(false);
-  const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+  const [deckMenuVisible, setDeckMenuVisible] = useState(false);
+  const [cardMenuVisible, setCardMenuVisible] = useState(false);
+  const [contextMenuPosition, setContextMenuPosition] = useState({
+    x: 0,
+    y: 0,
+  });
   const [searchModalVisible, setSearchModalVisible] = useState(false);
   const [searchDeckId, setSearchDeckId] = useState(null);
   const [menuDeckId, setMenuDeckId] = useState(null);
+  const [cardMenuCard, setCardMenuCard] = useState(null);
   const { roomId } = useParams();
   const [hasJoined, setHasJoined] = useState(false);
   const { showSpinner, minLoadingDone } = useLoadingFade(hasJoined);
@@ -54,7 +59,7 @@ function Room() {
     setStagePosition
   );
   const windowSize = useWindowSize();
-  useCardImagePreloader(decks);
+  useCardImagePreloader(decks, Object.values(cards));
   const {
     onMouseDown: dragMouseDown,
     onMouseMove: dragMouseMove,
@@ -92,9 +97,14 @@ function Room() {
     searchDeckId,
   });
   const handleDeckRightClick = (clientX, clientY, deckId) => {
-    setMenuVisible(true);
-    setMenuPosition({ x: clientX, y: clientY });
+    setDeckMenuVisible(true);
+    setContextMenuPosition({ x: clientX, y: clientY });
     setMenuDeckId(deckId);
+  };
+  const handleCardRightCLick = (clientX, clientY, card) => {
+    setCardMenuVisible(true);
+    setContextMenuPosition({ x: clientX, y: clientY });
+    setCardMenuCard(card);
   };
   useEffect(() => {
     function handleMouseMove(e) {
@@ -151,6 +161,7 @@ function Room() {
             setStagePosition={setStagePosition}
             tapCard={tapCard}
             onDeckRightClick={handleDeckRightClick}
+            onCardRightClick={handleCardRightCLick}
             dragSource={dragSource}
             getCardMouseDownHandler={getCardMouseDownHandler}
           />
@@ -194,29 +205,53 @@ function Room() {
             </>
           )}
         </div>
-        {menuVisible && (
+        {deckMenuVisible && (
           <div
             style={{
               position: "absolute",
-              top: menuPosition.y,
-              left: menuPosition.x,
-              backgroundColor: "white",
+              top: contextMenuPosition.y,
+              left: contextMenuPosition.x,
+              backgroundColor: "black",
               border: "1px solid #ccc",
               padding: "6px",
               zIndex: 9999,
             }}
-            onMouseLeave={() => setMenuVisible(false)}
+            onMouseLeave={() => setDeckMenuVisible(false)}
           >
             <div
               style={{ cursor: "pointer" }}
               onClick={() => {
                 console.log("Search clicked for deck", menuDeckId);
-                setMenuVisible(false);
+                setDeckMenuVisible(false);
                 setSearchDeckId(menuDeckId);
                 setSearchModalVisible(true);
               }}
             >
               🔍 Search
+            </div>
+          </div>
+        )}
+        {cardMenuVisible && (
+          <div
+            style={{
+              position: "absolute",
+              top: contextMenuPosition.y,
+              left: contextMenuPosition.x,
+              backgroundColor: "black",
+              border: "1px solid #ccc",
+              padding: "6px",
+              zIndex: 9999,
+            }}
+            onMouseLeave={() => setCardMenuVisible(false)}
+          >
+            <div
+              style={{ cursor: "pointer" }}
+              onClick={() => {
+                console.log("tokens clicked on ", cardMenuCard);
+                setCardMenuVisible(false);
+              }}
+            >
+              ➕ Tokens
             </div>
           </div>
         )}

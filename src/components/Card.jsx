@@ -7,6 +7,7 @@ export default function Card({
   isGhost = false,
   onMouseDown,
   onTapCard,
+  onRightClick,
 }) {
   const image = useSharedImage(card.imageUrl);
 
@@ -14,7 +15,12 @@ export default function Card({
   const height = 89;
   const rotation = card.tapped ? 90 : 0;
 
-  const handleClick = () => {
+  const handleContextMenu = (e) => {
+    e.evt.preventDefault();
+    onRightClick(e);
+  };
+  const handleClick = (e) => {
+    if (e.evt.button !== 0) return;
     onTapCard(card.id);
   };
 
@@ -31,6 +37,7 @@ export default function Card({
     listening: !isGhost,
     onClick: handleClick,
     onMouseDown: onMouseDown,
+    onContextMenu: handleContextMenu,
   };
 
   return image ? (

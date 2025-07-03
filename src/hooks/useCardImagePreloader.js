@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-export function useCardImagePreloader(decks) {
+export function useCardImagePreloader(decks, boardCards = []) {
   const seenUrlsRef = useRef(new Set());
   const queueRef = useRef([]);
   const timeoutRef = useRef(null);
@@ -8,54 +8,58 @@ export function useCardImagePreloader(decks) {
   const enqueueNewImages = async () => {
     const currentUrls = new Set();
 
+    // All deck cards and commanders
     for (const deck of Object.values(decks)) {
-      for (const card of deck.cards || []) {
-        // Enqueue main card image
-        const url = card.imageUrl;
-        currentUrls.add(url);
-        if (!seenUrlsRef.current.has(url)) {
-          queueRef.current.push(url);
-          seenUrlsRef.current.add(url);
-        }
+      const allCards = [...(deck.cards || []), ...(deck.commanders || [])];
+      for (const card of allCards) {
+        await enqueueCard(card);
+      }
+    }
 
-        // Token image resolution
-        // Token image resolution
-        if (card.hasTokens && card.uid) {
-          try {
-            const res = await fetch(
-              `https://api.scryfall.com/cards/${card.uid}`
-            );
-            const data = await res.json();
-            const tokenParts =
-              data.all_parts?.filter((p) => p.component === "token") || [];
+    // Also include any standalone board cards
+    for (const card of boardCards) {
+      await enqueueCard(card);
+    }
+  };
 
-            const resolvedTokens = [];
+  const enqueueCard = async (card) => {
+    const url = card.imageUrl;
+    if (url && !seenUrlsRef.current.has(url)) {
+      queueRef.current.push(url);
+      seenUrlsRef.current.add(url);
+    }
 
-            for (const part of tokenParts) {
-              await new Promise((r) => setTimeout(r, 100)); // throttle
-              const tokenRes = await fetch(part.uri);
-              const tokenData = await tokenRes.json();
-              const tokenUrl = tokenData.image_uris?.normal;
-              if (tokenUrl) {
-                resolvedTokens.push({
-                  id: tokenData.id,
-                  name: tokenData.name,
-                  imageUrl: tokenUrl,
-                });
+    if (card.hasTokens && card.uid && !card.tokens) {
+      try {
+        const res = await fetch(`https://api.scryfall.com/cards/${card.uid}`);
+        const data = await res.json();
+        const tokenParts =
+          data.all_parts?.filter((p) => p.component === "token") || [];
 
-                if (!seenUrlsRef.current.has(tokenUrl)) {
-                  queueRef.current.push(tokenUrl);
-                  seenUrlsRef.current.add(tokenUrl);
-                }
-              }
+        const resolvedTokens = [];
+
+        for (const part of tokenParts) {
+          await new Promise((r) => setTimeout(r, 100));
+          const tokenRes = await fetch(part.uri);
+          const tokenData = await tokenRes.json();
+          const tokenUrl = tokenData.image_uris?.normal;
+          if (tokenUrl) {
+            resolvedTokens.push({
+              id: tokenData.id,
+              name: tokenData.name,
+              imageUrl: tokenUrl,
+            });
+
+            if (!seenUrlsRef.current.has(tokenUrl)) {
+              queueRef.current.push(tokenUrl);
+              seenUrlsRef.current.add(tokenUrl);
             }
-
-            // ✅ Store resolved tokens for use in context menus
-            card.tokens = resolvedTokens;
-          } catch (err) {
-            console.warn(`Failed to load token images for ${card.name}:`, err);
           }
         }
+
+        card.tokens = resolvedTokens;
+      } catch (err) {
+        console.warn(`Failed to load token images for ${card.name}:`, err);
       }
     }
   };

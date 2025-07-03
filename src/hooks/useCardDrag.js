@@ -127,10 +127,22 @@ export function useCardDrag({
             username: searchDeckId,
           });
         } else {
-          setCards((prev) => [...prev, { ...card, x, y }]);
+          const playedCard = {
+            id: card.id,
+            name: card.name,
+            imageUrl: card.imageUrl,
+            uid: card.uid,
+            hasTokens: card.hasTokens,
+            x,
+            y,
+            tapped: false,
+          };
+
+          setCards((prev) => [...prev, playedCard]);
+
           sendMessage({
             type: "CARD_PLAYED_FROM_LIBRARY",
-            card: { ...card, x, y },
+            card: playedCard,
             username: searchDeckId,
           });
         }
@@ -145,7 +157,16 @@ export function useCardDrag({
           setHand((prev) => prev.filter((c) => c.id !== card.id));
           sendMessage({
             type: "CARD_PLAYED_FROM_HAND",
-            card: { ...card, x, y },
+            card: {
+              id: card.id,
+              name: card.name,
+              imageUrl: card.imageUrl,
+              uid: card.uid,
+              hasTokens: card.hasTokens,
+              x,
+              y,
+              tapped: false,
+            },
             username,
           });
         }
