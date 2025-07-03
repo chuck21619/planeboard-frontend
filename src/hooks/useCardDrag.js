@@ -32,6 +32,9 @@ export function useCardDrag({
 
   function getCardMouseDownHandler(card, source) {
     return (e) => {
+      const isLeftClick = ("evt" in e && e.evt.button === 0) || e.button === 0;
+
+      if (!isLeftClick) return;
       setHasMoved(false);
       pendingDragRef.current = { card, source };
       if ("evt" in e) {
@@ -86,6 +89,9 @@ export function useCardDrag({
 
   useEffect(() => {
     function handleGlobalMouseUp(e) {
+      const isLeftClick = ("evt" in e && e.evt.button === 0) || e.button === 0;
+
+      if (!isLeftClick) return;
       if (!hasMoved) {
         pendingDragRef.current = null;
         setHasMoved(false);

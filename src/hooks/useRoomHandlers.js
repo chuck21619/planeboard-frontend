@@ -16,7 +16,7 @@ export function useRoomHandlers({
   setStagePosition,
   username,
   navigate,
-  searchDeckId
+  searchDeckId,
 }) {
   useEffect(() => {
     const handleBeforeUnload = () => {
@@ -68,6 +68,8 @@ export function useRoomHandlers({
           ...prev,
           [message.player]: message.handSize,
         }));
+      } else if (message.type === "SPAWN_TOKEN") {
+        setCards((prev) => [...prev, message.token]);
       } else if (message.type === "CARD_PLAYED_FROM_LIBRARY") {
         setCards((prev) => [...prev, message.card]);
         setDecks((prevDecks) =>

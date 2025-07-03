@@ -14,6 +14,7 @@ import { useLoadingFade } from "../hooks/useLoadingFade";
 import { useStageMousePos } from "../hooks/useStageMousePos";
 import GameCanvas from "./GameCanvas";
 import DeckSearchModal from "./DeckSearchModal";
+import { sendMessage } from "../ws";
 
 const username = localStorage.getItem("username");
 
@@ -231,7 +232,7 @@ function Room() {
             </div>
           </div>
         )}
-        {cardMenuVisible && (
+        {cardMenuVisible && cardMenuCard && (
           <div
             style={{
               position: "absolute",
@@ -241,18 +242,59 @@ function Room() {
               border: "1px solid #ccc",
               padding: "6px",
               zIndex: 9999,
+              minWidth: "120px",
             }}
             onMouseLeave={() => setCardMenuVisible(false)}
           >
+            {/* Placeholder item */}
             <div
-              style={{ cursor: "pointer" }}
+              style={{ cursor: "pointer", padding: "4px 8px" }}
               onClick={() => {
-                console.log("tokens clicked on ", cardMenuCard);
+                console.log("Test clicked");
                 setCardMenuVisible(false);
               }}
             >
-              ➕ Tokens
+              🧪 Test
             </div>
+
+            {/* Token entries, if available */}
+            {cardMenuCard.tokens?.length > 0 &&
+              cardMenuCard.tokens.map((token) => (
+                <div
+                  key={token.id}
+                  style={{
+                    cursor: "pointer",
+                    padding: "4px 8px",
+                    whiteSpace: "nowrap",
+                  }}
+                  onClick={() => {
+                    console.log("Spawn token clicked:", token);
+                    setCardMenuVisible(false);
+                    const uniqueID = `${token.id}-${Math.random()
+                      .toString(36)
+                      .substring(2, 6)}`;
+
+                    const newToken = {
+                      id: uniqueID,
+                      name: token.name,
+                      imageUrl: token.imageUrl,
+                      x: mousePos.x,
+                      y: mousePos.y,
+                      owner: localStorage.getItem("username"),
+                      tapped: false,
+                    };
+
+                    setCards((prev) => [...prev, newToken]);
+
+                    sendMessage({
+                      type: "SPAWN_TOKEN",
+                      card: newToken,
+                    });
+                  }}
+                >
+                  ➕ {token.name}
+                </div>
+              ))}
           </div>
         )}
       </div>
