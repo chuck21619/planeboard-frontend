@@ -106,48 +106,50 @@ export function useCardDrag({
 
       if (dragSource === "board") {
         if (isDroppingInHand) {
-          setHand((prev) => [...prev, card]);
+          const untappedCard = { ...card, x, y, tapped: false };
+          setHand((prev) => [...prev, untappedCard]);
           setCards((prev) => prev.filter((c) => c.id !== card.id));
           sendMessage({ type: "RETURN_TO_HAND", id: card.id, username });
         } else {
+          //dragging within the board
           setCards((prev) =>
             prev.map((c) => (c.id === card.id ? { ...c, x, y } : c))
           );
           sendMessage({ type: "MOVE_CARD", id: card.id, x, y });
         }
       } else if (dragSource === "deckSearch") {
-          if (isDroppingInHand) {
-            setHand((prev) => [...prev, card]);
-            setCards((prev) => prev.filter((c) => c.id !== card.id));
-            sendMessage({
-              type: "TUTOR_TO_HAND",
-              id: card.id,
-              username: searchDeckId,
-            });
-          } else {
-            setCards((prev) => [...prev, { ...card, x, y }]);
-            sendMessage({
-              type: "CARD_PLAYED_FROM_LIBRARY",
-              card: { ...card, x, y },
-              username: searchDeckId,
-            });
-          }
-          setDecks((prevDecks) =>
-            removeCardFromDeck(prevDecks, searchDeckId, card.id)
-          );
-        } else if (dragSource === "hand") {
-          if (isDroppingInHand) {
-            ignoreNextChange.current = true;
-          } else {
-            setCards((prev) => [...prev, { ...card, x, y }]);
-            setHand((prev) => prev.filter((c) => c.id !== card.id));
-            sendMessage({
-              type: "CARD_PLAYED_FROM_HAND",
-              card: { ...card, x, y },
-              username,
-            });
-          }
+        if (isDroppingInHand) {
+          setHand((prev) => [...prev, card]);
+          setCards((prev) => prev.filter((c) => c.id !== card.id));
+          sendMessage({
+            type: "TUTOR_TO_HAND",
+            id: card.id,
+            username: searchDeckId,
+          });
+        } else {
+          setCards((prev) => [...prev, { ...card, x, y }]);
+          sendMessage({
+            type: "CARD_PLAYED_FROM_LIBRARY",
+            card: { ...card, x, y },
+            username: searchDeckId,
+          });
         }
+        setDecks((prevDecks) =>
+          removeCardFromDeck(prevDecks, searchDeckId, card.id)
+        );
+      } else if (dragSource === "hand") {
+        if (isDroppingInHand) {
+          ignoreNextChange.current = true;
+        } else {
+          setCards((prev) => [...prev, { ...card, x, y }]);
+          setHand((prev) => prev.filter((c) => c.id !== card.id));
+          sendMessage({
+            type: "CARD_PLAYED_FROM_HAND",
+            card: { ...card, x, y },
+            username,
+          });
+        }
+      }
       setDraggingCard(null);
       setDragSource(null);
     }

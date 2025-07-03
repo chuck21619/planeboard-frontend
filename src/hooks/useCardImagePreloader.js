@@ -5,20 +5,59 @@ export function useCardImagePreloader(decks) {
   const queueRef = useRef([]);
   const timeoutRef = useRef(null);
 
-  const enqueueNewImages = () => {
+  const enqueueNewImages = async () => {
     const currentUrls = new Set();
 
-    Object.values(decks).forEach((deck) => {
-      deck.cards?.forEach((card) => {
+    for (const deck of Object.values(decks)) {
+      for (const card of deck.cards || []) {
+        // Enqueue main card image
         const url = card.imageUrl;
         currentUrls.add(url);
-
         if (!seenUrlsRef.current.has(url)) {
           queueRef.current.push(url);
           seenUrlsRef.current.add(url);
         }
-      });
-    });
+
+        // Token image resolution
+        // Token image resolution
+        if (card.hasTokens && card.uid) {
+          try {
+            const res = await fetch(
+              `https://api.scryfall.com/cards/${card.uid}`
+            );
+            const data = await res.json();
+            const tokenParts =
+              data.all_parts?.filter((p) => p.component === "token") || [];
+
+            const resolvedTokens = [];
+
+            for (const part of tokenParts) {
+              await new Promise((r) => setTimeout(r, 100)); // throttle
+              const tokenRes = await fetch(part.uri);
+              const tokenData = await tokenRes.json();
+              const tokenUrl = tokenData.image_uris?.normal;
+              if (tokenUrl) {
+                resolvedTokens.push({
+                  id: tokenData.id,
+                  name: tokenData.name,
+                  imageUrl: tokenUrl,
+                });
+
+                if (!seenUrlsRef.current.has(tokenUrl)) {
+                  queueRef.current.push(tokenUrl);
+                  seenUrlsRef.current.add(tokenUrl);
+                }
+              }
+            }
+
+            // ✅ Store resolved tokens for use in context menus
+            card.tokens = resolvedTokens;
+          } catch (err) {
+            console.warn(`Failed to load token images for ${card.name}:`, err);
+          }
+        }
+      }
+    }
   };
 
   const loadNextImage = () => {
@@ -43,12 +82,11 @@ export function useCardImagePreloader(decks) {
   };
 
   useEffect(() => {
-    enqueueNewImages();
-
-    // Only start loading if not already active
-    if (!timeoutRef.current && queueRef.current.length > 0) {
-      loadNextImage();
-    }
+    enqueueNewImages().then(() => {
+      if (!timeoutRef.current && queueRef.current.length > 0) {
+        loadNextImage();
+      }
+    });
 
     return () => clearTimeout(timeoutRef.current);
   }, [decks]);
