@@ -273,7 +273,6 @@ function Room() {
                     const uniqueID = `${token.id}-${Math.random()
                       .toString(36)
                       .substring(2, 6)}`;
-
                     const newToken = {
                       id: uniqueID,
                       name: token.name,
@@ -283,9 +282,8 @@ function Room() {
                       owner: localStorage.getItem("username"),
                       tapped: false,
                     };
-
                     setCards((prev) => [...prev, newToken]);
-
+                    setHoveredCard(newToken);
                     sendMessage({
                       type: "SPAWN_TOKEN",
                       card: newToken,
