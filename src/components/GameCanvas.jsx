@@ -4,6 +4,7 @@ import Deck from "./Deck";
 import OpponentHand from "./OpponentHand";
 import BoardBackground from "./BoardBackground";
 import { getCardRotation } from "../utils/cardOrientation";
+import { remapPositions } from "../utils/playerOrientation";
 
 export default function GameCanvas({
   stageRef,
@@ -35,6 +36,9 @@ export default function GameCanvas({
   lifeTotals,
   setLifeTotals,
 }) {
+  const viewerPosition = positions[username];
+  const { remappedPositions, isRotated } = remapPositions(username, positions);
+
   return (
     <Stage
       ref={stageRef}
@@ -53,7 +57,8 @@ export default function GameCanvas({
     >
       <Layer>
         <BoardBackground
-            positions={positions}
+          positions={positions}
+          isRotated={isRotated}
           lifeTotals={lifeTotals}
           setLifeTotals={setLifeTotals}
         />
@@ -66,7 +71,7 @@ export default function GameCanvas({
             <OpponentHand
               key={playerName}
               count={count}
-                quadrant={positions[playerName]}
+              quadrant={remappedPositions[playerName]}
               cardBackImage={cardBackImage}
             />
           );

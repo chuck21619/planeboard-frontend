@@ -1,5 +1,5 @@
 import { Rect, Text } from "react-konva";
-import { useState, useCallback } from "react";
+import { useCallback } from "react";
 import { sendMessage } from "../ws";
 
 const watermarkColor = "rgba(255, 255, 255, 0.03)";
@@ -13,9 +13,10 @@ const lifeCounterWidth = 70;
 const size = 5000;
 
 export default function BoardBackground({
-  positions = {},
-  lifeTotals = {},
+  positions,
+  lifeTotals,
   setLifeTotals,
+  isRotated,
 }) {
   const getUsernameForPosition = (targetPos) =>
     Object.entries(positions).find(([_, pos]) => pos === targetPos)?.[0] || "";
@@ -27,7 +28,7 @@ export default function BoardBackground({
         [username]: (prev[username] ?? 0) + delta,
       }));
     },
-    [getUsernameForPosition]
+    [setLifeTotals]
   );
 
   const handleClick = (e, username, delta) => {
@@ -47,6 +48,23 @@ export default function BoardBackground({
       lifeTotal: newLifeTotal,
     });
   };
+
+  const baseCorners = [
+    { key: "topLeft", x: -size, y: -size, align: "right", fill: "#155215" },
+    { key: "topRight", x: 0, y: -size, align: "left", fill: "#151554" },
+    { key: "bottomLeft", x: -size, y: 0, align: "right", fill: "#541515" },
+    { key: "bottomRight", x: 0, y: 0, align: "left", fill: "#545415" },
+  ];
+
+  const rotatedCorners = isRotated
+    ? baseCorners.map(({ key, x, y, align, fill }) => ({
+        key,
+        x: -x - size,
+        y: -y - size,
+        align: align === "left" ? "right" : "left",
+        fill,
+      }))
+    : baseCorners;
 
   const renderCorner = (x, y, align, posKey, fill) => {
     const username = getUsernameForPosition(posKey);
@@ -88,7 +106,7 @@ export default function BoardBackground({
             width={lifeCounterWidth}
             align={align}
             fontSize={lifeCounterFontSize}
-            fontStyle="bold" // ✅ bold font
+            fontStyle="bold"
             fill={lifeCounterColor}
             onMouseDown={(e) =>
               handleClick(e, username, e.evt.button === 2 ? -1 : 1)
@@ -102,10 +120,9 @@ export default function BoardBackground({
 
   return (
     <>
-      {renderCorner(-size, -size, "right", "topLeft", "#155215")}
-      {renderCorner(0, -size, "left", "topRight", "#151554")}
-      {renderCorner(-size, 0, "right", "bottomLeft", "#541515")}
-      {renderCorner(0, 0, "left", "bottomRight", "#545415")}
+      {rotatedCorners.map(({ key, x, y, align, fill }) =>
+        renderCorner(x, y, align, key, fill)
+      )}
     </>
   );
 }
