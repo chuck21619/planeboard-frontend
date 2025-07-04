@@ -89,10 +89,16 @@ export default function GameCanvas({
           const ownerPosition = positions[card.owner];
           const rotation = getCardRotation(viewerPosition, ownerPosition);
 
+          const transformedCard = {
+            ...card,
+            x: isRotated ? -card.x - 64 : card.x,
+            y: isRotated ? -card.y - 89 : card.y,
+          };
+
           return (
             <Card
               key={card.id}
-              card={card}
+              card={transformedCard}
               rotation={rotation}
               onTapCard={tapCard}
               onMouseDown={getCardMouseDownHandler(card, "board")}
@@ -103,18 +109,26 @@ export default function GameCanvas({
           );
         })}
 
-        {Object.values(decks).map((deck) => (
-          <Deck
-            key={deck.id}
-            deck={deck}
-            decks={decks}
-            setDecks={setDecks}
-            setHand={setHand}
-            onRightClick={(e) =>
-              onDeckRightClick(e.evt.clientX, e.evt.clientY, deck.id)
-            }
-          />
-        ))}
+        {Object.values(decks).map((deck) => {
+          const transformedDeck = {
+            ...deck,
+            x: isRotated ? -deck.x - 64 : deck.x,
+            y: isRotated ? -deck.y - 89 : deck.y,
+          };
+
+          return (
+            <Deck
+              key={deck.id}
+              deck={transformedDeck}
+              decks={decks}
+              setDecks={setDecks}
+              setHand={setHand}
+              onRightClick={(e) =>
+                onDeckRightClick(e.evt.clientX, e.evt.clientY, deck.id)
+              }
+            />
+          );
+        })}
       </Layer>
     </Stage>
   );
