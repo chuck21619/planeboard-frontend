@@ -21,7 +21,7 @@
 .card-in-hand img {
   pointer-events: auto;
   height: 89px;
-  border-radius: 8px;
+  border-radius: 4px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
 }
 
@@ -32,7 +32,7 @@
   left: 0;
   width: 64px;
   height: 89px;
-  border-radius: 8px;
+  border-radius: 4px;
 }
 
 .card-img {

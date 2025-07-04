@@ -68,7 +68,6 @@ export function useCardDrag({
       const y =
         (e.clientY - rect.top - stagePosition.y) / stageScale - cardHeight / 2;
 
-      console.log("useCardDrag, setDragPos: ", x, ",", y);
       setDragPos({ x, y });
     }
 
@@ -147,6 +146,7 @@ export function useCardDrag({
             x,
             y,
             tapped: false,
+            owner: username,
           };
 
           setCards((prev) => [...prev, playedCard]);
@@ -164,6 +164,7 @@ export function useCardDrag({
         if (isDroppingInHand) {
           ignoreNextChange.current = true;
         } else {
+          card.owner = username;
           setCards((prev) => [...prev, { ...card, x, y }]);
           setHand((prev) => prev.filter((c) => c.id !== card.id));
           sendMessage({
