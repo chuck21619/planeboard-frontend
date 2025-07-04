@@ -31,6 +31,8 @@ export default function GameCanvas({
   dragSource,
   getCardMouseDownHandler,
   stageDraggable,
+  lifeTotals,
+  setLifeTotals,
 }) {
   return (
     <>
@@ -50,7 +52,11 @@ export default function GameCanvas({
         onMouseMove={onMouseMove}
       >
         <Layer>
-          <BoardBackground positions={positions} />
+          <BoardBackground
+            positions={positions}
+            lifeTotals={lifeTotals}
+            setLifeTotals={setLifeTotals}
+          />
         </Layer>
 
         <Layer>

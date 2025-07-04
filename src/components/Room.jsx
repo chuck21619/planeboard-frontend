@@ -21,6 +21,7 @@ const username = localStorage.getItem("username");
 function Room() {
   const navigate = useNavigate();
   const stageRef = useRef();
+  const [lifeTotals, setLifeTotals] = useState({});
   const [deckMenuVisible, setDeckMenuVisible] = useState(false);
   const [cardMenuVisible, setCardMenuVisible] = useState(false);
   const [contextMenuPosition, setContextMenuPosition] = useState({
@@ -95,7 +96,7 @@ function Room() {
     setStagePosition,
     username,
     navigate,
-    searchDeckId,
+    setLifeTotals
   });
   const handleDeckRightClick = (clientX, clientY, deckId) => {
     setDeckMenuVisible(true);
@@ -165,6 +166,8 @@ function Room() {
             onCardRightClick={handleCardRightCLick}
             dragSource={dragSource}
             getCardMouseDownHandler={getCardMouseDownHandler}
+            lifeTotals={lifeTotals}
+            setLifeTotals={setLifeTotals}
           />
           <Hand
             hand={hand}

@@ -16,7 +16,7 @@ export function useRoomHandlers({
   setStagePosition,
   username,
   navigate,
-  searchDeckId,
+  setLifeTotals,
 }) {
   useEffect(() => {
     const handleBeforeUnload = () => {
@@ -54,6 +54,7 @@ export function useRoomHandlers({
         if (message.users.includes(username)) {
           setHasJoined(true);
         }
+        setLifeTotals(message.lifeTotals);
       } else if (message.type === "PLAYER_DREW_CARD") {
         setHandSizes((prev) => ({
           ...prev,
@@ -67,6 +68,12 @@ export function useRoomHandlers({
         setHandSizes((prev) => ({
           ...prev,
           [message.player]: message.handSize,
+        }));
+      } else if (message.type === "LIFE_TOTAL_UPDATED") {
+        const { username, lifeTotal } = message;
+        setLifeTotals((prev) => ({
+          ...prev,
+          [username]: lifeTotal,
         }));
       } else if (message.type === "SPAWN_TOKEN") {
         setCards((prev) => [...prev, message.token]);
