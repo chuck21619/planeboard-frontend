@@ -14,7 +14,7 @@ export default function Card({
 
   const width = 64;
   const height = 89;
-  const rotationWithTap = (card.tapped ? rotation + 90 : rotation) % 360;
+  const rotationWithTap = card.tapped ? rotation + 90 : rotation;
 
   const handleContextMenu = (e) => {
     e.evt.preventDefault();

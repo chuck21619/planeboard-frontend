@@ -20,6 +20,7 @@ export function useCardDrag({
   ignoreNextChange,
   setDecks,
   searchDeckId,
+  isRotated,
 }) {
   const onMouseMove = useCallback((e) => {
     // Intentionally empty — mousemove handled globally on window
@@ -67,6 +68,7 @@ export function useCardDrag({
       const y =
         (e.clientY - rect.top - stagePosition.y) / stageScale - cardHeight / 2;
 
+      console.log("useCardDrag, setDragPos: ", x, ",", y);
       setDragPos({ x, y });
     }
 
@@ -103,10 +105,14 @@ export function useCardDrag({
       const dropY = e.clientY;
       const handThreshold = window.innerHeight - 80;
       const isDroppingInHand = dropY > handThreshold;
-      const x =
+      var x =
         (e.clientX - rect.left - stagePosition.x) / stageScale - cardWidth / 2;
-      const y =
+      var y =
         (e.clientY - rect.top - stagePosition.y) / stageScale - cardHeight / 2;
+      if (isRotated) {
+        x = -x - 64;
+        y = -y - 89;
+      }
       const card = draggingCard;
 
       if (dragSource === "board") {

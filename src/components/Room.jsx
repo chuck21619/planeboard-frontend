@@ -88,6 +88,7 @@ function Room() {
     ignoreNextChange,
     setDecks,
     searchDeckId,
+    isRotated
   });
   const { tapCard } = useCardTap(setCards, hasMoved);
   useRoomHandlers({
