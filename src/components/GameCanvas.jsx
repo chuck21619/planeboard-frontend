@@ -35,9 +35,10 @@ export default function GameCanvas({
   stageDraggable,
   lifeTotals,
   setLifeTotals,
+  remappedPositions,
+  isRotated
 }) {
   const viewerPosition = positions[username];
-  const { remappedPositions, isRotated } = remapPositions(username, positions);
 
   return (
     <Stage

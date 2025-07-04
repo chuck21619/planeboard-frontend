@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import Hand from "./Hand";
@@ -15,10 +15,10 @@ import { useStageMousePos } from "../hooks/useStageMousePos";
 import GameCanvas from "./GameCanvas";
 import DeckSearchModal from "./DeckSearchModal";
 import { sendMessage } from "../ws";
-
-const username = localStorage.getItem("username");
+import { remapPositions } from "../utils/playerOrientation";
 
 function Room() {
+  const [username] = useState(() => localStorage.getItem("username"));
   const navigate = useNavigate();
   const stageRef = useRef();
   const [lifeTotals, setLifeTotals] = useState({});
@@ -46,6 +46,9 @@ function Room() {
   const [handSizes, setHandSizes] = useState({});
   const [cardBackImage] = useImage("/defaultCardBack.jpg");
   const [positions, setPositions] = useState({});
+  const { remappedPositions, isRotated } = useMemo(() => {
+    return remapPositions(username, positions);
+  }, [username, positions]);
   const [stageScale, setStageScale] = useState(1);
   const [stagePosition, setStagePosition] = useState({ x: 0, y: 0 });
   const [mousePos, stageMouseMove] = useStageMousePos();
@@ -54,7 +57,8 @@ function Room() {
     mousePos,
     cards,
     draggingCard,
-    hoveredHandCard
+    hoveredHandCard,
+    isRotated
   );
   const { handleWheel, handleDragEnd } = useStageEvents(
     setStageScale,
@@ -168,6 +172,8 @@ function Room() {
             getCardMouseDownHandler={getCardMouseDownHandler}
             lifeTotals={lifeTotals}
             setLifeTotals={setLifeTotals}
+            remappedPositions={remappedPositions}
+            isRotated={isRotated}
           />
           <Hand
             hand={hand}

@@ -1,5 +1,5 @@
+import React, { useCallback } from "react";
 import { Rect, Text } from "react-konva";
-import { useCallback } from "react";
 import { sendMessage } from "../ws";
 
 const watermarkColor = "rgba(255, 255, 255, 0.03)";
@@ -71,7 +71,7 @@ export default function BoardBackground({
     const hasPlayer = Boolean(username);
 
     return (
-      <>
+      <React.Fragment key={posKey}>
         <Rect
           x={x}
           y={y}
@@ -114,7 +114,7 @@ export default function BoardBackground({
             onContextMenu={(e) => e.evt.preventDefault()}
           />
         )}
-      </>
+      </React.Fragment>
     );
   };
 

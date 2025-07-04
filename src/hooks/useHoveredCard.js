@@ -19,7 +19,13 @@ function pointInRotatedRect(px, py, rect) {
   return Math.abs(rx) <= width / 2 && Math.abs(ry) <= height / 2;
 }
 
-export function useHoveredCard(mousePos, cards, draggingCard, hoveredHandCard) {
+export function useHoveredCard(
+  mousePos,
+  cards,
+  draggingCard,
+  hoveredHandCard,
+  isRotated
+) {
   const [hoveredCard, setHoveredCard] = useState(null);
   const ignoreNextChange = useRef(false);
   const lastCardId = useRef(null);
@@ -37,9 +43,15 @@ export function useHoveredCard(mousePos, cards, draggingCard, hoveredHandCard) {
     } else if (hoveredHandCard) {
       newHovered = hoveredHandCard;
     } else {
+      var x = mousePos.x;
+      var y = mousePos.y;
+      if (isRotated) {
+        x = -x;
+        y = -y;
+      }
       newHovered =
         cards.find((card) =>
-          pointInRotatedRect(mousePos.x, mousePos.y, {
+          pointInRotatedRect(x, y, {
             x: card.x,
             y: card.y,
             width: 64,
@@ -53,7 +65,7 @@ export function useHoveredCard(mousePos, cards, draggingCard, hoveredHandCard) {
 
     lastCardId.current = newHovered?.id || null;
     setHoveredCard(newHovered);
-  }, [mousePos, cards, draggingCard, hoveredHandCard]);
+  }, [mousePos, cards, draggingCard, hoveredHandCard, isRotated]);
 
   return { hoveredCard, setHoveredCard, ignoreNextChange };
 }
