@@ -91,8 +91,8 @@ export function useCardDrag({
       const isLeftClick = ("evt" in e && e.evt.button === 0) || e.button === 0;
 
       if (!isLeftClick) return;
+      pendingDragRef.current = null;
       if (!hasMoved) {
-        pendingDragRef.current = null;
         return;
       }
       setHasMoved(true);
