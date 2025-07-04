@@ -96,7 +96,7 @@ function Room() {
     setStagePosition,
     username,
     navigate,
-    setLifeTotals
+    setLifeTotals,
   });
   const handleDeckRightClick = (clientX, clientY, deckId) => {
     setDeckMenuVisible(true);
@@ -270,9 +270,18 @@ function Room() {
                     padding: "4px 8px",
                     whiteSpace: "nowrap",
                   }}
-                  onClick={() => {
+                  onClick={(e) => {
                     console.log("Spawn token clicked:", token);
                     setCardMenuVisible(false);
+                    const rect = canvasRef.current?.getBoundingClientRect();
+                    const canvasX = e.clientX - rect.left;
+                    const canvasY = e.clientY - rect.top;
+                    const worldX =
+                      canvasX / stageScale - stagePosition.x / stageScale;
+                    const worldY =
+                      canvasY / stageScale - stagePosition.y / stageScale;
+                    const x = worldX - 64 / 2;
+                    const y = worldY - 89 / 2;
                     const uniqueID = `${token.id}-${Math.random()
                       .toString(36)
                       .substring(2, 6)}`;
@@ -280,8 +289,8 @@ function Room() {
                       id: uniqueID,
                       name: token.name,
                       imageUrl: token.imageUrl,
-                      x: mousePos.x,
-                      y: mousePos.y,
+                      x: x,
+                      y: y,
                       owner: localStorage.getItem("username"),
                       tapped: false,
                     };
