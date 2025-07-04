@@ -8,12 +8,13 @@ export default function Card({
   onMouseDown,
   onTapCard,
   onRightClick,
+  rotation
 }) {
   const image = useSharedImage(card.imageUrl);
 
   const width = 64;
   const height = 89;
-  const rotation = card.tapped ? 90 : 0;
+  const rotationWithTap = (card.tapped ? rotation + 90 : rotation) % 360;
 
   const handleContextMenu = (e) => {
     e.evt.preventDefault();
@@ -31,7 +32,7 @@ export default function Card({
     height,
     offsetX: width / 2,
     offsetY: height / 2,
-    rotation,
+    rotation: rotationWithTap,
     cornerRadius: 4,
     opacity: isGhost ? 0.5 : 1,
     listening: !isGhost,
