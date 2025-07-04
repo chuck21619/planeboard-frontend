@@ -83,13 +83,13 @@ export default function GameCanvas({
         {draggingCard && dragSource !== "deckSearch" && (
           <Card
             card={{ ...draggingCard, x: dragPos.x, y: dragPos.y }}
+            rotation={draggingCard.rotation}
             isGhost
           />
         )}
         {cards.map((card) => {
           const ownerPosition = positions[card.owner];
           const rotation = getCardRotation(viewerPosition, ownerPosition);
-
           const transformedCard = {
             ...card,
             x: isRotated ? -card.x - 64 : card.x,
@@ -102,7 +102,7 @@ export default function GameCanvas({
               card={transformedCard}
               rotation={rotation}
               onTapCard={tapCard}
-              onMouseDown={getCardMouseDownHandler(card, "board")}
+              onMouseDown={getCardMouseDownHandler(card, "board", rotation)}
               onRightClick={(e) =>
                 onCardRightClick(e.evt.clientX, e.evt.clientY, card)
               }

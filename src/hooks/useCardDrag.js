@@ -31,13 +31,13 @@ export function useCardDrag({
   const [hasMoved, setHasMoved] = useState(false);
   const pendingDragRef = useRef(null);
 
-  function getCardMouseDownHandler(card, source) {
+  function getCardMouseDownHandler(card, source, rotation) {
     return (e) => {
       const isLeftClick = ("evt" in e && e.evt.button === 0) || e.button === 0;
 
       if (!isLeftClick) return;
       setHasMoved(false);
-      pendingDragRef.current = { card, source };
+      pendingDragRef.current = { card, source, rotation };
       if ("evt" in e) {
         e.evt.preventDefault();
         e.evt.stopPropagation();
@@ -52,8 +52,9 @@ export function useCardDrag({
       if (!hasMoved) {
         setHasMoved(true);
         if (pendingDragRef.current) {
-          const { card, source } = pendingDragRef.current;
+          const { card, source, rotation } = pendingDragRef.current;
           pendingDragRef.current = null;
+          card.rotation = rotation;
           setHasMoved(true);
           setDraggingCard(card);
           setDragSource(source);
@@ -62,15 +63,12 @@ export function useCardDrag({
       if (!draggingCard) return;
       const rect = canvasRef.current?.getBoundingClientRect();
       if (!rect) return;
-
       const x =
         (e.clientX - rect.left - stagePosition.x) / stageScale - cardWidth / 2;
       const y =
         (e.clientY - rect.top - stagePosition.y) / stageScale - cardHeight / 2;
-
       setDragPos({ x, y });
     }
-
     window.addEventListener("mousemove", handleGlobalMouseMove);
     return () => window.removeEventListener("mousemove", handleGlobalMouseMove);
   }, [

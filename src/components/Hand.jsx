@@ -26,7 +26,7 @@ export default function Hand({ hand, setHoveredHandCard, getCardMouseDownHandler
             marginLeft: i === 0 ? 0 : -overlapAmount,
             zIndex: i,
           }}
-          onMouseDown={getCardMouseDownHandler(card, "hand")}
+          onMouseDown={getCardMouseDownHandler(card, "hand", 0)}
           onMouseEnter={() => handleMouseEnter(card)}
           onMouseLeave={() => handleMouseLeave(card)}
         >

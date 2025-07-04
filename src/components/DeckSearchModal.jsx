@@ -65,7 +65,7 @@ export default function DeckSearchModal({
               height: 94,
               objectFit: "contain",
             }}
-            onMouseDown={getCardMouseDownHandler(card, "deckSearch")}
+            onMouseDown={getCardMouseDownHandler(card, "deckSearch", 0)}
             onMouseEnter={() => setHoveredCard(card)}
             onMouseLeave={() => setHoveredCard(null)}
           />
