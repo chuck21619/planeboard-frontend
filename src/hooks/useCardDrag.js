@@ -99,6 +99,14 @@ export function useCardDrag({
       if (!draggingCard) return;
       const rect = canvasRef.current?.getBoundingClientRect();
       if (!rect) return;
+      const elementUnderCursor = document.elementFromPoint(
+        e.clientX,
+        e.clientY
+      );
+      if (elementUnderCursor?.closest(".deck-search-modal")) {
+        setDraggingCard(null);
+        return;
+      }
       const dropY = e.clientY;
       const handThreshold = window.innerHeight - 80;
       const isDroppingInHand = dropY > handThreshold;

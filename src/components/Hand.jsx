@@ -1,9 +1,13 @@
 import { useState, useEffect } from "react";
 import { useSharedImage } from "../hooks/useSharedImage";
 
-export default function Hand({ hand, setHoveredHandCard, getCardMouseDownHandler }) {
+export default function Hand({
+  hand,
+  setHoveredHandCard,
+  getCardMouseDownHandler,
+}) {
   const cardWidth = 64;
-  const maxWidth = window.innerWidth - 40;
+  const maxWidth = window.innerWidth - 270;
   const totalCardWidth = hand.length * cardWidth;
   const overlap = totalCardWidth > maxWidth;
 
