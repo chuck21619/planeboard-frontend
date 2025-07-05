@@ -109,6 +109,7 @@ export function useRoomHandlers({
       } else if (message.type === "TURN_PASSED") {
         setTurn(message.turn);
       } else if (message.type === "USER_LEFT") {
+        setTurn(message.turn);
         setPositions(message.positions);
         setCards((prevCards) =>
           prevCards.filter((card) => card.owner !== message.user)
