@@ -313,8 +313,12 @@ function Room() {
                       canvasX / stageScale - stagePosition.x / stageScale;
                     const worldY =
                       canvasY / stageScale - stagePosition.y / stageScale;
-                    const x = worldX - 64 / 2;
-                    const y = worldY - 89 / 2;
+                    var x = worldX - 64 / 2;
+                    var y = worldY - 89 / 2;
+                    if ( isRotated ) {
+                      x = -x-64
+                      y = -y-89
+                    }
                     const uniqueID = `${token.id}-${Math.random()
                       .toString(36)
                       .substring(2, 6)}`;
