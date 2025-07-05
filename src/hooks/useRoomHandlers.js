@@ -5,9 +5,11 @@ import {
   removeTopCardFromDeck,
   removePlayerDeck,
 } from "../utils/deckUtils";
+import { loadTokenData } from "../utils/loadTokenData";
 
 export function useRoomHandlers({
   roomId,
+  cards,
   setCards,
   setDecks,
   setHandSizes,
@@ -66,7 +68,18 @@ export function useRoomHandlers({
           removeTopCardFromDeck(prevDecks, message.player)
         );
       } else if (message.type === "CARD_PLAYED_FROM_HAND") {
+        const card = message.card;
         setCards((prev) => [...prev, message.card]);
+        loadTokenData(card).then((cardWithTokens) => {
+          if (!cardWithTokens.tokens) return;
+          setCards((prev) =>
+            prev.map((c) =>
+              c.id === cardWithTokens.id
+                ? { ...c, tokens: cardWithTokens.tokens }
+                : c
+            )
+          );
+        });
         setHandSizes((prev) => ({
           ...prev,
           [message.player]: message.handSize,
@@ -80,7 +93,18 @@ export function useRoomHandlers({
       } else if (message.type === "SPAWN_TOKEN") {
         setCards((prev) => [...prev, message.token]);
       } else if (message.type === "CARD_PLAYED_FROM_LIBRARY") {
+        const card = message.card;
         setCards((prev) => [...prev, message.card]);
+        loadTokenData(card).then((cardWithTokens) => {
+          if (!cardWithTokens.tokens) return;
+          setCards((prev) =>
+            prev.map((c) =>
+              c.id === cardWithTokens.id
+                ? { ...c, tokens: cardWithTokens.tokens }
+                : c
+            )
+          );
+        });
         setDecks((prevDecks) =>
           removeCardFromDeck(prevDecks, message.player, message.card.id)
         );

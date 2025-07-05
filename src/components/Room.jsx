@@ -2,7 +2,6 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import Hand from "./Hand";
-import { useCardImagePreloader } from "../hooks/useCardImagePreloader";
 import useImage from "use-image";
 import { useCardDrag } from "../hooks/useCardDrag";
 import { useCardTap } from "../hooks/useCardTap";
@@ -16,6 +15,7 @@ import GameCanvas from "./GameCanvas";
 import DeckSearchModal from "./DeckSearchModal";
 import { sendMessage } from "../ws";
 import { remapPositions } from "../utils/playerOrientation";
+import { useCardImagePreloader } from "../hooks/useCardImagePreloader";
 
 function Room() {
   const [username] = useState(() => localStorage.getItem("username"));
@@ -66,7 +66,34 @@ function Room() {
     setStagePosition
   );
   const windowSize = useWindowSize();
-  useCardImagePreloader(decks, Object.values(cards));
+  useCardImagePreloader(
+    positions,
+    decks,
+    Object.values(cards),
+    (uid, tokens) => {
+      setCards((prev) =>
+        prev.map((card) => (card.uid === uid ? { ...card, tokens } : card))
+      );
+      setDecks((prev) => {
+        const updatedDecks = { ...prev };
+        for (const [deckId, deck] of Object.entries(updatedDecks)) {
+          const updatedCards = (deck.cards || []).map((card) =>
+            card.uid === uid ? { ...card, tokens } : card
+          );
+          const updatedCommanders = (deck.commanders || []).map((card) =>
+            card.uid === uid ? { ...card, tokens } : card
+          );
+          updatedDecks[deckId] = {
+            ...deck,
+            cards: updatedCards,
+            commanders: updatedCommanders,
+          };
+        }
+        return updatedDecks;
+      });
+    }
+  );
+
   const {
     onMouseDown: dragMouseDown,
     onMouseMove: dragMouseMove,
@@ -94,6 +121,7 @@ function Room() {
   const { tapCard } = useCardTap(setCards, hasMoved);
   useRoomHandlers({
     roomId,
+    cards,
     setCards,
     setDecks,
     setHandSizes,
@@ -125,6 +153,7 @@ function Room() {
       return () => window.removeEventListener("mousemove", handleMouseMove);
     }
   }, [draggingCard, dragSource]);
+
   return (
     <div>
       <div
@@ -315,9 +344,9 @@ function Room() {
                       canvasY / stageScale - stagePosition.y / stageScale;
                     var x = worldX - 64 / 2;
                     var y = worldY - 89 / 2;
-                    if ( isRotated ) {
-                      x = -x-64
-                      y = -y-89
+                    if (isRotated) {
+                      x = -x - 64;
+                      y = -y - 89;
                     }
                     const uniqueID = `${token.id}-${Math.random()
                       .toString(36)
