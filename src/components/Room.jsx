@@ -43,6 +43,7 @@ function Room() {
   const [hoveredHandCard, setHoveredHandCard] = useState(null);
   const [dragPos, setDragPos] = useState({ x: 0, y: 0 });
   const canvasRef = useRef(null);
+  const [turn, setTurn] = useState("");
   const [handSizes, setHandSizes] = useState({});
   const [cardBackImage] = useImage("/defaultCardBack.jpg");
   const [positions, setPositions] = useState({});
@@ -88,7 +89,7 @@ function Room() {
     ignoreNextChange,
     setDecks,
     searchDeckId,
-    isRotated
+    isRotated,
   });
   const { tapCard } = useCardTap(setCards, hasMoved);
   useRoomHandlers({
@@ -102,6 +103,7 @@ function Room() {
     username,
     navigate,
     setLifeTotals,
+    setTurn,
   });
   const handleDeckRightClick = (clientX, clientY, deckId) => {
     setDeckMenuVisible(true);
@@ -175,6 +177,7 @@ function Room() {
             setLifeTotals={setLifeTotals}
             remappedPositions={remappedPositions}
             isRotated={isRotated}
+            turn={turn}
           />
           <Hand
             hand={hand}
@@ -182,6 +185,29 @@ function Room() {
             setHoveredHandCard={setHoveredHandCard}
             getCardMouseDownHandler={getCardMouseDownHandler}
           />
+          {turn === username && (
+            <div
+              onClick={() => {
+                setTurn(""); //disables button
+                sendMessage({ type: "PASS_TURN" });
+              }}
+              style={{
+                position: "absolute",
+                bottom: "20px",
+                right: "20px",
+                backgroundColor: "#333",
+                color: "white",
+                padding: "10px 16px",
+                borderRadius: "8px",
+                cursor: "pointer",
+                userSelect: "none",
+                fontWeight: "bold",
+                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.2)",
+              }}
+            >
+              Pass Turn
+            </div>
+          )}
         </div>
         {searchModalVisible && (
           <DeckSearchModal

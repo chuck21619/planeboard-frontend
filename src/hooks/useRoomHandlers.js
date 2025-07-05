@@ -17,6 +17,7 @@ export function useRoomHandlers({
   username,
   navigate,
   setLifeTotals,
+  setTurn,
 }) {
   useEffect(() => {
     const handleBeforeUnload = () => {
@@ -39,6 +40,7 @@ export function useRoomHandlers({
         setDecks(message.decks);
         setPositions(message.positions);
         setHandSizes(message.handSizes);
+        setTurn(message.turn);
       } else if (message.type === "MOVE_CARD") {
         setCards((prevCards) =>
           prevCards.map((card) =>
@@ -104,6 +106,8 @@ export function useRoomHandlers({
         setDecks((prevDecks) =>
           removeCardFromDeck(prevDecks, message.player, message.id)
         );
+      } else if (message.type === "TURN_PASSED") {
+        setTurn(message.turn);
       } else if (message.type === "USER_LEFT") {
         setPositions(message.positions);
         setCards((prevCards) =>

@@ -36,7 +36,8 @@ export default function GameCanvas({
   lifeTotals,
   setLifeTotals,
   remappedPositions,
-  isRotated
+  isRotated,
+  turn
 }) {
   const viewerPosition = positions[username];
 
@@ -62,6 +63,7 @@ export default function GameCanvas({
           isRotated={isRotated}
           lifeTotals={lifeTotals}
           setLifeTotals={setLifeTotals}
+          turn={turn}
         />
       </Layer>
 

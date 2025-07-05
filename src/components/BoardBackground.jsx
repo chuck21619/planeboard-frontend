@@ -2,7 +2,8 @@ import React, { useCallback } from "react";
 import { Rect, Text } from "react-konva";
 import { sendMessage } from "../ws";
 
-const watermarkColor = "rgba(255, 255, 255, 0.03)";
+const watermarkColorActive = "rgba(255, 255, 255, 0.38)";
+const watermarkColorInActive = "rgba(255, 255, 255, 0.03)";
 const watermarkFontSize = 300;
 const watermarkOffset = 100;
 const lifeCounterColor = "rgba(255, 255, 255, 0.27)";
@@ -17,6 +18,7 @@ export default function BoardBackground({
   lifeTotals,
   setLifeTotals,
   isRotated,
+  turn
 }) {
   const getUsernameForPosition = (targetPos) =>
     Object.entries(positions).find(([_, pos]) => pos === targetPos)?.[0] || "";
@@ -69,6 +71,7 @@ export default function BoardBackground({
   const renderCorner = (x, y, align, posKey, fill) => {
     const username = getUsernameForPosition(posKey);
     const hasPlayer = Boolean(username);
+    const waterMarkColor = turn == username ? watermarkColorActive : watermarkColorInActive;
 
     return (
       <React.Fragment key={posKey}>
@@ -87,7 +90,7 @@ export default function BoardBackground({
           width={size}
           align={align}
           fontSize={watermarkFontSize}
-          fill={watermarkColor}
+          fill={waterMarkColor}
           listening={false}
         />
         {hasPlayer && (
