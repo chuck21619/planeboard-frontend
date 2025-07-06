@@ -101,6 +101,9 @@ function Room() {
     }
   );
   function cardDraggedToDeckMenu(card, deckId, position) {
+    if (dragSource === "deckSearch") {
+      return;
+    }
     setCardDraggedToDeck(card);
     setCardDraggedToDeckMenuDeckId(deckId);
     setCardDraggedToDeckMenuPosition(position);
