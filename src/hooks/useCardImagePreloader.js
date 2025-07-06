@@ -20,10 +20,12 @@ export function useCardImagePreloader(
     });
   };
   const enqueueCard = async (card) => {
-    const url = card.imageUrl;
-    if (url && !seenUrlsRef.current.has(url)) {
-      seenUrlsRef.current.add(url);
-      await preloadImage(url);
+    const urls = [card.imageUrl, card.imageUrlBack];
+    for (const url of urls) {
+      if (url && !seenUrlsRef.current.has(url)) {
+        seenUrlsRef.current.add(url);
+        await preloadImage(url);
+      }
     }
     if (card.hasTokens && card.uid && !card.tokens) {
       const updatedCard = await loadTokenData(card);
