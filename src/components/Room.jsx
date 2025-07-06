@@ -54,6 +54,13 @@ function Room() {
   const [stagePosition, setStagePosition] = useState({ x: 0, y: 0 });
   const [mousePos, stageMouseMove] = useStageMousePos();
   const [pointerPos, setPointerPos] = useState({ x: 0, y: 0 });
+  const [cardDraggedToDeckMenuVisible, setCardDraggedToDeckMenuVisible] =
+    useState(false);
+  const [cardDraggedToDeck, setCardDraggedToDeck] = useState(null);
+  const [cardDraggedToDeckMenuDeckId, setCardDraggedToDeckMenuDeckId] =
+    useState(null);
+  const [cardDraggedToDeckMenuPosition, setCardDraggedToDeckMenuPosition] =
+    useState({ x: 0, y: 0 });
   const { hoveredCard, setHoveredCard, ignoreNextChange } = useHoveredCard(
     mousePos,
     cards,
@@ -93,7 +100,12 @@ function Room() {
       });
     }
   );
-
+  function cardDraggedToDeckMenu(card, deckId, position) {
+    setCardDraggedToDeck(card);
+    setCardDraggedToDeckMenuDeckId(deckId);
+    setCardDraggedToDeckMenuPosition(position);
+    setCardDraggedToDeckMenuVisible(true);
+  }
   const {
     onMouseDown: dragMouseDown,
     onMouseMove: dragMouseMove,
@@ -114,9 +126,11 @@ function Room() {
     setHand,
     username,
     ignoreNextChange,
+    decks,
     setDecks,
     searchDeckId,
     isRotated,
+    cardDraggedToDeckMenu,
   });
   const { tapCard } = useCardTap(setCards, hasMoved);
   useRoomHandlers({
@@ -135,12 +149,12 @@ function Room() {
   });
   const handleDeckRightClick = (clientX, clientY, deckId) => {
     setDeckMenuVisible(true);
-    setContextMenuPosition({ x: clientX - 1, y: clientY - 1 });
+    setContextMenuPosition({ x: clientX - 2, y: clientY - 1 });
     setMenuDeckId(deckId);
   };
   const handleCardRightCLick = (clientX, clientY, card) => {
     setCardMenuVisible(true);
-    setContextMenuPosition({ x: clientX - 1, y: clientY - 1 });
+    setContextMenuPosition({ x: clientX - 2, y: clientY - 1 });
     setCardMenuCard(card);
   };
   useEffect(() => {
@@ -371,6 +385,118 @@ function Room() {
                   ➕ {token.name}
                 </div>
               ))}
+          </div>
+        )}
+        {cardDraggedToDeckMenuVisible && cardDraggedToDeck && (
+          <div
+            style={{
+              position: "absolute",
+              top: cardDraggedToDeckMenuPosition.y - 1,
+              left: cardDraggedToDeckMenuPosition.x - 2,
+              backgroundColor: "black",
+              border: "1px solid #ccc",
+              padding: "6px",
+              zIndex: 9999,
+              minWidth: "160px",
+            }}
+            onMouseLeave={() => setCardDraggedToDeckMenuVisible(false)}
+          >
+            <div
+              style={{ cursor: "pointer", padding: "4px 8px" }}
+              onClick={() => {
+                console.log("Return to top of deck:", cardDraggedToDeck);
+                setDecks((prev) => {
+                  const newDecks = { ...prev };
+                  const targetDeck = [
+                    ...(newDecks[cardDraggedToDeckMenuDeckId]?.cards || []),
+                  ];
+                  newDecks[cardDraggedToDeckMenuDeckId].cards = [
+                    cardDraggedToDeck,
+                    ...targetDeck,
+                  ];
+                  return newDecks;
+                });
+                console.log(hand);
+                setHand((prev) => prev.filter((c) => c.id !== cardDraggedToDeck.id));
+                sendMessage({
+                  type: "CARD_TO_TOP_OF_DECK",
+                  username: cardDraggedToDeckMenuDeckId,
+                  source: "hand", // figure this out
+                  card: {
+                    id: cardDraggedToDeck.id,
+                    name: cardDraggedToDeck.name,
+                    imageUrl: cardDraggedToDeck.imageUrl,
+                    uid: cardDraggedToDeck.uid,
+                    hasTokens: cardDraggedToDeck.hasTokens,
+                    x: 0,
+                    y: 0,
+                    tapped: false,
+                  },
+                });
+                setCardDraggedToDeckMenuVisible(false);
+              }}
+            >
+              ⬆️ Top of Deck
+            </div>
+            <div
+              style={{ cursor: "pointer", padding: "4px 8px" }}
+              onClick={() => {
+                setHand((prev) => prev.filter((c) => c.id !== cardDraggedToDeck.id));
+                sendMessage({
+                  type: "CARD_TO_SHUFFLE_IN_DECK",
+                  username: cardDraggedToDeckMenuDeckId,
+                  source: "hand", // figure this out
+                  card: {
+                    id: cardDraggedToDeck.id,
+                    name: cardDraggedToDeck.name,
+                    imageUrl: cardDraggedToDeck.imageUrl,
+                    uid: cardDraggedToDeck.uid,
+                    hasTokens: cardDraggedToDeck.hasTokens,
+                    x: 0,
+                    y: 0,
+                    tapped: false,
+                  },
+                });
+                setCardDraggedToDeckMenuVisible(false);
+              }}
+            >
+              🔀 Shuffle Into Deck
+            </div>
+            <div
+              style={{ cursor: "pointer", padding: "4px 8px" }}
+              onClick={() => {
+                setDecks((prev) => {
+                  const newDecks = { ...prev };
+                  const targetDeck = [
+                    ...(newDecks[cardDraggedToDeckMenuDeckId]?.cards || []),
+                  ];
+                  newDecks[cardDraggedToDeckMenuDeckId].cards = [
+                    ...targetDeck,
+                    cardDraggedToDeck,
+                  ];
+                  return newDecks;
+                });
+                setHand((prev) => prev.filter((c) => c.id !== cardDraggedToDeck.id));
+                sendMessage({
+                  type: "CARD_TO_BOTTOM_OF_DECK",
+                  username: cardDraggedToDeckMenuDeckId,
+                  source: "hand", // figure this out
+                  card: {
+                    id: cardDraggedToDeck.id,
+                    name: cardDraggedToDeck.name,
+                    imageUrl: cardDraggedToDeck.imageUrl,
+                    uid: cardDraggedToDeck.uid,
+                    hasTokens: cardDraggedToDeck.hasTokens,
+                    x: 0,
+                    y: 0,
+                    tapped: false,
+                  },
+                });
+                setCardDraggedToDeckMenuVisible(false);
+              }}
+            >
+              ⬇️ Bottom of Deck
+            </div>
           </div>
         )}
       </div>

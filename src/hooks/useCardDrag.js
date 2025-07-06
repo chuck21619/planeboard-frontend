@@ -18,9 +18,11 @@ export function useCardDrag({
   setHand,
   username,
   ignoreNextChange,
+  decks,
   setDecks,
   searchDeckId,
   isRotated,
+  cardDraggedToDeckMenu,
 }) {
   const onMouseMove = useCallback((e) => {
     // Intentionally empty — mousemove handled globally on window
@@ -119,6 +121,31 @@ export function useCardDrag({
         y = -y - 89;
       }
       const card = draggingCard;
+
+      const decksArray = Object.values(decks);
+      const droppedOnDeck = decksArray.find((deck) => {
+        const deckX = deck.x;
+        const deckY = deck.y;
+        const dropCenterX = x + cardWidth / 2;
+        const dropCenterY = y + cardHeight / 2;
+
+        return (
+          dropCenterX >= deckX &&
+          dropCenterX <= deckX + cardWidth &&
+          dropCenterY >= deckY &&
+          dropCenterY <= deckY + cardHeight
+        );
+      });
+
+      if (droppedOnDeck) {
+        cardDraggedToDeckMenu(card, droppedOnDeck.id, {
+          x: e.clientX,
+          y: e.clientY,
+        });
+        setDraggingCard(null);
+        setDragSource(null);
+        return;
+      }
 
       if (dragSource === "board") {
         if (isDroppingInHand) {
