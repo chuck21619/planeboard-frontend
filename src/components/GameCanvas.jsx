@@ -37,7 +37,8 @@ export default function GameCanvas({
   setLifeTotals,
   remappedPositions,
   isRotated,
-  turn
+  turn,
+  defaultCardBackImage,
 }) {
   const viewerPosition = positions[username];
 
@@ -108,6 +109,7 @@ export default function GameCanvas({
               onRightClick={(e) =>
                 onCardRightClick(e.evt.clientX, e.evt.clientY, card)
               }
+              defaultCardBackImage={defaultCardBackImage}
             />
           );
         })}

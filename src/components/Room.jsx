@@ -254,6 +254,7 @@ function Room() {
             remappedPositions={remappedPositions}
             isRotated={isRotated}
             turn={turn}
+            defaultCardBackImage={cardBackImage}
           />
           <Hand
             hand={hand}
@@ -317,10 +318,9 @@ function Room() {
               <img
                 src={
                   hoveredCard?.flipped
-                    ? hoveredCard.imageUrlBack
+                    ? hoveredCard.imageUrlBack || "/defaultCardBack.jpg"
                     : hoveredCard.imageUrl
                 }
-                alt={hoveredCard?.name}
               />
             </>
           )}
