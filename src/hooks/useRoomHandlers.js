@@ -114,6 +114,14 @@ export function useRoomHandlers({
             card.id === message.id ? { ...card, tapped: message.tapped } : card
           )
         );
+      } else if (message.type === "CARD_FLIPPED") {
+        setCards((prevCards) =>
+          prevCards.map((card) =>
+            card.id === message.id
+              ? { ...card, flipped: message.flipped }
+              : card
+          )
+        );
       } else if (
         message.type === "CARD_TO_TOP_OF_DECK" ||
         message.type === "CARD_TO_BOTTOM_OF_DECK"

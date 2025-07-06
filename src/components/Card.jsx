@@ -8,9 +8,10 @@ export default function Card({
   onMouseDown,
   onTapCard,
   onRightClick,
-  rotation
+  rotation,
 }) {
-  const image = useSharedImage(card.imageUrl);
+  const frontImage = useSharedImage(card.imageUrl);
+  const backImage = useSharedImage(card.imageUrlBack);
 
   const width = 64;
   const height = 89;
@@ -41,8 +42,12 @@ export default function Card({
     onContextMenu: handleContextMenu,
   };
 
-  return image ? (
-    <KonvaImage image={image} {...commonProps} />
+  if (card.flipped && backImage) {
+    return <KonvaImage image={backImage} {...commonProps} />;
+  }
+
+  return frontImage ? (
+    <KonvaImage image={frontImage} {...commonProps} />
   ) : (
     <Rect fill="white" stroke="black" strokeWidth={2} {...commonProps} />
   );

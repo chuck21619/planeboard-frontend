@@ -173,6 +173,7 @@ export function useCardDrag({
             id: card.id,
             name: card.name,
             imageUrl: card.imageUrl,
+            imageUrlBack: card.imageUrlBack,
             uid: card.uid,
             hasTokens: card.hasTokens,
             x,

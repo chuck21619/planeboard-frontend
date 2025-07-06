@@ -160,6 +160,36 @@ function Room() {
     setContextMenuPosition({ x: clientX - 2, y: clientY - 1 });
     setCardMenuCard(card);
   };
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === "f" || event.key === "F") {
+        if (!hoveredCard) return;
+        const cardId = hoveredCard.id;
+        setCards((prevCards) => {
+          let newFlipState = false;
+          const updated = prevCards.map((card) => {
+            if (card.id === cardId) {
+              newFlipState = !card.flipped;
+              return { ...card, flipped: newFlipState };
+            }
+            return card;
+          });
+          sendMessage({
+            type: "FLIP_CARD",
+            id: cardId,
+            flipped: newFlipState,
+          });
+
+          return updated;
+        });
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [hoveredCard, setCards]);
+
   useEffect(() => {
     function handleMouseMove(e) {
       setPointerPos({ x: e.clientX, y: e.clientY });
@@ -431,11 +461,12 @@ function Room() {
                 sendMessage({
                   type: "CARD_TO_TOP_OF_DECK",
                   username: cardDraggedToDeckMenuDeckId,
-                  source: dragSource, // figure this out
+                  source: dragSource,
                   card: {
                     id: cardDraggedToDeck.id,
                     name: cardDraggedToDeck.name,
                     imageUrl: cardDraggedToDeck.imageUrl,
+                    imageUrlBack: cardDraggedToDeck.imageUrlBack,
                     uid: cardDraggedToDeck.uid,
                     hasTokens: cardDraggedToDeck.hasTokens,
                     x: 0,
@@ -462,11 +493,12 @@ function Room() {
                 sendMessage({
                   type: "CARD_TO_SHUFFLE_IN_DECK",
                   username: cardDraggedToDeckMenuDeckId,
-                  source: dragSource, // figure this out
+                  source: dragSource,
                   card: {
                     id: cardDraggedToDeck.id,
                     name: cardDraggedToDeck.name,
                     imageUrl: cardDraggedToDeck.imageUrl,
+                    imageUrlBack: cardDraggedToDeck.imageUrlBack,
                     uid: cardDraggedToDeck.uid,
                     hasTokens: cardDraggedToDeck.hasTokens,
                     x: 0,
@@ -504,11 +536,12 @@ function Room() {
                 sendMessage({
                   type: "CARD_TO_BOTTOM_OF_DECK",
                   username: cardDraggedToDeckMenuDeckId,
-                  source: dragSource, // figure this out
+                  source: dragSource,
                   card: {
                     id: cardDraggedToDeck.id,
                     name: cardDraggedToDeck.name,
                     imageUrl: cardDraggedToDeck.imageUrl,
+                    imageUrlBack: cardDraggedToDeck.imageUrlBack,
                     uid: cardDraggedToDeck.uid,
                     hasTokens: cardDraggedToDeck.hasTokens,
                     x: 0,
