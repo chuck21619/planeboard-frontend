@@ -417,11 +417,18 @@ function Room() {
                   return newDecks;
                 });
                 console.log(hand);
-                setHand((prev) => prev.filter((c) => c.id !== cardDraggedToDeck.id));
+                setHand((prev) =>
+                  prev.filter((c) => c.id !== cardDraggedToDeck.id)
+                );
+                if (dragSource === "board") {
+                  setCards((prev) =>
+                    prev.filter((c) => c.id !== cardDraggedToDeck.id)
+                  );
+                }
                 sendMessage({
                   type: "CARD_TO_TOP_OF_DECK",
                   username: cardDraggedToDeckMenuDeckId,
-                  source: "hand", // figure this out
+                  source: dragSource, // figure this out
                   card: {
                     id: cardDraggedToDeck.id,
                     name: cardDraggedToDeck.name,
@@ -441,11 +448,18 @@ function Room() {
             <div
               style={{ cursor: "pointer", padding: "4px 8px" }}
               onClick={() => {
-                setHand((prev) => prev.filter((c) => c.id !== cardDraggedToDeck.id));
+                setHand((prev) =>
+                  prev.filter((c) => c.id !== cardDraggedToDeck.id)
+                );
+                if (dragSource === "board") {
+                  setCards((prev) =>
+                    prev.filter((c) => c.id !== cardDraggedToDeck.id)
+                  );
+                }
                 sendMessage({
                   type: "CARD_TO_SHUFFLE_IN_DECK",
                   username: cardDraggedToDeckMenuDeckId,
-                  source: "hand", // figure this out
+                  source: dragSource, // figure this out
                   card: {
                     id: cardDraggedToDeck.id,
                     name: cardDraggedToDeck.name,
@@ -476,11 +490,18 @@ function Room() {
                   ];
                   return newDecks;
                 });
-                setHand((prev) => prev.filter((c) => c.id !== cardDraggedToDeck.id));
+                setHand((prev) =>
+                  prev.filter((c) => c.id !== cardDraggedToDeck.id)
+                );
+                if (dragSource === "board") {
+                  setCards((prev) =>
+                    prev.filter((c) => c.id !== cardDraggedToDeck.id)
+                  );
+                }
                 sendMessage({
                   type: "CARD_TO_BOTTOM_OF_DECK",
                   username: cardDraggedToDeckMenuDeckId,
-                  source: "hand", // figure this out
+                  source: dragSource, // figure this out
                   card: {
                     id: cardDraggedToDeck.id,
                     name: cardDraggedToDeck.name,

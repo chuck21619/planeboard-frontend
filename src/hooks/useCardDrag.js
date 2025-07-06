@@ -143,7 +143,6 @@ export function useCardDrag({
           y: e.clientY,
         });
         setDraggingCard(null);
-        setDragSource(null);
         return;
       }
 
