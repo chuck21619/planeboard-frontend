@@ -86,6 +86,7 @@ export default function GameCanvas({
         {draggingCard && dragSource !== "deckSearch" && (
           <Card
             card={{ ...draggingCard, x: dragPos.x, y: dragPos.y }}
+            defaultCardBackImage={defaultCardBackImage}
             rotation={draggingCard.rotation}
             isGhost
           />

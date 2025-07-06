@@ -165,8 +165,16 @@ function Room() {
     const handleKeyDown = (event) => {
       if (event.key === "f" || event.key === "F") {
         if (!hoveredCard) return;
+        if (draggingCard) {
+          console.log("flipped while dragging");
+          setDraggingCard((prev) => ({ ...prev, flipped: true }));
+          draggingCard.flipped = true;
+          return;
+        }
         const cardId = hoveredCard.id;
         setCards((prevCards) => {
+          const targetCard = prevCards.find((card) => card.id === cardId);
+          if (!targetCard) return prevCards;
           let newFlipState = false;
           const updated = prevCards.map((card) => {
             if (card.id === cardId) {
@@ -188,7 +196,7 @@ function Room() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [hoveredCard]);
+  }, [hoveredCard, draggingCard]);
 
   useEffect(() => {
     function handleMouseMove(e) {
@@ -297,7 +305,11 @@ function Room() {
         )}
         {draggingCard && dragSource === "deckSearch" && hasMoved && (
           <img
-            src={draggingCard.imageUrl}
+            src={"/defaultCardBack.jpg"
+              // draggingCard.flipped
+              //   ? draggingCard.imageUrlBack || "/defaultCardBack.jpg"
+              //   : draggingCard.imageUrl
+            }
             alt={draggingCard.name}
             style={{
               position: "fixed",
