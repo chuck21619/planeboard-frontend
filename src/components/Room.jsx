@@ -180,7 +180,7 @@ function Room() {
             id: cardId,
             flipped: newFlipState,
           });
-
+          setHoveredCard((prev) => ({ ...prev, flipped: newFlipState }));
           return updated;
         });
       }
@@ -188,7 +188,7 @@ function Room() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [hoveredCard, setCards]);
+  }, [hoveredCard]);
 
   useEffect(() => {
     function handleMouseMove(e) {
@@ -314,7 +314,14 @@ function Room() {
         <div className={`hover-preview ${hoveredCard ? "" : "hidden"}`}>
           {hoveredCard && (
             <>
-              <img src={hoveredCard?.imageUrl} alt={hoveredCard?.name} />
+              <img
+                src={
+                  hoveredCard?.flipped
+                    ? hoveredCard.imageUrlBack
+                    : hoveredCard.imageUrl
+                }
+                alt={hoveredCard?.name}
+              />
             </>
           )}
         </div>
@@ -472,6 +479,7 @@ function Room() {
                     x: 0,
                     y: 0,
                     tapped: false,
+                    flipped: false,
                   },
                 });
                 setCardDraggedToDeckMenuVisible(false);
@@ -504,6 +512,7 @@ function Room() {
                     x: 0,
                     y: 0,
                     tapped: false,
+                    flipped: false,
                   },
                 });
                 setCardDraggedToDeckMenuVisible(false);
@@ -547,6 +556,7 @@ function Room() {
                     x: 0,
                     y: 0,
                     tapped: false,
+                    flipped: false,
                   },
                 });
                 setCardDraggedToDeckMenuVisible(false);

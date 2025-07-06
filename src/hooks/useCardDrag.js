@@ -179,6 +179,7 @@ export function useCardDrag({
             x,
             y,
             tapped: false,
+            flipped: false,
             owner: username,
           };
 
@@ -211,6 +212,7 @@ export function useCardDrag({
               x,
               y,
               tapped: false,
+              flipped: false,
             },
             username,
           });
