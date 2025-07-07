@@ -168,7 +168,6 @@ function Room() {
         if (draggingCard) {
           const newFlipState = !draggingCard.flipped;
           setDraggingCard((prev) => ({ ...prev, flipped: newFlipState }));
-          draggingCard.flipped = newFlipState;
           setHoveredCard((prev) => ({ ...prev, flipped: newFlipState }));
           return;
         }
