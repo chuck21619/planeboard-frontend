@@ -62,7 +62,6 @@ export function useHoveredCard(
     }
 
     if (newHovered?.id === lastCardId.current) return;
-
     lastCardId.current = newHovered?.id || null;
     setHoveredCard(newHovered);
   }, [mousePos, cards, draggingCard, hoveredHandCard, isRotated]);

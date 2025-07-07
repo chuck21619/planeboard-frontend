@@ -6,6 +6,7 @@ export default function DeckSearchModal({
   onClose,
   setHoveredCard,
   getCardMouseDownHandler,
+  draggingCard,
 }) {
   const [query, setQuery] = useState("");
   const deck = decks[deckId];
@@ -41,6 +42,7 @@ export default function DeckSearchModal({
         type="text"
         placeholder="Search cards..."
         value={query}
+        disabled={!!draggingCard}
         onChange={(e) => setQuery(e.target.value)}
         style={{ width: "100%", marginBottom: "8px", padding: "6px" }}
       />
@@ -67,7 +69,7 @@ export default function DeckSearchModal({
             }}
             onMouseDown={getCardMouseDownHandler(card, "deckSearch", 0)}
             onMouseEnter={() => setHoveredCard(card)}
-            onMouseLeave={() => setHoveredCard(null)}
+            // onMouseLeave={() => setHoveredCard(null)}
           />
         ))}
       </div>

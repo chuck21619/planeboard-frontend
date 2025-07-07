@@ -166,7 +166,6 @@ function Room() {
       if (event.key === "f" || event.key === "F") {
         if (!hoveredCard) return;
         if (draggingCard) {
-          console.log("flipped while dragging");
           setDraggingCard((prev) => ({ ...prev, flipped: true }));
           draggingCard.flipped = true;
           return;
@@ -301,14 +300,15 @@ function Room() {
             onClose={() => setSearchModalVisible(false)}
             setHoveredCard={setHoveredCard}
             getCardMouseDownHandler={getCardMouseDownHandler}
+            draggingCard={draggingCard}
           />
         )}
         {draggingCard && dragSource === "deckSearch" && hasMoved && (
           <img
-            src={"/defaultCardBack.jpg"
-              // draggingCard.flipped
-              //   ? draggingCard.imageUrlBack || "/defaultCardBack.jpg"
-              //   : draggingCard.imageUrl
+            src={
+              draggingCard.flipped
+                ? draggingCard.imageUrlBack || "/defaultCardBack.jpg"
+                : draggingCard.imageUrl
             }
             alt={draggingCard.name}
             style={{
