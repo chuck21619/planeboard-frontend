@@ -16,6 +16,7 @@ import DeckSearchModal from "./DeckSearchModal";
 import { sendMessage } from "../ws";
 import { remapPositions } from "../utils/playerOrientation";
 import { useCardImagePreloader } from "../hooks/useCardImagePreloader";
+import { getNextFlipIndex } from "../utils/cardUtils";
 
 function Room() {
   const [username] = useState(() => localStorage.getItem("username"));
@@ -166,29 +167,28 @@ function Room() {
       if (event.key === "f" || event.key === "F") {
         if (!hoveredCard) return;
         if (draggingCard) {
-          const newFlipState = !draggingCard.flipped;
-          setDraggingCard((prev) => ({ ...prev, flipped: newFlipState }));
-          setHoveredCard((prev) => ({ ...prev, flipped: newFlipState }));
+          const newFlipIndex = getNextFlipIndex(draggingCard);
+          setDraggingCard((prev) => ({ ...prev, flipIndex: newFlipIndex }));
+          setHoveredCard((prev) => ({ ...prev, flipIndex: newFlipIndex }));
           return;
         }
         const cardId = hoveredCard.id;
         setCards((prevCards) => {
           const targetCard = prevCards.find((card) => card.id === cardId);
           if (!targetCard) return prevCards;
-          let newFlipState = false;
+          const newFlipIndex = getNextFlipIndex(targetCard);
           const updated = prevCards.map((card) => {
             if (card.id === cardId) {
-              newFlipState = !card.flipped;
-              return { ...card, flipped: newFlipState };
+              return { ...card, flipIndex: newFlipIndex };
             }
             return card;
           });
           sendMessage({
             type: "FLIP_CARD",
             id: cardId,
-            flipped: newFlipState,
+            flipIndex: newFlipIndex,
           });
-          setHoveredCard((prev) => ({ ...prev, flipped: newFlipState }));
+          setHoveredCard((prev) => ({ ...prev, flipIndex: newFlipIndex }));
           return updated;
         });
       }
@@ -307,9 +307,13 @@ function Room() {
         {draggingCard && dragSource === "deckSearch" && hasMoved && (
           <img
             src={
-              draggingCard.flipped
-                ? draggingCard.imageUrlBack || "/defaultCardBack.jpg"
-                : draggingCard.imageUrl
+              draggingCard.flipIndex === 0
+                ? draggingCard.imageUrl
+                : draggingCard.flipIndex === 1
+                ? draggingCard.numFaces === 2
+                  ? "/defaultCardBack.jpg"
+                  : draggingCard.imageUrlBack
+                : "/defaultCardBack.jpg"
             }
             alt={draggingCard.name}
             style={{
@@ -330,9 +334,13 @@ function Room() {
             <>
               <img
                 src={
-                  hoveredCard?.flipped
-                    ? hoveredCard.imageUrlBack || "/defaultCardBack.jpg"
-                    : hoveredCard.imageUrl
+                  hoveredCard.flipIndex === 0
+                    ? hoveredCard.imageUrl
+                    : hoveredCard.flipIndex === 1
+                    ? hoveredCard.numFaces === 2
+                      ? "/defaultCardBack.jpg"
+                      : hoveredCard.imageUrlBack
+                    : "/defaultCardBack.jpg"
                 }
               />
             </>
@@ -489,10 +497,11 @@ function Room() {
                     imageUrlBack: cardDraggedToDeck.imageUrlBack,
                     uid: cardDraggedToDeck.uid,
                     hasTokens: cardDraggedToDeck.hasTokens,
+                    numFaces: cardDraggedToDeck.numFaces,
                     x: 0,
                     y: 0,
                     tapped: false,
-                    flipped: false,
+                    flipIndex: 0,
                   },
                 });
                 setCardDraggedToDeckMenuVisible(false);
@@ -522,10 +531,11 @@ function Room() {
                     imageUrlBack: cardDraggedToDeck.imageUrlBack,
                     uid: cardDraggedToDeck.uid,
                     hasTokens: cardDraggedToDeck.hasTokens,
+                    numFaces: cardDraggedToDeck.numFaces,
                     x: 0,
                     y: 0,
                     tapped: false,
-                    flipped: false,
+                    flipIndex: 0,
                   },
                 });
                 setCardDraggedToDeckMenuVisible(false);
@@ -566,10 +576,11 @@ function Room() {
                     imageUrlBack: cardDraggedToDeck.imageUrlBack,
                     uid: cardDraggedToDeck.uid,
                     hasTokens: cardDraggedToDeck.hasTokens,
+                    numFaces: cardDraggedToDeck.numFaces,
                     x: 0,
                     y: 0,
                     tapped: false,
-                    flipped: false,
+                    flipIndex: 0,
                   },
                 });
                 setCardDraggedToDeckMenuVisible(false);

@@ -47,7 +47,7 @@ export function useRoomHandlers({
         setCards((prevCards) =>
           prevCards.map((card) =>
             card.id === message.id
-              ? { ...card, x: message.x, y: message.y }
+              ? { ...card, x: message.x, y: message.y, flipIndex: message.flipIndex }
               : card
           )
         );
@@ -118,7 +118,7 @@ export function useRoomHandlers({
         setCards((prevCards) =>
           prevCards.map((card) =>
             card.id === message.id
-              ? { ...card, flipped: message.flipped }
+              ? { ...card, flipIndex: message.flipIndex }
               : card
           )
         );

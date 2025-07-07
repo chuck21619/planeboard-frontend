@@ -39,7 +39,14 @@ export function useCardDrag({
 
       if (!isLeftClick) return;
       setHasMoved(false);
-      pendingDragRef.current = { card, source, rotation };
+      pendingDragRef.current = {
+        card: {
+          ...card,
+          flipIndex: card.flipIndex ?? 0, // ensure it's defined
+        },
+        source,
+        rotation,
+      };
       if ("evt" in e) {
         e.evt.preventDefault();
         e.evt.stopPropagation();
@@ -148,16 +155,16 @@ export function useCardDrag({
 
       if (dragSource === "board") {
         if (isDroppingInHand) {
-          const untappedCard = { ...card, x, y, tapped: false };
+          const untappedCard = { ...card, x, y, tapped: false, flipIndex: 0 };
           setHand((prev) => [...prev, untappedCard]);
           setCards((prev) => prev.filter((c) => c.id !== card.id));
           sendMessage({ type: "RETURN_TO_HAND", id: card.id, username });
         } else {
           //dragging within the board
           setCards((prev) =>
-            prev.map((c) => (c.id === card.id ? { ...c, x, y } : c))
+            prev.map((c) => (c.id === card.id ? { ...c, x, y, flipIndex: card.flipIndex } : c))
           );
-          sendMessage({ type: "MOVE_CARD", id: card.id, x, y });
+          sendMessage({ type: "MOVE_CARD", id: card.id, x, y, flipIndex: card.flipIndex });
         }
       } else if (dragSource === "deckSearch") {
         if (isDroppingInHand) {
@@ -176,10 +183,11 @@ export function useCardDrag({
             imageUrlBack: card.imageUrlBack,
             uid: card.uid,
             hasTokens: card.hasTokens,
+            numFaces: card.numFaces,
             x,
             y,
             tapped: false,
-            flipped: draggingCard.flipped,
+            flipIndex: draggingCard.flipIndex,
             owner: username,
           };
 
@@ -210,10 +218,11 @@ export function useCardDrag({
               imageUrlBack: card.imageUrlBack,
               uid: card.uid,
               hasTokens: card.hasTokens,
+              numFaces: card.numFaces,
               x,
               y,
               tapped: false,
-              flipped: draggingCard.flipped,
+              flipIndex: draggingCard.flipIndex,
             },
             username,
           });
