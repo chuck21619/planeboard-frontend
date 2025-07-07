@@ -32,11 +32,11 @@ export function useCardDrag({
   }, []);
   const [hasMoved, setHasMoved] = useState(false);
   const pendingDragRef = useRef(null);
+  const dragOffsetRef = useRef({ x: 0, y: 0 });
 
   function getCardMouseDownHandler(card, source, rotation) {
     return (e) => {
       const isLeftClick = ("evt" in e && e.evt.button === 0) || e.button === 0;
-
       if (!isLeftClick) return;
       setHasMoved(false);
       pendingDragRef.current = {
@@ -58,9 +58,24 @@ export function useCardDrag({
   }
   useEffect(() => {
     function handleGlobalMouseMove(e) {
+      const rect = canvasRef.current?.getBoundingClientRect();
+      const x =
+        (e.clientX - rect.left - stagePosition.x) / stageScale - cardWidth / 2;
+      const y =
+        (e.clientY - rect.top - stagePosition.y) / stageScale - cardHeight / 2;
       if (!hasMoved) {
         setHasMoved(true);
         if (pendingDragRef.current) {
+          dragOffsetRef.current = {
+            x:
+              pendingDragRef.current?.card?.x != null
+                ? x - pendingDragRef.current.card.x
+                : 0,
+            y:
+              pendingDragRef.current?.card?.y != null
+                ? y - pendingDragRef.current.card.y
+                : 0,
+          };
           const { card, source, rotation } = pendingDragRef.current;
           pendingDragRef.current = null;
           card.rotation = rotation;
@@ -70,17 +85,15 @@ export function useCardDrag({
         }
       }
       if (!draggingCard) return;
-      const rect = canvasRef.current?.getBoundingClientRect();
-      if (!rect) return;
-      const x =
-        (e.clientX - rect.left - stagePosition.x) / stageScale - cardWidth / 2;
-      const y =
-        (e.clientY - rect.top - stagePosition.y) / stageScale - cardHeight / 2;
-      setDragPos({ x, y });
+      setDragPos({
+        x: x - dragOffsetRef.current.x,
+        y: y - dragOffsetRef.current.y,
+      });
     }
     window.addEventListener("mousemove", handleGlobalMouseMove);
     return () => window.removeEventListener("mousemove", handleGlobalMouseMove);
   }, [
+    draggingCard,
     canvasRef,
     stagePosition,
     stageScale,
@@ -123,6 +136,8 @@ export function useCardDrag({
         (e.clientX - rect.left - stagePosition.x) / stageScale - cardWidth / 2;
       var y =
         (e.clientY - rect.top - stagePosition.y) / stageScale - cardHeight / 2;
+      x = x - dragOffsetRef.current.x;
+      y = y - dragOffsetRef.current.y;
       if (isRotated) {
         x = -x - 64;
         y = -y - 89;
@@ -162,9 +177,17 @@ export function useCardDrag({
         } else {
           //dragging within the board
           setCards((prev) =>
-            prev.map((c) => (c.id === card.id ? { ...c, x, y, flipIndex: card.flipIndex } : c))
+            prev.map((c) =>
+              c.id === card.id ? { ...c, x, y, flipIndex: card.flipIndex } : c
+            )
           );
-          sendMessage({ type: "MOVE_CARD", id: card.id, x, y, flipIndex: card.flipIndex });
+          sendMessage({
+            type: "MOVE_CARD",
+            id: card.id,
+            x,
+            y,
+            flipIndex: card.flipIndex,
+          });
         }
       } else if (dragSource === "deckSearch") {
         if (isDroppingInHand) {
