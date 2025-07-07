@@ -166,8 +166,10 @@ function Room() {
       if (event.key === "f" || event.key === "F") {
         if (!hoveredCard) return;
         if (draggingCard) {
-          setDraggingCard((prev) => ({ ...prev, flipped: true }));
-          draggingCard.flipped = true;
+          const newFlipState = !draggingCard.flipped;
+          setDraggingCard((prev) => ({ ...prev, flipped: newFlipState }));
+          draggingCard.flipped = newFlipState;
+          setHoveredCard((prev) => ({ ...prev, flipped: newFlipState }));
           return;
         }
         const cardId = hoveredCard.id;
