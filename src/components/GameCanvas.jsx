@@ -4,6 +4,7 @@ import Deck from "./Deck";
 import OpponentHand from "./OpponentHand";
 import BoardBackground from "./BoardBackground";
 import { getCardRotation } from "../utils/cardOrientation";
+import Counter from "./Counter";
 
 export default function GameCanvas({
   stageRef,
@@ -39,6 +40,8 @@ export default function GameCanvas({
   turn,
   defaultCardBackImage,
   onStageRightClick,
+  counters,
+  setCounters
 }) {
   const viewerPosition = positions[username];
 
@@ -142,6 +145,26 @@ export default function GameCanvas({
             />
           );
         })}
+      </Layer>
+      <Layer>
+        {counters.map(({ id, x, y, count }) => (
+          <Counter
+            key={id}
+            x={x}
+            y={y}
+            count={count}
+            onChange={(newCount) => {
+              setCounters((prev) =>
+                prev.map((c) => (c.id === id ? { ...c, count: newCount } : c))
+              );
+            }}
+            onMove={({ x, y }) => {
+              setCounters((prev) =>
+                prev.map((c) => (c.id === id ? { ...c, x, y } : c))
+              );
+            }}
+          />
+        ))}
       </Layer>
     </Stage>
   );

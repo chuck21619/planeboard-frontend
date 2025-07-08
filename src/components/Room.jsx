@@ -45,6 +45,7 @@ function Room() {
   const [boardMenuVisible, setBoardMenuVisible] = useState(false);
   const [boardMenuPosition, setBoardMenuPosition] = useState({ x: 0, y: 0 });
   const [cardMenuCard, setCardMenuCard] = useState(null);
+  const [counters, setCounters] = useState([]);
   const { roomId } = useParams();
   const [hasJoined, setHasJoined] = useState(false);
   const { showSpinner, minLoadingDone } = useLoadingFade(hasJoined);
@@ -163,7 +164,7 @@ function Room() {
       return;
     }
     e.evt.preventDefault();
-    setBoardMenuPosition({ x: e.evt.clientX - 2, y: e.evt.clientY - 1});
+    setBoardMenuPosition({ x: e.evt.clientX - 2, y: e.evt.clientY - 1 });
     setBoardMenuVisible(true);
     setCardMenuVisible(false);
     setDeckMenuVisible(false);
@@ -240,6 +241,8 @@ function Room() {
             turn={turn}
             defaultCardBackImage={cardBackImage}
             onStageRightClick={handleStageRightClick}
+            counters={counters}
+            setCounters={setCounters}
           />
           <Hand
             hand={hand}
@@ -312,8 +315,17 @@ function Room() {
           position={boardMenuPosition}
           onClose={() => setBoardMenuVisible(false)}
           onAddCounter={(type) => {
-            console.log(`Add ${type} counter at`, boardMenuPosition);
-            // add your counter-placing logic here
+            setCounters((prev) => [
+              ...prev,
+              {
+                id: Date.now(),
+                x: mousePos.x,
+                y: mousePos.y,
+                count: 1,
+                type,
+              },
+            ]);
+            setBoardMenuVisible(false);
           }}
         />
       </div>

@@ -1,5 +1,3 @@
-import React, { useEffect } from "react";
-
 export default function BoardContextMenu({ visible, position, onClose, onAddCounter }) {
   if (!visible) return null;
 
