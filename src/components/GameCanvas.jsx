@@ -41,7 +41,9 @@ export default function GameCanvas({
   defaultCardBackImage,
   onStageRightClick,
   counters,
-  setCounters
+  setCounters,
+  hoveredCounterId,
+  setHoveredCounterId,
 }) {
   const viewerPosition = positions[username];
 
@@ -158,10 +160,15 @@ export default function GameCanvas({
                 prev.map((c) => (c.id === id ? { ...c, count: newCount } : c))
               );
             }}
+            hovered={hoveredCounterId === id}
             onMove={({ x, y }) => {
               setCounters((prev) =>
                 prev.map((c) => (c.id === id ? { ...c, x, y } : c))
               );
+            }}
+            onHoverChange={(hovered) => {
+              if (hovered) setHoveredCounterId(id);
+              else if (hoveredCounterId === id) setHoveredCounterId(null);
             }}
           />
         ))}

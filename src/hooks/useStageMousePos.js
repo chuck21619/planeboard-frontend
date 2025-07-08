@@ -4,10 +4,11 @@ export function useStageMousePos() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
   function onMouseMove(e) {
+    console.log("mouseMove");
     const stage = e.target.getStage();
     const pointer = stage.getPointerPosition();
     if (!pointer) return;
-
+    console.log("pointer:", pointer);
     const scale = stage.scaleX();
     const stagePos = stage.position();
 

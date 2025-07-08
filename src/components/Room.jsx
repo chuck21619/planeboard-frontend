@@ -46,6 +46,7 @@ function Room() {
   const [boardMenuPosition, setBoardMenuPosition] = useState({ x: 0, y: 0 });
   const [cardMenuCard, setCardMenuCard] = useState(null);
   const [counters, setCounters] = useState([]);
+  const [hoveredCounterId, setHoveredCounterId] = useState(null);
   const { roomId } = useParams();
   const [hasJoined, setHasJoined] = useState(false);
   const { showSpinner, minLoadingDone } = useLoadingFade(hasJoined);
@@ -178,6 +179,23 @@ function Room() {
     setCards,
   });
   useEffect(() => {
+    const handleKeyDown = (e) => {
+      console.log("counters:", counters);
+      if (e.key === "d" && hoveredCounterId != null) {
+        console.log("hovered counter id:", hoveredCounterId);
+        setCounters((prev) => prev.filter((c) => c.id !== hoveredCounterId));
+        setHoveredCounterId(null);
+      }
+    };
+    const container = stageRef.current?.getStage()?.container();
+    if (container) {
+      container.style.cursor = hoveredCounterId != null ? "pointer" : "default";
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [hoveredCounterId]);
+
+  useEffect(() => {
     if (!(draggingCard && dragSource === "deckSearch")) return;
     function handleMouseMove(e) {
       setPointerPos({ x: e.clientX, y: e.clientY });
@@ -243,6 +261,8 @@ function Room() {
             onStageRightClick={handleStageRightClick}
             counters={counters}
             setCounters={setCounters}
+            hoveredCounterId={hoveredCounterId}
+            setHoveredCounterId={setHoveredCounterId}
           />
           <Hand
             hand={hand}
@@ -315,16 +335,19 @@ function Room() {
           position={boardMenuPosition}
           onClose={() => setBoardMenuVisible(false)}
           onAddCounter={(type) => {
+            const newId = Date.now();
             setCounters((prev) => [
               ...prev,
               {
-                id: Date.now(),
+                id: newId,
                 x: mousePos.x,
                 y: mousePos.y,
                 count: 1,
                 type,
               },
             ]);
+            
+            setHoveredCounterId(newId);
             setBoardMenuVisible(false);
           }}
         />
