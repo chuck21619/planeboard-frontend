@@ -5,6 +5,7 @@ import OpponentHand from "./OpponentHand";
 import BoardBackground from "./BoardBackground";
 import { getCardRotation } from "../utils/cardOrientation";
 import Counter from "./Counter";
+import { sendMessage } from "../ws";
 
 export default function GameCanvas({
   stageRef,
@@ -149,22 +150,42 @@ export default function GameCanvas({
         })}
       </Layer>
       <Layer>
-        {counters.map(({ id, x, y, count }) => (
+        {Object.values(counters).map(({ id, x, y, count }) => (
           <Counter
             key={id}
-            x={x}
-            y={y}
+            x={isRotated ? -x-40 : x}
+            y={isRotated ? -y-40 : y}
             count={count}
-            onChange={(newCount) => {
-              setCounters((prev) =>
-                prev.map((c) => (c.id === id ? { ...c, count: newCount } : c))
-              );
-            }}
             hovered={hoveredCounterId === id}
+            onChange={(newCount) => {
+              setCounters((prev) => ({
+                ...prev,
+                [id]: {
+                  ...prev[id],
+                  count: newCount,
+                },
+              }));
+              sendMessage({
+                type: "UPDATE_COUNTER",
+                id,
+                count: newCount,
+              });
+            }}
             onMove={({ x, y }) => {
-              setCounters((prev) =>
-                prev.map((c) => (c.id === id ? { ...c, x, y } : c))
-              );
+              setCounters((prev) => ({
+                ...prev,
+                [id]: {
+                  ...prev[id],
+                  x,
+                  y,
+                },
+              }));
+              sendMessage({
+                type: "MOVE_COUNTER",
+                id,
+                x,
+                y,
+              });
             }}
             onHoverChange={(hovered) => {
               if (hovered) setHoveredCounterId(id);

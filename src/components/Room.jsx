@@ -135,7 +135,6 @@ function Room() {
   const { tapCard } = useCardTap(setCards, hasMoved);
   useRoomHandlers({
     roomId,
-    cards,
     setCards,
     setDecks,
     setHandSizes,
@@ -146,6 +145,7 @@ function Room() {
     navigate,
     setLifeTotals,
     setTurn,
+    setCounters,
   });
   const handleDeckRightClick = (clientX, clientY, deckId) => {
     rightClickHandledRef.current = true;
@@ -170,7 +170,6 @@ function Room() {
     setCardMenuVisible(false);
     setDeckMenuVisible(false);
   };
-
   useCardFlipHotkey({
     hoveredCard,
     draggingCard,
@@ -178,12 +177,17 @@ function Room() {
     setHoveredCard,
     setCards,
   });
+
   useEffect(() => {
     const handleKeyDown = (e) => {
-      console.log("counters:", counters);
       if (e.key === "d" && hoveredCounterId != null) {
-        console.log("hovered counter id:", hoveredCounterId);
-        setCounters((prev) => prev.filter((c) => c.id !== hoveredCounterId));
+        console.log("Deleting counter:", hoveredCounterId);
+        setCounters((prev) => {
+          const newCounters = { ...prev };
+          delete newCounters[hoveredCounterId];
+          return newCounters;
+        });
+        sendMessage({ type: "DELETE_COUNTER", id: hoveredCounterId });
         setHoveredCounterId(null);
       }
     };
@@ -333,19 +337,20 @@ function Room() {
           visible={boardMenuVisible}
           position={boardMenuPosition}
           onClose={() => setBoardMenuVisible(false)}
-          onAddCounter={(type) => {
-            const newId = Date.now();
-            setCounters((prev) => [
+          onAddCounter={() => {
+            const newId = Date.now().toString();
+            const newCounter = {
+              id: newId,
+              x: mousePos.x - 20,
+              y: mousePos.y - 20,
+              count: 1,
+              owner: username,
+            };
+            setCounters((prev) => ({
               ...prev,
-              {
-                id: newId,
-                x: mousePos.x-20,
-                y: mousePos.y-20,
-                count: 1,
-                type,
-              },
-            ]);
-            
+              [newCounter.id]: newCounter,
+            }));
+            sendMessage({ type: "ADD_COUNTER", counters: [newCounter] });
             setHoveredCounterId(newId);
             setBoardMenuVisible(false);
           }}

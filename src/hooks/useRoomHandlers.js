@@ -9,7 +9,6 @@ import { loadTokenData } from "../utils/loadTokenData";
 
 export function useRoomHandlers({
   roomId,
-  cards,
   setCards,
   setDecks,
   setHandSizes,
@@ -20,6 +19,7 @@ export function useRoomHandlers({
   navigate,
   setLifeTotals,
   setTurn,
+  setCounters,
 }) {
   useEffect(() => {
     const handleBeforeUnload = () => {
@@ -43,11 +43,17 @@ export function useRoomHandlers({
         setPositions(message.positions);
         setHandSizes(message.handSizes);
         setTurn(message.turn);
+        setCounters(message.counters);
       } else if (message.type === "MOVE_CARD") {
         setCards((prevCards) =>
           prevCards.map((card) =>
             card.id === message.id
-              ? { ...card, x: message.x, y: message.y, flipIndex: message.flipIndex }
+              ? {
+                  ...card,
+                  x: message.x,
+                  y: message.y,
+                  flipIndex: message.flipIndex,
+                }
               : card
           )
         );
@@ -175,6 +181,34 @@ export function useRoomHandlers({
         setDecks((prevDecks) =>
           removeCardFromDeck(prevDecks, message.player, message.id)
         );
+      } else if (message.type === "COUNTER_ADDED") {
+        setCounters((prev) => ({
+          ...prev,
+          [message.counter.id]: message.counter,
+        }));
+      } else if (message.type === "COUNTER_MOVED") {
+        setCounters((prev) => ({
+          ...prev,
+          [message.id]: {
+            ...prev[message.id],
+            x: message.x,
+            y: message.y,
+          },
+        }));
+      } else if (message.type === "COUNTER_UPDATED") {
+        setCounters((prev) => ({
+          ...prev,
+          [message.id]: {
+            ...prev[message.id],
+            count: message.count,
+          },
+        }));
+      } else if (message.type === "COUNTER_DELETED") {
+        setCounters((prev) => {
+          const copy = { ...prev };
+          delete copy[message.id];
+          return copy;
+        });
       } else if (message.type === "TURN_PASSED") {
         setTurn(message.turn);
       } else if (message.type === "USER_LEFT") {
