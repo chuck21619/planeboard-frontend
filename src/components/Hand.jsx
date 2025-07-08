@@ -15,7 +15,7 @@ export default function Hand({
     ? (totalCardWidth - maxWidth) / (hand.length - 1)
     : 0;
   function handleMouseEnter(card) {
-    setHoveredHandCard(card);
+    setHoveredHandCard({...card, flipIndex:0});
   }
   function handleMouseLeave(card) {
     setHoveredHandCard(null);

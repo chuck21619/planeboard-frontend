@@ -16,7 +16,15 @@ import DeckSearchModal from "./DeckSearchModal";
 import { sendMessage } from "../ws";
 import { remapPositions } from "../utils/playerOrientation";
 import { useCardImagePreloader } from "../hooks/useCardImagePreloader";
-import { getNextFlipIndex } from "../utils/cardUtils";
+import CardToDeckMenu from "./CardToDeckMenu";
+import CardContextMenu from "./CardContextMenu";
+import DeckContextMenu from "./DeckContextMenu";
+import DraggingCardImage from "./DraggingCardImage";
+import HoveredCardPreview from "./HoveredCardPreview";
+import PassTurnButton from "./PassTurnButton";
+import { useCardFlipHotkey } from "../hooks/useCardFlipHotkey";
+import { updateCardTokens } from "../utils/cardUtils";
+import { updateDeckTokens } from "../utils/deckUtils";
 
 function Room() {
   const [username] = useState(() => localStorage.getItem("username"));
@@ -79,26 +87,8 @@ function Room() {
     decks,
     Object.values(cards),
     (uid, tokens) => {
-      setCards((prev) =>
-        prev.map((card) => (card.uid === uid ? { ...card, tokens } : card))
-      );
-      setDecks((prev) => {
-        const updatedDecks = { ...prev };
-        for (const [deckId, deck] of Object.entries(updatedDecks)) {
-          const updatedCards = (deck.cards || []).map((card) =>
-            card.uid === uid ? { ...card, tokens } : card
-          );
-          const updatedCommanders = (deck.commanders || []).map((card) =>
-            card.uid === uid ? { ...card, tokens } : card
-          );
-          updatedDecks[deckId] = {
-            ...deck,
-            cards: updatedCards,
-            commanders: updatedCommanders,
-          };
-        }
-        return updatedDecks;
-      });
+      setCards((prev) => updateCardTokens(prev, uid, tokens));
+      setDecks((prev) => updateDeckTokens(prev, uid, tokens));
     }
   );
   function cardDraggedToDeckMenu(card, deckId, position) {
@@ -161,48 +151,18 @@ function Room() {
     setContextMenuPosition({ x: clientX - 2, y: clientY - 1 });
     setCardMenuCard(card);
   };
-
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if (event.key === "f" || event.key === "F") {
-        if (!hoveredCard) return;
-        if (draggingCard) {
-          const newFlipIndex = getNextFlipIndex(draggingCard);
-          setDraggingCard((prev) => ({ ...prev, flipIndex: newFlipIndex }));
-          setHoveredCard((prev) => ({ ...prev, flipIndex: newFlipIndex }));
-          return;
-        }
-        const cardId = hoveredCard.id;
-        setCards((prevCards) => {
-          const targetCard = prevCards.find((card) => card.id === cardId);
-          if (!targetCard) return prevCards;
-          const newFlipIndex = getNextFlipIndex(targetCard);
-          const updated = prevCards.map((card) => {
-            if (card.id === cardId) {
-              return { ...card, flipIndex: newFlipIndex };
-            }
-            return card;
-          });
-          sendMessage({
-            type: "FLIP_CARD",
-            id: cardId,
-            flipIndex: newFlipIndex,
-          });
-          setHoveredCard((prev) => ({ ...prev, flipIndex: newFlipIndex }));
-          return updated;
-        });
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [hoveredCard, draggingCard]);
+  useCardFlipHotkey({
+    hoveredCard,
+    draggingCard,
+    setDraggingCard,
+    setHoveredCard,
+    setCards,
+  });
 
   useEffect(() => {
     function handleMouseMove(e) {
       setPointerPos({ x: e.clientX, y: e.clientY });
     }
-
     if (draggingCard && dragSource === "deckSearch") {
       window.addEventListener("mousemove", handleMouseMove);
       return () => window.removeEventListener("mousemove", handleMouseMove);
@@ -271,27 +231,12 @@ function Room() {
             getCardMouseDownHandler={getCardMouseDownHandler}
           />
           {turn === username && (
-            <div
+            <PassTurnButton
               onClick={() => {
-                setTurn(""); //disables button
+                setTurn("");
                 sendMessage({ type: "PASS_TURN" });
               }}
-              style={{
-                position: "absolute",
-                bottom: "20px",
-                right: "20px",
-                backgroundColor: "#333",
-                color: "white",
-                padding: "10px 16px",
-                borderRadius: "8px",
-                cursor: "pointer",
-                userSelect: "none",
-                fontWeight: "bold",
-                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.2)",
-              }}
-            >
-              Pass Turn
-            </div>
+            />
           )}
         </div>
         {searchModalVisible && (
@@ -304,292 +249,47 @@ function Room() {
             draggingCard={draggingCard}
           />
         )}
-        {draggingCard && dragSource === "deckSearch" && hasMoved && (
-          <img
-            src={
-              draggingCard.flipIndex === 0
-                ? draggingCard.imageUrl
-                : draggingCard.flipIndex === 1
-                ? draggingCard.numFaces === 2
-                  ? "/defaultCardBack.jpg"
-                  : draggingCard.imageUrlBack
-                : "/defaultCardBack.jpg"
-            }
-            alt={draggingCard.name}
-            style={{
-              position: "fixed",
-              pointerEvents: "none",
-              top: pointerPos.y - 45,
-              left: pointerPos.x - 32,
-              width: 64,
-              borderRadius: 8,
-              zIndex: 11000,
-              opacity: 0.8,
-              userSelect: "none",
-            }}
-          />
-        )}
-        <div className={`hover-preview ${hoveredCard ? "" : "hidden"}`}>
-          {hoveredCard && (
-            <>
-              <img
-                src={
-                  hoveredCard.flipIndex === 0
-                    ? hoveredCard.imageUrl
-                    : hoveredCard.flipIndex === 1
-                    ? hoveredCard.numFaces === 2
-                      ? "/defaultCardBack.jpg"
-                      : hoveredCard.imageUrlBack
-                    : "/defaultCardBack.jpg"
-                }
-              />
-            </>
-          )}
-        </div>
-        {deckMenuVisible && (
-          <div
-            style={{
-              position: "absolute",
-              top: contextMenuPosition.y,
-              left: contextMenuPosition.x,
-              backgroundColor: "black",
-              border: "1px solid #ccc",
-              padding: "6px",
-              zIndex: 9999,
-            }}
-            onMouseLeave={() => setDeckMenuVisible(false)}
-          >
-            <div
-              style={{ cursor: "pointer" }}
-              onClick={() => {
-                console.log("Search clicked for deck", menuDeckId);
-                setDeckMenuVisible(false);
-                setSearchDeckId(menuDeckId);
-                setSearchModalVisible(true);
-              }}
-            >
-              🔍 Search
-            </div>
-          </div>
-        )}
-        {cardMenuVisible && cardMenuCard && (
-          <div
-            style={{
-              position: "absolute",
-              top: contextMenuPosition.y,
-              left: contextMenuPosition.x,
-              backgroundColor: "black",
-              border: "1px solid #ccc",
-              padding: "6px",
-              zIndex: 9999,
-              minWidth: "120px",
-            }}
-            onMouseLeave={() => setCardMenuVisible(false)}
-          >
-            {/* Placeholder item */}
-            <div
-              style={{ cursor: "pointer", padding: "4px 8px" }}
-              onClick={() => {
-                console.log("Test clicked");
-                setCardMenuVisible(false);
-              }}
-            >
-              🧪 Test
-            </div>
-
-            {/* Token entries, if available */}
-            {cardMenuCard.tokens?.length > 0 &&
-              cardMenuCard.tokens.map((token) => (
-                <div
-                  key={token.id}
-                  style={{
-                    cursor: "pointer",
-                    padding: "4px 8px",
-                    whiteSpace: "nowrap",
-                  }}
-                  onClick={(e) => {
-                    console.log("Spawn token clicked:", token);
-                    setCardMenuVisible(false);
-                    const rect = canvasRef.current?.getBoundingClientRect();
-                    const canvasX = e.clientX - rect.left;
-                    const canvasY = e.clientY - rect.top;
-                    const worldX =
-                      canvasX / stageScale - stagePosition.x / stageScale;
-                    const worldY =
-                      canvasY / stageScale - stagePosition.y / stageScale;
-                    var x = worldX - 64 / 2;
-                    var y = worldY - 89 / 2;
-                    if (isRotated) {
-                      x = -x - 64;
-                      y = -y - 89;
-                    }
-                    const uniqueID = `${token.id}-${Math.random()
-                      .toString(36)
-                      .substring(2, 6)}`;
-                    const newToken = {
-                      id: uniqueID,
-                      name: token.name,
-                      imageUrl: token.imageUrl,
-                      x: x,
-                      y: y,
-                      owner: localStorage.getItem("username"),
-                      tapped: false,
-                    };
-                    setCards((prev) => [...prev, newToken]);
-                    setHoveredCard(newToken);
-                    sendMessage({
-                      type: "SPAWN_TOKEN",
-                      card: newToken,
-                    });
-                  }}
-                >
-                  ➕ {token.name}
-                </div>
-              ))}
-          </div>
-        )}
-        {cardDraggedToDeckMenuVisible && cardDraggedToDeck && (
-          <div
-            style={{
-              position: "absolute",
-              top: cardDraggedToDeckMenuPosition.y - 1,
-              left: cardDraggedToDeckMenuPosition.x - 2,
-              backgroundColor: "black",
-              border: "1px solid #ccc",
-              padding: "6px",
-              zIndex: 9999,
-              minWidth: "160px",
-            }}
-            onMouseLeave={() => setCardDraggedToDeckMenuVisible(false)}
-          >
-            <div
-              style={{ cursor: "pointer", padding: "4px 8px" }}
-              onClick={() => {
-                console.log("Return to top of deck:", cardDraggedToDeck);
-                setDecks((prev) => {
-                  const newDecks = { ...prev };
-                  const targetDeck = [
-                    ...(newDecks[cardDraggedToDeckMenuDeckId]?.cards || []),
-                  ];
-                  newDecks[cardDraggedToDeckMenuDeckId].cards = [
-                    cardDraggedToDeck,
-                    ...targetDeck,
-                  ];
-                  return newDecks;
-                });
-                console.log(hand);
-                setHand((prev) =>
-                  prev.filter((c) => c.id !== cardDraggedToDeck.id)
-                );
-                if (dragSource === "board") {
-                  setCards((prev) =>
-                    prev.filter((c) => c.id !== cardDraggedToDeck.id)
-                  );
-                }
-                sendMessage({
-                  type: "CARD_TO_TOP_OF_DECK",
-                  username: cardDraggedToDeckMenuDeckId,
-                  source: dragSource,
-                  card: {
-                    id: cardDraggedToDeck.id,
-                    name: cardDraggedToDeck.name,
-                    imageUrl: cardDraggedToDeck.imageUrl,
-                    imageUrlBack: cardDraggedToDeck.imageUrlBack,
-                    uid: cardDraggedToDeck.uid,
-                    hasTokens: cardDraggedToDeck.hasTokens,
-                    numFaces: cardDraggedToDeck.numFaces,
-                    x: 0,
-                    y: 0,
-                    tapped: false,
-                    flipIndex: 0,
-                  },
-                });
-                setCardDraggedToDeckMenuVisible(false);
-              }}
-            >
-              ⬆️ Top of Deck
-            </div>
-            <div
-              style={{ cursor: "pointer", padding: "4px 8px" }}
-              onClick={() => {
-                setHand((prev) =>
-                  prev.filter((c) => c.id !== cardDraggedToDeck.id)
-                );
-                if (dragSource === "board") {
-                  setCards((prev) =>
-                    prev.filter((c) => c.id !== cardDraggedToDeck.id)
-                  );
-                }
-                sendMessage({
-                  type: "CARD_TO_SHUFFLE_IN_DECK",
-                  username: cardDraggedToDeckMenuDeckId,
-                  source: dragSource,
-                  card: {
-                    id: cardDraggedToDeck.id,
-                    name: cardDraggedToDeck.name,
-                    imageUrl: cardDraggedToDeck.imageUrl,
-                    imageUrlBack: cardDraggedToDeck.imageUrlBack,
-                    uid: cardDraggedToDeck.uid,
-                    hasTokens: cardDraggedToDeck.hasTokens,
-                    numFaces: cardDraggedToDeck.numFaces,
-                    x: 0,
-                    y: 0,
-                    tapped: false,
-                    flipIndex: 0,
-                  },
-                });
-                setCardDraggedToDeckMenuVisible(false);
-              }}
-            >
-              🔀 Shuffle Into Deck
-            </div>
-            <div
-              style={{ cursor: "pointer", padding: "4px 8px" }}
-              onClick={() => {
-                setDecks((prev) => {
-                  const newDecks = { ...prev };
-                  const targetDeck = [
-                    ...(newDecks[cardDraggedToDeckMenuDeckId]?.cards || []),
-                  ];
-                  newDecks[cardDraggedToDeckMenuDeckId].cards = [
-                    ...targetDeck,
-                    cardDraggedToDeck,
-                  ];
-                  return newDecks;
-                });
-                setHand((prev) =>
-                  prev.filter((c) => c.id !== cardDraggedToDeck.id)
-                );
-                if (dragSource === "board") {
-                  setCards((prev) =>
-                    prev.filter((c) => c.id !== cardDraggedToDeck.id)
-                  );
-                }
-                sendMessage({
-                  type: "CARD_TO_BOTTOM_OF_DECK",
-                  username: cardDraggedToDeckMenuDeckId,
-                  source: dragSource,
-                  card: {
-                    id: cardDraggedToDeck.id,
-                    name: cardDraggedToDeck.name,
-                    imageUrl: cardDraggedToDeck.imageUrl,
-                    imageUrlBack: cardDraggedToDeck.imageUrlBack,
-                    uid: cardDraggedToDeck.uid,
-                    hasTokens: cardDraggedToDeck.hasTokens,
-                    numFaces: cardDraggedToDeck.numFaces,
-                    x: 0,
-                    y: 0,
-                    tapped: false,
-                    flipIndex: 0,
-                  },
-                });
-                setCardDraggedToDeckMenuVisible(false);
-              }}
-            >
-              ⬇️ Bottom of Deck
-            </div>
-          </div>
-        )}
+        <DraggingCardImage
+          draggingCard={draggingCard}
+          dragSource={dragSource}
+          hasMoved={hasMoved}
+          pointerPos={pointerPos}
+        />
+        <HoveredCardPreview hoveredCard={hoveredCard} />
+        <DeckContextMenu
+          visible={deckMenuVisible}
+          position={contextMenuPosition}
+          deckId={menuDeckId}
+          onClose={() => setDeckMenuVisible(false)}
+          onSearch={(deckId) => {
+            console.log("Search clicked for deck", deckId);
+            setSearchDeckId(deckId);
+            setSearchModalVisible(true);
+          }}
+        />
+        <CardContextMenu
+          visible={cardMenuVisible}
+          card={cardMenuCard}
+          position={contextMenuPosition}
+          canvasRef={canvasRef}
+          stageScale={stageScale}
+          stagePosition={stagePosition}
+          isRotated={isRotated}
+          setCards={setCards}
+          setHoveredCard={setHoveredCard}
+          onClose={() => setCardMenuVisible(false)}
+        />
+        <CardToDeckMenu
+          visible={cardDraggedToDeckMenuVisible}
+          card={cardDraggedToDeck}
+          deckId={cardDraggedToDeckMenuDeckId}
+          position={cardDraggedToDeckMenuPosition}
+          dragSource={dragSource}
+          setCards={setCards}
+          setHand={setHand}
+          setDecks={setDecks}
+          onClose={() => setCardDraggedToDeckMenuVisible(false)}
+        />
       </div>
     </div>
   );
