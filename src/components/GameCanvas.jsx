@@ -38,6 +38,7 @@ export default function GameCanvas({
   isRotated,
   turn,
   defaultCardBackImage,
+  onStageRightClick,
 }) {
   const viewerPosition = positions[username];
 
@@ -56,6 +57,13 @@ export default function GameCanvas({
       onMouseDown={onMouseDown}
       onMouseUp={onMouseUp}
       onMouseMove={onMouseMove}
+      onContextMenu={(e) => {
+        console.log("TESTSET");
+        e.evt.preventDefault();
+        if (typeof onStageRightClick === "function") {
+          onStageRightClick(e);
+        }
+      }}
     >
       <Layer>
         <BoardBackground

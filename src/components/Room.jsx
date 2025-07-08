@@ -25,12 +25,14 @@ import PassTurnButton from "./PassTurnButton";
 import { useCardFlipHotkey } from "../hooks/useCardFlipHotkey";
 import { updateCardTokens } from "../utils/cardUtils";
 import { updateDeckTokens } from "../utils/deckUtils";
+import BoardContextMenu from "./BoardContextMenu";
 
 function Room() {
   const [username] = useState(() => localStorage.getItem("username"));
   const navigate = useNavigate();
   const stageRef = useRef();
   const [lifeTotals, setLifeTotals] = useState({});
+  const rightClickHandledRef = useRef(false);
   const [deckMenuVisible, setDeckMenuVisible] = useState(false);
   const [cardMenuVisible, setCardMenuVisible] = useState(false);
   const [contextMenuPosition, setContextMenuPosition] = useState({
@@ -40,6 +42,8 @@ function Room() {
   const [searchModalVisible, setSearchModalVisible] = useState(false);
   const [searchDeckId, setSearchDeckId] = useState(null);
   const [menuDeckId, setMenuDeckId] = useState(null);
+  const [boardMenuVisible, setBoardMenuVisible] = useState(false);
+  const [boardMenuPosition, setBoardMenuPosition] = useState({ x: 0, y: 0 });
   const [cardMenuCard, setCardMenuCard] = useState(null);
   const { roomId } = useParams();
   const [hasJoined, setHasJoined] = useState(false);
@@ -142,15 +146,29 @@ function Room() {
     setTurn,
   });
   const handleDeckRightClick = (clientX, clientY, deckId) => {
+    rightClickHandledRef.current = true;
     setDeckMenuVisible(true);
     setContextMenuPosition({ x: clientX - 2, y: clientY - 1 });
     setMenuDeckId(deckId);
   };
   const handleCardRightCLick = (clientX, clientY, card) => {
+    rightClickHandledRef.current = true;
     setCardMenuVisible(true);
     setContextMenuPosition({ x: clientX - 2, y: clientY - 1 });
     setCardMenuCard(card);
   };
+  const handleStageRightClick = (e) => {
+    if (rightClickHandledRef.current) {
+      rightClickHandledRef.current = false;
+      return;
+    }
+    e.evt.preventDefault();
+    setBoardMenuPosition({ x: e.evt.clientX - 2, y: e.evt.clientY - 1});
+    setBoardMenuVisible(true);
+    setCardMenuVisible(false);
+    setDeckMenuVisible(false);
+  };
+
   useCardFlipHotkey({
     hoveredCard,
     draggingCard,
@@ -158,7 +176,6 @@ function Room() {
     setHoveredCard,
     setCards,
   });
-
   useEffect(() => {
     if (!(draggingCard && dragSource === "deckSearch")) return;
     function handleMouseMove(e) {
@@ -222,6 +239,7 @@ function Room() {
             isRotated={isRotated}
             turn={turn}
             defaultCardBackImage={cardBackImage}
+            onStageRightClick={handleStageRightClick}
           />
           <Hand
             hand={hand}
@@ -288,6 +306,15 @@ function Room() {
           setHand={setHand}
           setDecks={setDecks}
           onClose={() => setCardDraggedToDeckMenuVisible(false)}
+        />
+        <BoardContextMenu
+          visible={boardMenuVisible}
+          position={boardMenuPosition}
+          onClose={() => setBoardMenuVisible(false)}
+          onAddCounter={(type) => {
+            console.log(`Add ${type} counter at`, boardMenuPosition);
+            // add your counter-placing logic here
+          }}
         />
       </div>
     </div>
