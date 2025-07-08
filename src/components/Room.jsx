@@ -160,13 +160,12 @@ function Room() {
   });
 
   useEffect(() => {
+    if (!(draggingCard && dragSource === "deckSearch")) return;
     function handleMouseMove(e) {
       setPointerPos({ x: e.clientX, y: e.clientY });
     }
-    if (draggingCard && dragSource === "deckSearch") {
-      window.addEventListener("mousemove", handleMouseMove);
-      return () => window.removeEventListener("mousemove", handleMouseMove);
-    }
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [draggingCard, dragSource]);
 
   return (

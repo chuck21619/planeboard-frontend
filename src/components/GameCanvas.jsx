@@ -4,7 +4,6 @@ import Deck from "./Deck";
 import OpponentHand from "./OpponentHand";
 import BoardBackground from "./BoardBackground";
 import { getCardRotation } from "../utils/cardOrientation";
-import { remapPositions } from "../utils/playerOrientation";
 
 export default function GameCanvas({
   stageRef,
