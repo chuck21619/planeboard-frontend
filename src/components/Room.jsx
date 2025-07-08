@@ -67,7 +67,7 @@ function Room() {
   }, [username, positions]);
   const [stageScale, setStageScale] = useState(1);
   const [stagePosition, setStagePosition] = useState({ x: 0, y: 0 });
-  const [mousePos, stageMouseMove] = useStageMousePos();
+  const mousePos = useStageMousePos(stageRef);
   const [pointerPos, setPointerPos] = useState({ x: 0, y: 0 });
   const [cardDraggedToDeckMenuVisible, setCardDraggedToDeckMenuVisible] =
     useState(false);
@@ -231,7 +231,6 @@ function Room() {
             onMouseUp={dragMouseUp}
             onMouseMove={(e) => {
               dragMouseMove(e);
-              stageMouseMove(e);
             }}
             cards={cards}
             decks={decks}
@@ -340,8 +339,8 @@ function Room() {
               ...prev,
               {
                 id: newId,
-                x: mousePos.x,
-                y: mousePos.y,
+                x: mousePos.x-20,
+                y: mousePos.y-20,
                 count: 1,
                 type,
               },

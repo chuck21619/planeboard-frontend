@@ -1,22 +1,26 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-export function useStageMousePos() {
+export function useStageMousePos(stageRef) {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
-  function onMouseMove(e) {
-    console.log("mouseMove");
-    const stage = e.target.getStage();
-    const pointer = stage.getPointerPosition();
-    if (!pointer) return;
-    console.log("pointer:", pointer);
-    const scale = stage.scaleX();
-    const stagePos = stage.position();
+  useEffect(() => {
+    function handleMouseMove(e) {
+      const stage = stageRef?.current?.getStage?.();
+      if (!stage) return;
 
-    const x = (pointer.x - stagePos.x) / scale;
-    const y = (pointer.y - stagePos.y) / scale;
+      const scale = stage.scaleX();
+      const stagePos = stage.position();
+      const boundingRect = stage.container().getBoundingClientRect();
 
-    setMousePos({ x, y });
-  }
+      const x = (e.clientX - boundingRect.left - stagePos.x) / scale;
+      const y = (e.clientY - boundingRect.top - stagePos.y) / scale;
 
-  return [mousePos, onMouseMove];
+      setMousePos({ x, y });
+    }
+
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, [stageRef]);
+
+  return mousePos;
 }
