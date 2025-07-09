@@ -4,16 +4,21 @@ export default function DeckCardViewer({
   deckId,
   decks,
   onClose,
-  setDeckCardViewerCard,
+  setHoveredDeckCardViewerCard,
   getCardMouseDownHandler,
   draggingCard,
+  subset = "all", // "all" | "bottom" | "top"
+  peekCards = [],
 }) {
   const [query, setQuery] = useState("");
-  const deck = decks[deckId];
-  const cards = deck?.cards || [];
-  const filteredCards = cards.filter((card) =>
-    card.name.toLowerCase().includes(query.toLowerCase())
-  );
+  const cards = decks[deckId]?.cards || [];
+  const filteredCards =
+    peekCards.length > 0
+      ? peekCards
+      : cards.filter((card) =>
+          card.name.toLowerCase().includes(query.toLowerCase())
+        );
+
   return (
     <div
       className="deck-card-viewer"
@@ -35,17 +40,25 @@ export default function DeckCardViewer({
       <button onClick={onClose} style={{ float: "right" }}>
         ✖
       </button>
-      <h3>Search Deck</h3>
+      <h3>
+        {subset === "bottom"
+          ? `Peek Bottom`
+          : subset === "top"
+          ? `View Top`
+          : "Search Deck"}
+      </h3>
 
-      <input
-        autoFocus
-        type="text"
-        placeholder="Search cards..."
-        value={query}
-        disabled={!!draggingCard}
-        onChange={(e) => setQuery(e.target.value)}
-        style={{ width: "100%", marginBottom: "8px", padding: "6px" }}
-      />
+      {subset === "all" && (
+        <input
+          autoFocus
+          type="text"
+          placeholder="Search cards..."
+          value={query}
+          disabled={!!draggingCard}
+          onChange={(e) => setQuery(e.target.value)}
+          style={{ width: "100%", marginBottom: "8px", padding: "6px" }}
+        />
+      )}
 
       <div
         style={{
@@ -68,8 +81,10 @@ export default function DeckCardViewer({
               objectFit: "contain",
             }}
             onMouseDown={getCardMouseDownHandler(card, "deckCardViewer", 0)}
-            onMouseEnter={() => setDeckCardViewerCard({ ...card, flipIndex: 0 })}
-            onMouseLeave={() => setDeckCardViewerCard(null)}
+            onMouseEnter={() =>
+              setHoveredDeckCardViewerCard({ ...card, flipIndex: 0 })
+            }
+            onMouseLeave={() => setHoveredDeckCardViewerCard(null)}
           />
         ))}
       </div>

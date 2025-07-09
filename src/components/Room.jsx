@@ -46,7 +46,7 @@ function Room() {
   const [menuDeckId, setMenuDeckId] = useState(null);
   const [scryData, setScryData] = useState(null); // { deckId, count }
   const [surveilData, setSurveilData] = useState(null); // { deckId, count }
-  const [peekBottomData, setPeekBottomData] = useState(null); // { deckId, count }
+  const [peekCards, setPeekCards] = useState([]);
   const [boardMenuVisible, setBoardMenuVisible] = useState(false);
   const [boardMenuPosition, setBoardMenuPosition] = useState({ x: 0, y: 0 });
   const [cardMenuCard, setCardMenuCard] = useState(null);
@@ -61,7 +61,8 @@ function Room() {
   const [draggingCard, setDraggingCard] = useState(null);
   const [dragSource, setDragSource] = useState(null);
   const [hoveredHandCard, setHoveredHandCard] = useState(null);
-  const [hoveredDeckCardViewerCard, setHoveredDeckCardViewerCard] = useState(null);
+  const [hoveredDeckCardViewerCard, setHoveredDeckCardViewerCard] =
+    useState(null);
   const [dragPos, setDragPos] = useState({ x: 0, y: 0 });
   const canvasRef = useRef(null);
   const [turn, setTurn] = useState("");
@@ -138,6 +139,7 @@ function Room() {
     deckCardViewerDeckId,
     isRotated,
     cardDraggedToDeckMenu,
+    setPeekCards,
   });
   const { tapCard } = useCardTap(setCards, hasMoved);
   useRoomHandlers({
@@ -299,6 +301,19 @@ function Room() {
             draggingCard={draggingCard}
           />
         )}
+        {peekCards.length > 0 && (
+          <DeckCardViewer
+            deckId={deckCardViewerDeckId}
+            decks={decks}
+            onClose={() => setPeekCards([])}
+            setHoveredDeckCardViewerCard={setHoveredDeckCardViewerCard}
+            getCardMouseDownHandler={getCardMouseDownHandler}
+            draggingCard={draggingCard}
+            subset="bottom"
+            peekCards={peekCards}
+          />
+        )}
+
         <DraggingCardImage
           draggingCard={draggingCard}
           dragSource={dragSource}
@@ -310,6 +325,7 @@ function Room() {
           visible={deckMenuVisible}
           position={contextMenuPosition}
           deckId={menuDeckId}
+          decks={decks}
           onClose={() => setDeckMenuVisible(false)}
           onSearch={(deckId) => {
             console.log("Search clicked for deck", deckId);
@@ -318,7 +334,7 @@ function Room() {
           }}
           setScryData={setScryData}
           setSurveilData={setSurveilData}
-          setPeekBottomData={setPeekBottomData}
+          setPeekCards={setPeekCards}
         />
         <CardContextMenu
           visible={cardMenuVisible}

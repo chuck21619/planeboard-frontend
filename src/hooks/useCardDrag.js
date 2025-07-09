@@ -23,6 +23,7 @@ export function useCardDrag({
   deckCardViewerDeckId,
   isRotated,
   cardDraggedToDeckMenu,
+  setPeekCards,
 }) {
   const onMouseMove = useCallback((e) => {
     // Intentionally empty — mousemove handled globally on window
@@ -70,10 +71,10 @@ export function useCardDrag({
           let offsetY = 0;
           const pendingCard = pendingDragRef.current?.card;
           if (pendingCard?.x != null) {
-            offsetX = isRotated ? (x + pendingCard.x)+64 : (x - pendingCard.x);
+            offsetX = isRotated ? x + pendingCard.x + 64 : x - pendingCard.x;
           }
           if (pendingCard?.y != null) {
-            offsetY = isRotated ? (y + pendingCard.y)+89 : (y - pendingCard.y);
+            offsetY = isRotated ? y + pendingCard.y + 89 : y - pendingCard.y;
           }
           dragOffsetRef.current = {
             x: offsetX,
@@ -218,13 +219,17 @@ export function useCardDrag({
           };
 
           setCards((prev) => [...prev, playedCard]);
-
           sendMessage({
             type: "CARD_PLAYED_FROM_LIBRARY",
             card: playedCard,
             username: deckCardViewerDeckId,
           });
         }
+        setPeekCards((prev) => {
+          if (!prev) return [];
+          const updated = prev.filter((c) => c.id !== card.id);
+          return updated.length > 0 ? updated : [];
+        });
         setDecks((prevDecks) =>
           removeCardFromDeck(prevDecks, deckCardViewerDeckId, card.id)
         );

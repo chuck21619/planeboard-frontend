@@ -4,11 +4,12 @@ export default function DeckContextMenu({
   visible,
   position,
   deckId,
+  decks,
   onClose,
   onSearch,
   setScryData,
   setSurveilData,
-  setPeekBottomData,
+  setPeekCards,
 }) {
   const [scryCount, setScryCount] = useState(1);
   const [surveilCount, setSurveilCount] = useState(1);
@@ -147,7 +148,7 @@ export default function DeckContextMenu({
           </button>
         </div>
       </div>
-      
+
       {/* Peek Bottom Menu Item */}
       <div
         style={{
@@ -158,7 +159,7 @@ export default function DeckContextMenu({
           cursor: "pointer",
         }}
         onClick={() => {
-          setPeekBottomData({ deckId, count: peekBottomCount });
+          setPeekCards(decks[deckId].cards.slice(-peekBottomCount));
           onClose();
         }}
       >
