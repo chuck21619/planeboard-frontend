@@ -26,6 +26,8 @@ import { useCardFlipHotkey } from "../hooks/useCardFlipHotkey";
 import { updateCardTokens } from "../utils/cardUtils";
 import { updateDeckTokens } from "../utils/deckUtils";
 import BoardContextMenu from "./BoardContextMenu";
+import ScryModal from "./ScryModal";
+import SurveilModal from "./SurveilModal";
 
 function Room() {
   const [username] = useState(() => localStorage.getItem("username"));
@@ -42,6 +44,8 @@ function Room() {
   const [searchModalVisible, setSearchModalVisible] = useState(false);
   const [searchDeckId, setSearchDeckId] = useState(null);
   const [menuDeckId, setMenuDeckId] = useState(null);
+  const [scryData, setScryData] = useState(null); // { deckId, count }
+  const [surveilData, setSurveilData] = useState(null); // { deckId, count }
   const [boardMenuVisible, setBoardMenuVisible] = useState(false);
   const [boardMenuPosition, setBoardMenuPosition] = useState({ x: 0, y: 0 });
   const [cardMenuCard, setCardMenuCard] = useState(null);
@@ -309,6 +313,8 @@ function Room() {
             setSearchDeckId(deckId);
             setSearchModalVisible(true);
           }}
+          setScryData={setScryData}
+          setSurveilData={setSurveilData}
         />
         <CardContextMenu
           visible={cardMenuVisible}
@@ -355,6 +361,20 @@ function Room() {
             setBoardMenuVisible(false);
           }}
         />
+        {scryData && (
+          <ScryModal
+            deckId={scryData.deckId}
+            count={scryData.count}
+            onClose={() => setScryData(null)}
+          />
+        )}
+        {surveilData && (
+          <SurveilModal
+            deckId={surveilData.deckId}
+            count={surveilData.count}
+            onClose={() => setSurveilData(null)}
+          />
+        )}
       </div>
     </div>
   );

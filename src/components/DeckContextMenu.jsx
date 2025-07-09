@@ -6,8 +6,8 @@ export default function DeckContextMenu({
   deckId,
   onClose,
   onSearch,
-  onScry, // function to call when user clicks Scry
-  onSurveil, // function to call when user clicks Surveil
+  setScryData,
+  setSurveilData,
 }) {
   const [scryCount, setScryCount] = useState(1);
   const [surveilCount, setSurveilCount] = useState(1);
@@ -62,7 +62,7 @@ export default function DeckContextMenu({
         }}
         onClick={() => {
           console.log("scry:", scryCount);
-          if (onScry) onScry(scryCount);
+          setScryData({deckId, scryCount});
           onClose();
         }}
       >
@@ -111,7 +111,7 @@ export default function DeckContextMenu({
         }}
         onClick={() => {
           console.log("surveil:", surveilCount);
-          if (onSurveil) onSurveil(surveilCount);
+          setSurveilData({deckId, scryCount});
           onClose();
         }}
       >
