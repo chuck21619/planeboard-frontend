@@ -24,6 +24,7 @@ export function useHoveredCard(
   cards,
   draggingCard,
   hoveredHandCard,
+  hoveredSearchCard,
   isRotated
 ) {
   const [hoveredCard, setHoveredCard] = useState(null);
@@ -42,6 +43,8 @@ export function useHoveredCard(
       newHovered = draggingCard;
     } else if (hoveredHandCard) {
       newHovered = hoveredHandCard;
+    } else if (hoveredSearchCard) {
+      newHovered = hoveredSearchCard;
     } else {
       var x = mousePos.x;
       var y = mousePos.y;
@@ -64,7 +67,7 @@ export function useHoveredCard(
     if (newHovered?.id === lastCardId.current) return;
     lastCardId.current = newHovered?.id || null;
     setHoveredCard(newHovered);
-  }, [mousePos, cards, draggingCard, hoveredHandCard, isRotated]);
+  }, [mousePos, cards, draggingCard, hoveredSearchCard, hoveredHandCard, isRotated]);
 
   return { hoveredCard, setHoveredCard, ignoreNextChange };
 }

@@ -181,6 +181,11 @@ export function useRoomHandlers({
         setDecks((prevDecks) =>
           removeCardFromDeck(prevDecks, message.player, message.id)
         );
+      } else if (message.type === "PLAYER_SCRYED") {
+        setDecks((prevDecks) => ({
+          ...prevDecks,
+          [message.deck.id]: message.deck,
+        }));
       } else if (message.type === "COUNTER_ADDED") {
         setCounters((prev) => ({
           ...prev,

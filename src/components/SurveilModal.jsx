@@ -1,4 +1,4 @@
-export default function SurveilModal({ deckId, count, onClose }) {
+export default function SurveilModal({ deck, count, onClose }) {
   //const [query, setQuery] = useState("");
   return (
     <div
@@ -6,12 +6,12 @@ export default function SurveilModal({ deckId, count, onClose }) {
         position: "absolute",
         top: 100,
         left: 100,
-        background: "white",
+        background: "black",
         padding: 20,
       }}
     >
       <h3>
-        Surveil {count} from {deckId}
+        Surveil {count} from {deck.id}
       </h3>
       <button onClick={onClose}>Close</button>
     </div>

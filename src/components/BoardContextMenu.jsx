@@ -22,16 +22,7 @@ export default function BoardContextMenu({ visible, position, onClose, onAddCoun
           onClose();
         }}
       >
-        ➕ +1/+1 Counter
-      </div>
-      <div
-        style={{ cursor: "pointer" }}
-        onClick={() => {
-          onAddCounter("Loyalty");
-          onClose();
-        }}
-      >
-        🌀 Loyalty Counter
+        ➕ Add Counter
       </div>
     </div>
   );

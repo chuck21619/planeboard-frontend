@@ -62,7 +62,7 @@ export default function DeckContextMenu({
         }}
         onClick={() => {
           console.log("scry:", scryCount);
-          setScryData({deckId, scryCount});
+          setScryData({deckId, count: scryCount});
           onClose();
         }}
       >

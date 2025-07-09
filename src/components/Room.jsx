@@ -60,6 +60,7 @@ function Room() {
   const [draggingCard, setDraggingCard] = useState(null);
   const [dragSource, setDragSource] = useState(null);
   const [hoveredHandCard, setHoveredHandCard] = useState(null);
+  const [hoveredSearchCard, setHoveredSearchCard] = useState(null);
   const [dragPos, setDragPos] = useState({ x: 0, y: 0 });
   const canvasRef = useRef(null);
   const [turn, setTurn] = useState("");
@@ -85,6 +86,7 @@ function Room() {
     cards,
     draggingCard,
     hoveredHandCard,
+    hoveredSearchCard,
     isRotated
   );
   const { handleWheel, handleDragEnd } = useStageEvents(
@@ -154,7 +156,7 @@ function Room() {
   const handleDeckRightClick = (clientX, clientY, deckId) => {
     rightClickHandledRef.current = true;
     setDeckMenuVisible(true);
-    setContextMenuPosition({ x: clientX - 2, y: clientY - 1 });
+    setContextMenuPosition({ x: clientX - 2, y: clientY - 113 });
     setMenuDeckId(deckId);
   };
   const handleCardRightCLick = (clientX, clientY, card) => {
@@ -291,7 +293,7 @@ function Room() {
             deckId={searchDeckId}
             decks={decks}
             onClose={() => setSearchModalVisible(false)}
-            setHoveredCard={setHoveredCard}
+            setHoveredSearchCard={setHoveredSearchCard}
             getCardMouseDownHandler={getCardMouseDownHandler}
             draggingCard={draggingCard}
           />
@@ -363,14 +365,16 @@ function Room() {
         />
         {scryData && (
           <ScryModal
-            deckId={scryData.deckId}
+            deck={decks[scryData.deckId]}
             count={scryData.count}
             onClose={() => setScryData(null)}
+            setDecks={setDecks}
+            setHoveredSearchCard={setHoveredSearchCard}
           />
         )}
         {surveilData && (
           <SurveilModal
-            deckId={surveilData.deckId}
+            deck={decks[surveilData.deckId]}
             count={surveilData.count}
             onClose={() => setSurveilData(null)}
           />

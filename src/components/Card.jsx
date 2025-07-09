@@ -59,7 +59,7 @@ export default function Card({
     return <KonvaImage image={displayedImage} {...commonProps} />;
   } else {
     return (
-      <Rect fill="white" stroke="black" strokeWidth={2} {...commonProps} />
+      <Rect fill="grey" stroke="black" strokeWidth={2} {...commonProps} />
     );
   }
 }
