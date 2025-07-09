@@ -66,15 +66,18 @@ export function useCardDrag({
       if (!hasMoved) {
         setHasMoved(true);
         if (pendingDragRef.current) {
+          let offsetX = 0;
+          let offsetY = 0;
+          const pendingCard = pendingDragRef.current?.card;
+          if (pendingCard?.x != null) {
+            offsetX = isRotated ? (x + pendingCard.x)+64 : (x - pendingCard.x);
+          }
+          if (pendingCard?.y != null) {
+            offsetY = isRotated ? (y + pendingCard.y)+89 : (y - pendingCard.y);
+          }
           dragOffsetRef.current = {
-            x:
-              pendingDragRef.current?.card?.x != null
-                ? x - pendingDragRef.current.card.x
-                : 0,
-            y:
-              pendingDragRef.current?.card?.y != null
-                ? y - pendingDragRef.current.card.y
-                : 0,
+            x: offsetX,
+            y: offsetY,
           };
           const { card, source, rotation } = pendingDragRef.current;
           pendingDragRef.current = null;

@@ -186,6 +186,12 @@ export function useRoomHandlers({
           ...prevDecks,
           [message.deck.id]: message.deck,
         }));
+      } else if (message.type === "PLAYER_SURVEILED") {
+        setDecks((prevDecks) => ({
+          ...prevDecks,
+          [message.deck.id]: message.deck,
+        }));
+        setCards((prevCards) => [...prevCards, ...message.toGraveyard]);
       } else if (message.type === "COUNTER_ADDED") {
         setCounters((prev) => ({
           ...prev,

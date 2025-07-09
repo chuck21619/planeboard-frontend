@@ -377,6 +377,10 @@ function Room() {
             deck={decks[surveilData.deckId]}
             count={surveilData.count}
             onClose={() => setSurveilData(null)}
+            setDecks={setDecks}
+            setHoveredSearchCard={setHoveredSearchCard}
+            setCards={setCards}
+            isRotated={isRotated}
           />
         )}
       </div>

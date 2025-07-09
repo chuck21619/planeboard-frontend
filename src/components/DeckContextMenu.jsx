@@ -111,7 +111,7 @@ export default function DeckContextMenu({
         }}
         onClick={() => {
           console.log("surveil:", surveilCount);
-          setSurveilData({deckId, scryCount});
+          setSurveilData({deckId, count: surveilCount});
           onClose();
         }}
       >
