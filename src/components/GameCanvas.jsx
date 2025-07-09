@@ -96,7 +96,7 @@ export default function GameCanvas({
       </Layer>
 
       <Layer>
-        {draggingCard && dragSource !== "deckSearch" && (
+        {draggingCard && dragSource !== "deckCardViewer" && (
           <Card
             card={{ ...draggingCard, x: dragPos.x, y: dragPos.y }}
             defaultCardBackImage={defaultCardBackImage}

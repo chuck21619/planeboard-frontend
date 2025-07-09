@@ -1,10 +1,10 @@
 import { useState } from "react";
 
-export default function DeckSearchModal({
+export default function DeckCardViewer({
   deckId,
   decks,
   onClose,
-  setHoveredSearchCard,
+  setDeckCardViewerCard,
   getCardMouseDownHandler,
   draggingCard,
 }) {
@@ -16,7 +16,7 @@ export default function DeckSearchModal({
   );
   return (
     <div
-      className="deck-search-modal"
+      className="deck-card-viewer"
       style={{
         position: "fixed",
         top: "10%",
@@ -67,9 +67,9 @@ export default function DeckSearchModal({
               height: 94,
               objectFit: "contain",
             }}
-            onMouseDown={getCardMouseDownHandler(card, "deckSearch", 0)}
-            onMouseEnter={() => setHoveredSearchCard({...card, flipIndex: 0})}
-            onMouseLeave={() => setHoveredSearchCard(null)}
+            onMouseDown={getCardMouseDownHandler(card, "deckCardViewer", 0)}
+            onMouseEnter={() => setDeckCardViewerCard({ ...card, flipIndex: 0 })}
+            onMouseLeave={() => setDeckCardViewerCard(null)}
           />
         ))}
       </div>

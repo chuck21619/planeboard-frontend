@@ -12,7 +12,7 @@ import { useHoveredCard } from "../hooks/useHoveredCard";
 import { useLoadingFade } from "../hooks/useLoadingFade";
 import { useStageMousePos } from "../hooks/useStageMousePos";
 import GameCanvas from "./GameCanvas";
-import DeckSearchModal from "./DeckSearchModal";
+import DeckCardViewer from "./DeckCardViewer";
 import { sendMessage } from "../ws";
 import { remapPositions } from "../utils/playerOrientation";
 import { useCardImagePreloader } from "../hooks/useCardImagePreloader";
@@ -41,11 +41,12 @@ function Room() {
     x: 0,
     y: 0,
   });
-  const [searchModalVisible, setSearchModalVisible] = useState(false);
-  const [searchDeckId, setSearchDeckId] = useState(null);
+  const [deckCardViewerVisible, setDeckCardViewerVisible] = useState(false);
+  const [deckCardViewerDeckId, setDeckCardViewerDeckId] = useState(null);
   const [menuDeckId, setMenuDeckId] = useState(null);
   const [scryData, setScryData] = useState(null); // { deckId, count }
   const [surveilData, setSurveilData] = useState(null); // { deckId, count }
+  const [peekBottomData, setPeekBottomData] = useState(null); // { deckId, count }
   const [boardMenuVisible, setBoardMenuVisible] = useState(false);
   const [boardMenuPosition, setBoardMenuPosition] = useState({ x: 0, y: 0 });
   const [cardMenuCard, setCardMenuCard] = useState(null);
@@ -60,7 +61,7 @@ function Room() {
   const [draggingCard, setDraggingCard] = useState(null);
   const [dragSource, setDragSource] = useState(null);
   const [hoveredHandCard, setHoveredHandCard] = useState(null);
-  const [hoveredSearchCard, setHoveredSearchCard] = useState(null);
+  const [hoveredDeckCardViewerCard, setHoveredDeckCardViewerCard] = useState(null);
   const [dragPos, setDragPos] = useState({ x: 0, y: 0 });
   const canvasRef = useRef(null);
   const [turn, setTurn] = useState("");
@@ -86,7 +87,7 @@ function Room() {
     cards,
     draggingCard,
     hoveredHandCard,
-    hoveredSearchCard,
+    hoveredDeckCardViewerCard,
     isRotated
   );
   const { handleWheel, handleDragEnd } = useStageEvents(
@@ -104,7 +105,7 @@ function Room() {
     }
   );
   function cardDraggedToDeckMenu(card, deckId, position) {
-    if (dragSource === "deckSearch") {
+    if (dragSource === "deckCardViewer") {
       return;
     }
     setCardDraggedToDeck(card);
@@ -134,7 +135,7 @@ function Room() {
     ignoreNextChange,
     decks,
     setDecks,
-    searchDeckId,
+    deckCardViewerDeckId,
     isRotated,
     cardDraggedToDeckMenu,
   });
@@ -206,7 +207,7 @@ function Room() {
   }, [hoveredCounterId]);
 
   useEffect(() => {
-    if (!(draggingCard && dragSource === "deckSearch")) return;
+    if (!(draggingCard && dragSource === "deckCardViewer")) return;
     function handleMouseMove(e) {
       setPointerPos({ x: e.clientX, y: e.clientY });
     }
@@ -288,12 +289,12 @@ function Room() {
             />
           )}
         </div>
-        {searchModalVisible && (
-          <DeckSearchModal
-            deckId={searchDeckId}
+        {deckCardViewerVisible && (
+          <DeckCardViewer
+            deckId={deckCardViewerDeckId}
             decks={decks}
-            onClose={() => setSearchModalVisible(false)}
-            setHoveredSearchCard={setHoveredSearchCard}
+            onClose={() => setDeckCardViewerVisible(false)}
+            setHoveredDeckCardViewerCard={setHoveredDeckCardViewerCard}
             getCardMouseDownHandler={getCardMouseDownHandler}
             draggingCard={draggingCard}
           />
@@ -312,11 +313,12 @@ function Room() {
           onClose={() => setDeckMenuVisible(false)}
           onSearch={(deckId) => {
             console.log("Search clicked for deck", deckId);
-            setSearchDeckId(deckId);
-            setSearchModalVisible(true);
+            setDeckCardViewerDeckId(deckId);
+            setDeckCardViewerVisible(true);
           }}
           setScryData={setScryData}
           setSurveilData={setSurveilData}
+          setPeekBottomData={setPeekBottomData}
         />
         <CardContextMenu
           visible={cardMenuVisible}
@@ -369,7 +371,7 @@ function Room() {
             count={scryData.count}
             onClose={() => setScryData(null)}
             setDecks={setDecks}
-            setHoveredSearchCard={setHoveredSearchCard}
+            setHoveredDeckCardViewerCard={setHoveredDeckCardViewerCard}
           />
         )}
         {surveilData && (
@@ -378,7 +380,7 @@ function Room() {
             count={surveilData.count}
             onClose={() => setSurveilData(null)}
             setDecks={setDecks}
-            setHoveredSearchCard={setHoveredSearchCard}
+            setHoveredDeckCardViewerCard={setHoveredDeckCardViewerCard}
             setCards={setCards}
             isRotated={isRotated}
           />

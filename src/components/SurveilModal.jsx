@@ -7,7 +7,7 @@ export default function SurveilModal({
   count,
   onClose,
   setDecks,
-  setHoveredSearchCard,
+  setHoveredDeckCardViewerCard,
   setCards,
   isRotated,
 }) {
@@ -70,8 +70,8 @@ export default function SurveilModal({
         border: "1px solid black",
         borderRadius: "8px",
       }}
-      onMouseEnter={() => setHoveredSearchCard({ ...item.card, flipIndex: 0 })}
-      onMouseLeave={() => setHoveredSearchCard(null)}
+      onMouseEnter={() => setHoveredDeckCardViewerCard({ ...item.card, flipIndex: 0 })}
+      onMouseLeave={() => setHoveredDeckCardViewerCard(null)}
     />
   );
 

@@ -7,7 +7,7 @@ export default function ScryModal({
   count,
   onClose,
   setDecks,
-  setHoveredSearchCard,
+  setHoveredDeckCardViewerCard,
 }) {
   const topCards = deck.cards.slice(0, count);
   const restRef = useRef(deck.cards.slice(count)); // middle of the deck
@@ -84,9 +84,9 @@ export default function ScryModal({
                 borderRadius: "8px",
               }}
               onMouseEnter={() =>
-                setHoveredSearchCard({ ...item.card, flipIndex: 0 })
+                setHoveredDeckCardViewerCard({ ...item.card, flipIndex: 0 })
               }
-              onMouseLeave={() => setHoveredSearchCard(null)}
+              onMouseLeave={() => setHoveredDeckCardViewerCard(null)}
             />
           ) : (
             <div

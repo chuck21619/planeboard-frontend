@@ -20,7 +20,7 @@ export function useCardDrag({
   ignoreNextChange,
   decks,
   setDecks,
-  searchDeckId,
+  deckCardViewerDeckId,
   isRotated,
   cardDraggedToDeckMenu,
 }) {
@@ -128,7 +128,7 @@ export function useCardDrag({
         e.clientX,
         e.clientY
       );
-      if (elementUnderCursor?.closest(".deck-search-modal")) {
+      if (elementUnderCursor?.closest(".deck-card-viewer")) {
         setDraggingCard(null);
         return;
       }
@@ -192,14 +192,14 @@ export function useCardDrag({
             flipIndex: card.flipIndex,
           });
         }
-      } else if (dragSource === "deckSearch") {
+      } else if (dragSource === "deckCardViewer") {
         if (isDroppingInHand) {
           setHand((prev) => [...prev, card]);
           setCards((prev) => prev.filter((c) => c.id !== card.id));
           sendMessage({
             type: "TUTOR_TO_HAND",
             id: card.id,
-            username: searchDeckId,
+            username: deckCardViewerDeckId,
           });
         } else {
           const playedCard = {
@@ -222,11 +222,11 @@ export function useCardDrag({
           sendMessage({
             type: "CARD_PLAYED_FROM_LIBRARY",
             card: playedCard,
-            username: searchDeckId,
+            username: deckCardViewerDeckId,
           });
         }
         setDecks((prevDecks) =>
-          removeCardFromDeck(prevDecks, searchDeckId, card.id)
+          removeCardFromDeck(prevDecks, deckCardViewerDeckId, card.id)
         );
       } else if (dragSource === "hand") {
         if (isDroppingInHand) {

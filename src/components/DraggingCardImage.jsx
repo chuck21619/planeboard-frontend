@@ -6,7 +6,7 @@ export default function DraggingCardImage({
   hasMoved,
   pointerPos,
 }) {
-  if (!draggingCard || dragSource !== "deckSearch" || !hasMoved) return null;
+  if (!draggingCard || dragSource !== "deckCardViewer" || !hasMoved) return null;
 
   const src =
     draggingCard.flipIndex === 0

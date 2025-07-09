@@ -8,9 +8,11 @@ export default function DeckContextMenu({
   onSearch,
   setScryData,
   setSurveilData,
+  setPeekBottomData,
 }) {
   const [scryCount, setScryCount] = useState(1);
   const [surveilCount, setSurveilCount] = useState(1);
+  const [peekBottomCount, setPeekBottomCount] = useState(1);
 
   if (!visible || !deckId) return null;
 
@@ -21,9 +23,6 @@ export default function DeckContextMenu({
   const decrement = (setter, count) => {
     if (count > 1) setter(count - 1);
   };
-
-  // Helper so clicks on arrows don't trigger onClick for whole row
-  const stopPropagation = (e) => e.stopPropagation();
 
   return (
     <div
@@ -62,7 +61,7 @@ export default function DeckContextMenu({
         }}
         onClick={() => {
           console.log("scry:", scryCount);
-          setScryData({deckId, count: scryCount});
+          setScryData({ deckId, count: scryCount });
           onClose();
         }}
       >
@@ -111,7 +110,7 @@ export default function DeckContextMenu({
         }}
         onClick={() => {
           console.log("surveil:", surveilCount);
-          setSurveilData({deckId, count: surveilCount});
+          setSurveilData({ deckId, count: surveilCount });
           onClose();
         }}
       >
@@ -142,6 +141,54 @@ export default function DeckContextMenu({
             onClick={(e) => {
               e.stopPropagation();
               increment(setSurveilCount, surveilCount);
+            }}
+          >
+            &gt;
+          </button>
+        </div>
+      </div>
+      
+      {/* Peek Bottom Menu Item */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "4px 0",
+          cursor: "pointer",
+        }}
+        onClick={() => {
+          setPeekBottomData({ deckId, count: peekBottomCount });
+          onClose();
+        }}
+      >
+        <span>Peek Bottom</span>
+        <div>
+          <button
+            style={{
+              marginLeft: 6,
+              marginRight: 6,
+              padding: "6px 14px",
+              fontSize: "12px",
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              decrement(setPeekBottomCount, peekBottomCount);
+            }}
+          >
+            &lt;
+          </button>
+          <span>{peekBottomCount}</span>
+          <button
+            style={{
+              marginLeft: 6,
+              marginRight: 2,
+              padding: "6px 14px",
+              fontSize: "12px",
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              increment(setPeekBottomCount, peekBottomCount);
             }}
           >
             &gt;
