@@ -45,7 +45,7 @@ function Room() {
   const [contextMenuDeckId, setContextMenuDeckId] = useState(null);
   const [scryData, setScryData] = useState(null); // { deckId, count }
   const [surveilData, setSurveilData] = useState(null); // { deckId, count }
-  const [peekCards, setPeekCards] = useState([]);
+  const [peekCardsData, setPeekCardsData] = useState({ cards: [], position: "" });
   const [boardMenuVisible, setBoardMenuVisible] = useState(false);
   const [boardMenuPosition, setBoardMenuPosition] = useState({ x: 0, y: 0 });
   const [cardMenuCard, setCardMenuCard] = useState(null);
@@ -138,7 +138,7 @@ function Room() {
     contextMenuDeckId,
     isRotated,
     cardDraggedToDeckMenu,
-    setPeekCards,
+    setPeekCardsData,
   });
   const { tapCard } = useCardTap(setCards, hasMoved);
   useRoomHandlers({
@@ -216,6 +216,16 @@ function Room() {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [draggingCard, dragSource]);
 
+  useEffect(() => { //clear ui if scrying/surveiling/searching deck of leaving player
+    if ( contextMenuDeckId && !decks[contextMenuDeckId]) {
+      setSurveilData(null);
+      setScryData(null);
+      setContextMenuDeckId(null);
+      setDeckCardViewerVisible(false);
+      setPeekCardsData({cards: [], position: ""});
+    }
+  }, [decks, contextMenuDeckId]);
+
   return (
     <div>
       <div
@@ -290,7 +300,7 @@ function Room() {
             />
           )}
         </div>
-        {deckCardViewerVisible && (
+        {deckCardViewerVisible && contextMenuDeckId && (
           <DeckCardViewer
             deckId={contextMenuDeckId}
             decks={decks}
@@ -300,16 +310,15 @@ function Room() {
             draggingCard={draggingCard}
           />
         )}
-        {peekCards.length > 0 && (
+        {peekCardsData.cards.length > 0 && contextMenuDeckId &&  (
           <DeckCardViewer
             deckId={contextMenuDeckId}
             decks={decks}
-            onClose={() => setPeekCards([])}
+            onClose={() => setPeekCardsData({cards: [], position: ""})}
             setHoveredDeckCardViewerCard={setHoveredDeckCardViewerCard}
             getCardMouseDownHandler={getCardMouseDownHandler}
             draggingCard={draggingCard}
-            subset="bottom"
-            peekCards={peekCards}
+            peekCardsData={peekCardsData}
           />
         )}
 
@@ -332,7 +341,7 @@ function Room() {
           }}
           setScryData={setScryData}
           setSurveilData={setSurveilData}
-          setPeekCards={setPeekCards}
+          setPeekCardsData={setPeekCardsData}
         />
         <CardContextMenu
           visible={cardMenuVisible}
@@ -379,7 +388,7 @@ function Room() {
             setBoardMenuVisible(false);
           }}
         />
-        {scryData && (
+        {scryData && contextMenuDeckId && decks[contextMenuDeckId] && (
           <ScryModal
             deck={decks[scryData.deckId]}
             count={scryData.count}
@@ -388,7 +397,7 @@ function Room() {
             setHoveredDeckCardViewerCard={setHoveredDeckCardViewerCard}
           />
         )}
-        {surveilData && (
+        {surveilData && contextMenuDeckId && decks[contextMenuDeckId] && (
           <SurveilModal
             deck={decks[surveilData.deckId]}
             count={surveilData.count}

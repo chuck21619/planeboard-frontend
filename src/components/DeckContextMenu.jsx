@@ -9,7 +9,7 @@ export default function DeckContextMenu({
   onSearch,
   setScryData,
   setSurveilData,
-  setPeekCards,
+  setPeekCardsData,
 }) {
   const [scryCount, setScryCount] = useState(1);
   const [surveilCount, setSurveilCount] = useState(1);
@@ -160,7 +160,7 @@ export default function DeckContextMenu({
           cursor: "pointer",
         }}
         onClick={() => {
-          setPeekCards(decks[deckId].cards.slice(0, peekTopCount));
+          setPeekCardsData({cards: decks[deckId].cards.slice(0, peekTopCount), position: "top"});
           onClose();
         }}
       >
@@ -208,7 +208,7 @@ export default function DeckContextMenu({
           cursor: "pointer",
         }}
         onClick={() => {
-          setPeekCards(decks[deckId].cards.slice(-peekBottomCount));
+          setPeekCardsData({cards: decks[deckId].cards.slice(-peekBottomCount), position: "bottom"});
           onClose();
         }}
       >

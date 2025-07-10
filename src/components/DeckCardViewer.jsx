@@ -7,14 +7,13 @@ export default function DeckCardViewer({
   setHoveredDeckCardViewerCard,
   getCardMouseDownHandler,
   draggingCard,
-  subset = "all", // "all" | "bottom" | "top"
-  peekCards = [],
+  peekCardsData = {cards: [], position: ""},
 }) {
   const [query, setQuery] = useState("");
   const cards = decks[deckId]?.cards || [];
   const filteredCards =
-    peekCards.length > 0
-      ? peekCards
+    peekCardsData.cards.length > 0
+      ? peekCardsData.cards
       : cards.filter((card) =>
           card.name.toLowerCase().includes(query.toLowerCase())
         );
@@ -41,14 +40,12 @@ export default function DeckCardViewer({
         ✖
       </button>
       <h3>
-        {subset === "bottom"
-          ? `Peek Bottom`
-          : subset === "top"
-          ? `View Top`
-          : "Search Deck"}
+        {peekCardsData.cards.length == 0
+          ? "Search Deck"
+          : "Viewing " + peekCardsData.position}
       </h3>
 
-      {subset === "all" && (
+      {peekCardsData.cards != [] && (
         <input
           autoFocus
           type="text"

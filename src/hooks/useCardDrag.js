@@ -23,7 +23,7 @@ export function useCardDrag({
   contextMenuDeckId,
   isRotated,
   cardDraggedToDeckMenu,
-  setPeekCards,
+  setPeekCardsData,
 }) {
   const onMouseMove = useCallback((e) => {
     // Intentionally empty — mousemove handled globally on window
@@ -225,10 +225,12 @@ export function useCardDrag({
             username: contextMenuDeckId,
           });
         }
-        setPeekCards((prev) => {
-          if (!prev) return [];
-          const updated = prev.filter((c) => c.id !== card.id);
-          return updated.length > 0 ? updated : [];
+        setPeekCardsData((prev) => {
+          if (!prev) return { cards: [], position: "" };
+          const updatedCards = prev.cards.filter((c) => c.id !== card.id);
+          return updatedCards.length > 0
+            ? { ...prev, cards: updatedCards }
+            : { cards: [], position: "" };
         });
         setDecks((prevDecks) =>
           removeCardFromDeck(prevDecks, contextMenuDeckId, card.id)

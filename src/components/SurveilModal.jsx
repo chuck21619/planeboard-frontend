@@ -13,8 +13,6 @@ export default function SurveilModal({
 }) {
   const surveilCards = deck.cards.slice(0, count);
   const restRef = useRef(deck.cards.slice(count)); // untouched rest of deck
-  console.log("Deck cards:", deck.cards);
-  console.log("Count:", count);
   const [topItems, setTopItems] = useState(
     surveilCards.map((card) => ({
       id: card.id,

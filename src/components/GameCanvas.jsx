@@ -64,7 +64,6 @@ export default function GameCanvas({
       onMouseUp={onMouseUp}
       onMouseMove={onMouseMove}
       onContextMenu={(e) => {
-        console.log("TESTSET");
         e.evt.preventDefault();
         if (typeof onStageRightClick === "function") {
           onStageRightClick(e);
