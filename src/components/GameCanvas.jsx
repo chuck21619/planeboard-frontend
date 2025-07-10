@@ -23,6 +23,7 @@ export default function GameCanvas({
   draggingCard,
   dragPos,
   handSizes,
+  setHandSizes,
   positions,
   cardBackImage,
   username,
@@ -82,7 +83,7 @@ export default function GameCanvas({
 
       <Layer>
         {Object.entries(handSizes).map(([playerName, count]) => {
-          if (playerName === username) return null;
+          //if (playerName === username) return null;
           return (
             <OpponentHand
               key={playerName}
@@ -144,6 +145,7 @@ export default function GameCanvas({
               onRightClick={(e) =>
                 onDeckRightClick(e.evt.clientX, e.evt.clientY, deck.id)
               }
+              setHandSizes={setHandSizes}
             />
           );
         })}

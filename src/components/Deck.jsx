@@ -3,7 +3,13 @@ import useImage from "use-image";
 import { sendMessage } from "../ws";
 import { removeTopCardFromDeck } from "../utils/deckUtils";
 
-export default function Deck({ deck, onRightClick, setHand, setDecks }) {
+export default function Deck({
+  deck,
+  onRightClick,
+  setHand,
+  setDecks,
+  setHandSizes,
+}) {
   const [deckImage] = useImage("/deck.png");
 
   const handleContextMenu = (e) => {
@@ -19,6 +25,10 @@ export default function Deck({ deck, onRightClick, setHand, setDecks }) {
       setHand((prev) => [...prev, cardToDraw]);
       setDecks((prevDecks) => removeTopCardFromDeck(prevDecks, username));
       sendMessage({ type: "DRAW_CARD" });
+      setHandSizes((prev) => ({
+          ...prev,
+          [username]: prev[username] + 1,
+        }));
     }
   };
 

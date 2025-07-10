@@ -16,6 +16,7 @@ export function useCardDrag({
   setDragPos,
   setCards,
   setHand,
+  setHandSizes,
   username,
   ignoreNextChange,
   decks,
@@ -177,6 +178,10 @@ export function useCardDrag({
           const untappedCard = { ...card, x, y, tapped: false, flipIndex: 0 };
           setHand((prev) => [...prev, untappedCard]);
           setCards((prev) => prev.filter((c) => c.id !== card.id));
+          setHandSizes((prev) => ({
+            ...prev,
+            [username]: prev[username] + 1,
+          }));
           sendMessage({ type: "RETURN_TO_HAND", id: card.id, username });
         } else {
           //dragging within the board
@@ -197,6 +202,10 @@ export function useCardDrag({
         if (isDroppingInHand) {
           setHand((prev) => [...prev, card]);
           setCards((prev) => prev.filter((c) => c.id !== card.id));
+          setHandSizes((prev) => ({
+            ...prev,
+            [username]: prev[username] + 1,
+          }));
           sendMessage({
             type: "TUTOR_TO_HAND",
             id: card.id,
@@ -242,6 +251,10 @@ export function useCardDrag({
           card.owner = username;
           setCards((prev) => [...prev, { ...card, x, y }]);
           setHand((prev) => prev.filter((c) => c.id !== card.id));
+          setHandSizes((prev) => ({
+            ...prev,
+            [username]: prev[username] - 1,
+          }));
           sendMessage({
             type: "CARD_PLAYED_FROM_HAND",
             card: {

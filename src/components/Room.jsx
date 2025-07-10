@@ -131,6 +131,7 @@ function Room() {
     setDragPos,
     setCards,
     setHand,
+    setHandSizes,
     username,
     ignoreNextChange,
     decks,
@@ -260,6 +261,7 @@ function Room() {
             draggingCard={draggingCard}
             dragPos={dragPos}
             handSizes={handSizes}
+            setHandSizes={setHandSizes}
             positions={positions}
             setCards={setCards}
             setHand={setHand}
