@@ -173,19 +173,13 @@ export default function GameCanvas({
               });
             }}
             onMove={({ x, y }) => {
-              setCounters((prev) => ({
-                ...prev,
-                [id]: {
-                  ...prev[id],
-                  x,
-                  y,
-                },
-              }));
+              const rotatedX = isRotated ? -x-40 : x;
+              const rotatedY = isRotated ? -y-40 : y;
               sendMessage({
                 type: "MOVE_COUNTER",
                 id,
-                x,
-                y,
+                x: rotatedX,
+                y: rotatedY,
               });
             }}
             onHoverChange={(hovered) => {

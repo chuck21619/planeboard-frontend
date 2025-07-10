@@ -311,7 +311,9 @@ function Room() {
                   sendMessage({ type: "UNTAP_ALL" });
                   setCards((prev) =>
                     prev.map((card) =>
-                      card.owner === username ? { ...card, tapped: false } : card
+                      card.owner === username
+                        ? { ...card, tapped: false }
+                        : card
                     )
                   );
                 }}
@@ -391,10 +393,12 @@ function Room() {
           onClose={() => setBoardMenuVisible(false)}
           onAddCounter={() => {
             const newId = Date.now().toString();
+            const rotatedX = isRotated ? -mousePos.x - 20 : mousePos.x - 20;
+            const rotatedY = isRotated ? -mousePos.y - 20 : mousePos.y - 20;
             const newCounter = {
               id: newId,
-              x: mousePos.x - 20,
-              y: mousePos.y - 20,
+              x: rotatedX,
+              y: rotatedY,
               count: 1,
               owner: username,
             };
