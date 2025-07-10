@@ -220,6 +220,12 @@ export function useRoomHandlers({
           delete copy[message.id];
           return copy;
         });
+      } else if (message.type === "UNTAPPED_ALL") {
+        setCards((prev) =>
+          prev.map((card) =>
+            card.owner === message.player ? { ...card, tapped: false } : card
+          )
+        );
       } else if (message.type === "TURN_PASSED") {
         setTurn(message.turn);
       } else if (message.type === "USER_LEFT") {

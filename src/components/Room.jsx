@@ -22,6 +22,7 @@ import DeckContextMenu from "./DeckContextMenu";
 import DraggingCardImage from "./DraggingCardImage";
 import HoveredCardPreview from "./HoveredCardPreview";
 import PassTurnButton from "./PassTurnButton";
+import UntapAllButton from "./UntapAllButton";
 import { useCardFlipHotkey } from "../hooks/useCardFlipHotkey";
 import { updateCardTokens } from "../utils/cardUtils";
 import { updateDeckTokens } from "../utils/deckUtils";
@@ -45,7 +46,10 @@ function Room() {
   const [contextMenuDeckId, setContextMenuDeckId] = useState(null);
   const [scryData, setScryData] = useState(null); // { deckId, count }
   const [surveilData, setSurveilData] = useState(null); // { deckId, count }
-  const [peekCardsData, setPeekCardsData] = useState({ cards: [], position: "" });
+  const [peekCardsData, setPeekCardsData] = useState({
+    cards: [],
+    position: "",
+  });
   const [boardMenuVisible, setBoardMenuVisible] = useState(false);
   const [boardMenuPosition, setBoardMenuPosition] = useState({ x: 0, y: 0 });
   const [cardMenuCard, setCardMenuCard] = useState(null);
@@ -217,13 +221,14 @@ function Room() {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [draggingCard, dragSource]);
 
-  useEffect(() => { //clear ui if scrying/surveiling/searching deck of leaving player
-    if ( contextMenuDeckId && !decks[contextMenuDeckId]) {
+  useEffect(() => {
+    //clear ui if scrying/surveiling/searching deck of leaving player
+    if (contextMenuDeckId && !decks[contextMenuDeckId]) {
       setSurveilData(null);
       setScryData(null);
       setContextMenuDeckId(null);
       setDeckCardViewerVisible(false);
-      setPeekCardsData({cards: [], position: ""});
+      setPeekCardsData({ cards: [], position: "" });
     }
   }, [decks, contextMenuDeckId]);
 
@@ -294,12 +299,24 @@ function Room() {
             getCardMouseDownHandler={getCardMouseDownHandler}
           />
           {turn === username && (
-            <PassTurnButton
-              onClick={() => {
-                setTurn("");
-                sendMessage({ type: "PASS_TURN" });
-              }}
-            />
+            <>
+              <PassTurnButton
+                onClick={() => {
+                  setTurn("");
+                  sendMessage({ type: "PASS_TURN" });
+                }}
+              />
+              <UntapAllButton
+                onClick={() => {
+                  sendMessage({ type: "UNTAP_ALL" });
+                  setCards((prev) =>
+                    prev.map((card) =>
+                      card.owner === username ? { ...card, tapped: false } : card
+                    )
+                  );
+                }}
+              />
+            </>
           )}
         </div>
         {deckCardViewerVisible && contextMenuDeckId && (
@@ -312,11 +329,11 @@ function Room() {
             draggingCard={draggingCard}
           />
         )}
-        {peekCardsData.cards.length > 0 && contextMenuDeckId &&  (
+        {peekCardsData.cards.length > 0 && contextMenuDeckId && (
           <DeckCardViewer
             deckId={contextMenuDeckId}
             decks={decks}
-            onClose={() => setPeekCardsData({cards: [], position: ""})}
+            onClose={() => setPeekCardsData({ cards: [], position: "" })}
             setHoveredDeckCardViewerCard={setHoveredDeckCardViewerCard}
             getCardMouseDownHandler={getCardMouseDownHandler}
             draggingCard={draggingCard}
