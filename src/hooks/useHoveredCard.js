@@ -64,10 +64,23 @@ export function useHoveredCard(
         ) || null;
     }
 
-    if (newHovered?.id === lastCardId.current) return;
+    if (
+      (newHovered === null && lastCardId.current === null) ||
+      newHovered?.id === lastCardId.current
+    ) {
+      return;
+    }
+
     lastCardId.current = newHovered?.id || null;
     setHoveredCard(newHovered);
-  }, [mousePos, cards, draggingCard, hoveredDeckCardViewerCard, hoveredHandCard, isRotated]);
+  }, [
+    mousePos,
+    cards,
+    draggingCard,
+    hoveredDeckCardViewerCard,
+    hoveredHandCard,
+    isRotated,
+  ]);
 
   return { hoveredCard, setHoveredCard, ignoreNextChange };
 }

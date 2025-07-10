@@ -15,12 +15,16 @@ export function useStageMousePos(stageRef) {
       const x = (e.clientX - boundingRect.left - stagePos.x) / scale;
       const y = (e.clientY - boundingRect.top - stagePos.y) / scale;
 
-      setMousePos({ x, y });
+      setMousePos((prev) => {
+        // avoid infinite updates if position hasn't changed
+        if (prev.x === x && prev.y === y) return prev;
+        return { x, y };
+      });
     }
 
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, [stageRef]);
+  }, []); // only on mount
 
   return mousePos;
 }
