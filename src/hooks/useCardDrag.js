@@ -20,7 +20,7 @@ export function useCardDrag({
   ignoreNextChange,
   decks,
   setDecks,
-  deckCardViewerDeckId,
+  contextMenuDeckId,
   isRotated,
   cardDraggedToDeckMenu,
   setPeekCards,
@@ -200,7 +200,7 @@ export function useCardDrag({
           sendMessage({
             type: "TUTOR_TO_HAND",
             id: card.id,
-            username: deckCardViewerDeckId,
+            username: contextMenuDeckId,
           });
         } else {
           const playedCard = {
@@ -222,7 +222,7 @@ export function useCardDrag({
           sendMessage({
             type: "CARD_PLAYED_FROM_LIBRARY",
             card: playedCard,
-            username: deckCardViewerDeckId,
+            username: contextMenuDeckId,
           });
         }
         setPeekCards((prev) => {
@@ -231,7 +231,7 @@ export function useCardDrag({
           return updated.length > 0 ? updated : [];
         });
         setDecks((prevDecks) =>
-          removeCardFromDeck(prevDecks, deckCardViewerDeckId, card.id)
+          removeCardFromDeck(prevDecks, contextMenuDeckId, card.id)
         );
       } else if (dragSource === "hand") {
         if (isDroppingInHand) {

@@ -42,8 +42,7 @@ function Room() {
     y: 0,
   });
   const [deckCardViewerVisible, setDeckCardViewerVisible] = useState(false);
-  const [deckCardViewerDeckId, setDeckCardViewerDeckId] = useState(null);
-  const [menuDeckId, setMenuDeckId] = useState(null);
+  const [contextMenuDeckId, setContextMenuDeckId] = useState(null);
   const [scryData, setScryData] = useState(null); // { deckId, count }
   const [surveilData, setSurveilData] = useState(null); // { deckId, count }
   const [peekCards, setPeekCards] = useState([]);
@@ -136,7 +135,7 @@ function Room() {
     ignoreNextChange,
     decks,
     setDecks,
-    deckCardViewerDeckId,
+    contextMenuDeckId,
     isRotated,
     cardDraggedToDeckMenu,
     setPeekCards,
@@ -160,7 +159,7 @@ function Room() {
     rightClickHandledRef.current = true;
     setDeckMenuVisible(true);
     setContextMenuPosition({ x: clientX - 2, y: clientY - 113 });
-    setMenuDeckId(deckId);
+    setContextMenuDeckId(deckId);
   };
   const handleCardRightCLick = (clientX, clientY, card) => {
     rightClickHandledRef.current = true;
@@ -293,7 +292,7 @@ function Room() {
         </div>
         {deckCardViewerVisible && (
           <DeckCardViewer
-            deckId={deckCardViewerDeckId}
+            deckId={contextMenuDeckId}
             decks={decks}
             onClose={() => setDeckCardViewerVisible(false)}
             setHoveredDeckCardViewerCard={setHoveredDeckCardViewerCard}
@@ -303,7 +302,7 @@ function Room() {
         )}
         {peekCards.length > 0 && (
           <DeckCardViewer
-            deckId={deckCardViewerDeckId}
+            deckId={contextMenuDeckId}
             decks={decks}
             onClose={() => setPeekCards([])}
             setHoveredDeckCardViewerCard={setHoveredDeckCardViewerCard}
@@ -324,12 +323,11 @@ function Room() {
         <DeckContextMenu
           visible={deckMenuVisible}
           position={contextMenuPosition}
-          deckId={menuDeckId}
+          deckId={contextMenuDeckId}
           decks={decks}
           onClose={() => setDeckMenuVisible(false)}
           onSearch={(deckId) => {
             console.log("Search clicked for deck", deckId);
-            setDeckCardViewerDeckId(deckId);
             setDeckCardViewerVisible(true);
           }}
           setScryData={setScryData}

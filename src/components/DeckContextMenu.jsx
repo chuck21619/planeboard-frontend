@@ -14,6 +14,7 @@ export default function DeckContextMenu({
   const [scryCount, setScryCount] = useState(1);
   const [surveilCount, setSurveilCount] = useState(1);
   const [peekBottomCount, setPeekBottomCount] = useState(1);
+  const [peekTopCount, setPeekTopCount] = useState(1);
 
   if (!visible || !deckId) return null;
 
@@ -142,6 +143,54 @@ export default function DeckContextMenu({
             onClick={(e) => {
               e.stopPropagation();
               increment(setSurveilCount, surveilCount);
+            }}
+          >
+            &gt;
+          </button>
+        </div>
+      </div>
+
+      {/* Peek Top Menu Item */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "4px 0",
+          cursor: "pointer",
+        }}
+        onClick={() => {
+          setPeekCards(decks[deckId].cards.slice(0, peekTopCount));
+          onClose();
+        }}
+      >
+        <span>Peek Top</span>
+        <div>
+          <button
+            style={{
+              marginLeft: 6,
+              marginRight: 6,
+              padding: "6px 14px",
+              fontSize: "12px",
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              decrement(setPeekTopCount, peekTopCount);
+            }}
+          >
+            &lt;
+          </button>
+          <span>{peekTopCount}</span>
+          <button
+            style={{
+              marginLeft: 6,
+              marginRight: 2,
+              padding: "6px 14px",
+              fontSize: "12px",
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              increment(setPeekTopCount, peekTopCount);
             }}
           >
             &gt;
