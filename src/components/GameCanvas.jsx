@@ -146,6 +146,7 @@ export default function GameCanvas({
                 onDeckRightClick(e.evt.clientX, e.evt.clientY, deck.id)
               }
               setHandSizes={setHandSizes}
+              remappedPositions={remappedPositions}
             />
           );
         })}
