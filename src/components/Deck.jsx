@@ -54,7 +54,7 @@ export default function Deck({
           {hovered && (
             <Text
               text={`${deck.cards.length}`}
-              x={deck.x}
+              x={deck.x + 25}
               y={
                 remappedPositions?.[deck.id]?.includes("bottom")
                   ? deck.y + 94 + 5 // below the deck
