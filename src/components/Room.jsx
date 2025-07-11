@@ -55,7 +55,7 @@ function Room() {
   const [boardMenuVisible, setBoardMenuVisible] = useState(false);
   const [boardMenuPosition, setBoardMenuPosition] = useState({ x: 0, y: 0 });
   const [cardMenuCard, setCardMenuCard] = useState(null);
-  const [counters, setCounters] = useState([]);
+  const [counters, setCounters] = useState({});
   const [hoveredCounterId, setHoveredCounterId] = useState(null);
   const { roomId } = useParams();
   const [hasJoined, setHasJoined] = useState(false);
@@ -77,7 +77,7 @@ function Room() {
   const [diceResults, setDiceResults] = useState(null);
   const [showDiceAnimation, setShowDiceAnimation] = useState(false);
   const [numSides, setNumSides] = useState(6);
-  const [diceRolls, setDiceRolls] = useState([]);
+  const [diceRollers, setDiceRollers] = useState({});
   const [positions, setPositions] = useState({});
   const { remappedPositions, isRotated } = useMemo(() => {
     return remapPositions(username, positions);
@@ -166,6 +166,9 @@ function Room() {
     setLifeTotals,
     setTurn,
     setCounters,
+    setDiceRollers,
+    diceRollers,
+    counters,
   });
   const handleDeckRightClick = (clientX, clientY, deckId) => {
     rightClickHandledRef.current = true;
@@ -298,7 +301,7 @@ function Room() {
             setCounters={setCounters}
             hoveredCounterId={hoveredCounterId}
             setHoveredCounterId={setHoveredCounterId}
-            diceRolls={diceRolls}
+            diceRollers={diceRollers}
           />
           <Hand
             hand={hand}
@@ -410,10 +413,12 @@ function Room() {
               count: 1,
               owner: username,
             };
+            console.log("counters 1:", counters);
             setCounters((prev) => ({
               ...prev,
               [newCounter.id]: newCounter,
             }));
+            console.log("counters 2:", counters);
             sendMessage({ type: "ADD_COUNTER", counters: [newCounter] });
             setHoveredCounterId(newId);
             setBoardMenuVisible(false);
@@ -444,11 +449,23 @@ function Room() {
         )}
         {diceRollerVisible && (
           <DiceRollerPanel
+            isRotated={isRotated}
             onSpawn={(numDice, numSides) => {
-              setDiceRolls((prev) => [
+              const newDiceRoller = {
+                id: Date.now().toString(),
+                x: 0,
+                y: 0,
+                numDice,
+                numSides,
+              };
+              setDiceRollers((prev) => ({
                 ...prev,
-                { id: Date.now(), x: 0, y: 0, numDice, numSides },
-              ]);
+                [newDiceRoller.id]: newDiceRoller,
+              }));
+              sendMessage({
+                type: "ADD_DICE_ROLLER",
+                diceRollers: [newDiceRoller],
+              });
             }}
             onClose={() => {
               setDiceRollerVisible(false);

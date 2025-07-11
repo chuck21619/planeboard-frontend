@@ -20,6 +20,9 @@ export function useRoomHandlers({
   setLifeTotals,
   setTurn,
   setCounters,
+  setDiceRollers,
+  diceRollers,
+  counters,
 }) {
   useEffect(() => {
     const handleBeforeUnload = () => {
@@ -44,6 +47,7 @@ export function useRoomHandlers({
         setHandSizes(message.handSizes);
         setTurn(message.turn);
         setCounters(message.counters);
+        setDiceRollers(message.diceRollers);
       } else if (message.type === "MOVE_CARD") {
         setCards((prevCards) =>
           prevCards.map((card) =>
@@ -198,14 +202,18 @@ export function useRoomHandlers({
           [message.counter.id]: message.counter,
         }));
       } else if (message.type === "COUNTER_MOVED") {
-        setCounters((prev) => ({
-          ...prev,
-          [message.id]: {
-            ...prev[message.id],
-            x: message.x,
-            y: message.y,
-          },
-        }));
+        console.log("counters - useRoomHandler:", counters);
+        setCounters((prev) => {
+          console.log("prev counters:", prev);
+          return {
+            ...prev,
+            [message.id]: {
+              ...prev[message.id],
+              x: message.x,
+              y: message.y,
+            },
+          };
+        });
       } else if (message.type === "COUNTER_UPDATED") {
         setCounters((prev) => ({
           ...prev,
@@ -215,7 +223,40 @@ export function useRoomHandlers({
           },
         }));
       } else if (message.type === "COUNTER_DELETED") {
+        console.log("counters - useRoomHandler - delete:", counters);
         setCounters((prev) => {
+          const copy = { ...prev };
+          console.log("prev: ", prev);
+          delete copy[message.id];
+          return copy;
+        });
+      } else if (message.type === "DICE_ROLLER_ADDED") {
+        setDiceRollers((prev) => ({
+          ...prev,
+          [message.diceRoller.id]: message.diceRoller,
+        }));
+      } else if (message.type === "DICE_ROLLER_MOVED") {
+        console.log("dice rollers - useRoomHandler:", diceRollers);
+        setDiceRollers((prev) => {
+          console.log("prev diceRollers:", prev);
+          console.log("message x: ", message.x);
+          console.log("message y: ", message.y);
+
+          const updated = {
+            ...prev,
+            [message.id]: {
+              ...prev[message.id],
+              x: message.x,
+              y: message.y,
+            },
+          };
+
+          console.log("updated diceRollers:", updated);
+          return updated;
+        });
+      } else if (message.type === "DICE_ROLLED") {
+      } else if (message.type === "DICE_ROLLER_DELETED") {
+        setDiceRollers((prev) => {
           const copy = { ...prev };
           delete copy[message.id];
           return copy;

@@ -47,7 +47,7 @@ export default function GameCanvas({
   setCounters,
   hoveredCounterId,
   setHoveredCounterId,
-  diceRolls,
+  diceRollers,
 }) {
   const viewerPosition = positions[username];
 
@@ -193,15 +193,30 @@ export default function GameCanvas({
         ))}
       </Layer>
       <Layer>
-        {diceRolls.map((roll) => (
-          <DiceRollKonva
-            key={roll.id}
-            x={roll.x}
-            y={roll.y}
-            numDice={roll.numDice}
-            numSides={roll.numSides}
-          />
-        ))}
+        {Object.values(diceRollers).map(({ id, x, y, numDice, numSides }) => {
+          console.log(`Rendering DiceRollKonva id=${id}, x=${x}, y=${y}, numDice=${numDice}, numSides=${numSides}`);
+          return (
+            <DiceRollKonva
+              key={id}
+              id={id}
+              isRotated={isRotated}
+              x={isRotated ? -x : x}
+              y={isRotated ? -y : y}
+              numDice={numDice}
+              numSides={numSides}
+              onMove={({ x, y }) => {
+                const rotatedX = isRotated ? -x : x;
+                const rotatedY = isRotated ? -y : y;
+                sendMessage({
+                  type: "MOVE_DICE_ROLLER",
+                  id,
+                  x: rotatedX,
+                  y: rotatedY,
+                });
+              }}
+            />
+          );
+        })}
       </Layer>
     </Stage>
   );

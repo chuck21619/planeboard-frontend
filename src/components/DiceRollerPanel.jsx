@@ -1,6 +1,7 @@
 import { useState } from "react";
+import { sendMessage } from "../ws";
 
-export default function DiceRollerPanel({ onSpawn, onClose }) {
+export default function DiceRollerPanel({ id, onSpawn, onClose }) {
   const [numDice, setNumDice] = useState(2);
   const [numSides, setNumSides] = useState(6);
 

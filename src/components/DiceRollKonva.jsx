@@ -1,10 +1,18 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Group, Rect, Text } from "react-konva";
+import { sendMessage } from "../ws";
 
-export default function DiceRollKonva({ x, y, numDice, numSides }) {
+export default function DiceRollKonva({
+  id,
+  isRotated,
+  x,
+  y,
+  numDice,
+  numSides,
+  onMove,
+}) {
   const rowHeight = 40;
   const cycles = 3;
-  const [pos, setPos] = useState({ x: x, y: y });
   const [results, setResults] = useState(
     Array.from({ length: numDice }, () => 1)
   );
@@ -22,32 +30,20 @@ export default function DiceRollKonva({ x, y, numDice, numSides }) {
     const newResults = generateResults();
     setResults(newResults);
     setRolling(true);
-
     const totalHeight = rowHeight * numSides * cycles;
-
-    // Final offsets: one full cycle + offset for final rolled number
     const finalOffsets = newResults.map((val) => {
-      // One full cycle height plus offset for final number
       const offset =
         rowHeight * numSides * (cycles - 1) + (val - 1) * rowHeight;
-      // Clamp so it doesn't scroll past max height
       return Math.min(offset, totalHeight - rowHeight);
     });
-
-    console.log("Rolling results:", newResults);
-    console.log("Final offsets:", finalOffsets);
-
     const startTime = performance.now();
-    const duration = 4000; // slower animation, 4 seconds
-
+    const duration = 4000;
     const animate = (time) => {
       const elapsed = time - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 5); // quintic ease out
-
+      const eased = 1 - Math.pow(1 - progress, 5);
       const newOffsets = finalOffsets.map((target) => target * eased);
       setOffsets(newOffsets);
-
       if (progress < 1) {
         animationRef.current = requestAnimationFrame(animate);
       } else {
@@ -55,7 +51,6 @@ export default function DiceRollKonva({ x, y, numDice, numSides }) {
         setRolling(false);
       }
     };
-
     animationRef.current = requestAnimationFrame(animate);
   };
 
@@ -69,13 +64,24 @@ export default function DiceRollKonva({ x, y, numDice, numSides }) {
 
   return (
     <Group
-      x={pos.x}
-      y={pos.y}
+      x={x}
+      y={y}
       draggable
       onDragEnd={(e) => {
-        setPos({ x: e.target.x(), y: e.target.y() });
+        onMove?.({ x: e.target.x(), y: e.target.y() });
       }}
     >
+      {/* Background */}
+      <Rect
+        x={-10}
+        y={-10}
+        width={numDice * 50 + 105}
+        height={rowHeight + 20}
+        fill="black"
+        opacity={0.6}
+        cornerRadius={8}
+      />
+
       {/* Dice columns */}
       {offsets.map((offset, i) => {
         const maxScroll = rowHeight * numSides * cycles - rowHeight;
@@ -112,27 +118,27 @@ export default function DiceRollKonva({ x, y, numDice, numSides }) {
 
       {/* Roll Button */}
       <Group
-        x={numDice * 50 + 10}
-        y={rowHeight / 4}
+        x={numDice * 50 + 5}
+        y={rowHeight / 7}
         onClick={() => {
           if (!rolling) startRolling();
         }}
-        // Konva doesn't support style prop for cursor; can add pointer events manually if needed
       >
         <Rect
           width={80}
-          height={rowHeight * 0.6}
-          fill={rolling ? "gray" : "darkgreen"}
+          height={rowHeight * 0.75}
+          fill={rolling ? "rgba(40, 40, 40, 1)" : "rgba(5, 68, 21, 1)"}
           cornerRadius={6}
           shadowColor="black"
           shadowBlur={4}
         />
         <Text
           text={rolling ? "Rolling..." : "Roll"}
-          fontSize={20}
+          fontSize={rolling ? 16 : 18}
+          fontStyle="bold"
           fill="white"
           width={80}
-          height={rowHeight * 0.6}
+          height={rowHeight * 0.75}
           align="center"
           verticalAlign="middle"
           pointerEvents="none"
