@@ -7,9 +7,13 @@ export default function DiceRollKonva({
   isRotated,
   x,
   y,
+  hovered,
   numDice,
   numSides,
+  hoveredDiceRollerId,
+  setHoveredDiceRollerId,
 }) {
+  const [isHovered, setIsHovered] = React.useState(false);
   const width = numDice * 50 + 105;
   const rowHeight = 40;
   const cycles = 3;
@@ -61,12 +65,26 @@ export default function DiceRollKonva({
   }, []);
 
   const numbers = Array.from({ length: numSides }, (_, i) => i + 1);
-
+  React.useEffect(() => {
+    setIsHovered(hovered);
+  }, [hovered]);
   return (
     <Group
       x={x}
       y={y}
       draggable
+      onMouseEnter={(e) => {
+        setIsHovered(true);
+        setHoveredDiceRollerId(id);
+        const container = e.target.getStage().container();
+        container.style.cursor = "pointer";
+      }}
+      onMouseLeave={(e) => {
+        setIsHovered(false);
+        if (hoveredDiceRollerId === id) setHoveredDiceRollerId(null);
+        const container = e.target.getStage().container();
+        container.style.cursor = "default";
+      }}
       onDragEnd={(e) => {
         const rotatedX = isRotated ? -e.target.x() - width + 20 : e.target.x();
         const rotatedY = isRotated ? -e.target.y() - 40 : e.target.y();

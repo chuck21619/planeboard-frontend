@@ -56,6 +56,7 @@ function Room() {
   const [cardMenuCard, setCardMenuCard] = useState(null);
   const [counters, setCounters] = useState({});
   const [hoveredCounterId, setHoveredCounterId] = useState(null);
+  const [hoveredDiceRollerId, setHoveredDiceRollerId] = useState(null);
   const { roomId } = useParams();
   const [hasJoined, setHasJoined] = useState(false);
   const { showSpinner, minLoadingDone } = useLoadingFade(hasJoined);
@@ -198,7 +199,6 @@ function Room() {
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "d" && hoveredCounterId != null) {
-        console.log("Deleting counter:", hoveredCounterId);
         setCounters((prev) => {
           const newCounters = { ...prev };
           delete newCounters[hoveredCounterId];
@@ -207,14 +207,23 @@ function Room() {
         sendMessage({ type: "DELETE_COUNTER", id: hoveredCounterId });
         setHoveredCounterId(null);
       }
+      else if (e.key === "d" && hoveredDiceRollerId != null) {
+        setDiceRollers((prev) => {
+          const newDiceRollers = { ...prev };
+          delete newDiceRollers[hoveredDiceRollerId];
+          return newDiceRollers;
+        });
+        sendMessage({ type: "DELETE_DICE_ROLLER", id: hoveredDiceRollerId });
+        setHoveredDiceRollerId(null);
+      }
     };
     const container = stageRef.current?.getStage()?.container();
     if (container) {
-      container.style.cursor = hoveredCounterId != null ? "pointer" : "default";
+      container.style.cursor = (hoveredCounterId != null || hoveredDiceRollerId != null) ? "pointer" : "default";
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [hoveredCounterId]);
+  }, [hoveredCounterId, hoveredDiceRollerId]);
 
   useEffect(() => {
     if (!(draggingCard && dragSource === "deckCardViewer")) return;
@@ -296,6 +305,8 @@ function Room() {
             hoveredCounterId={hoveredCounterId}
             setHoveredCounterId={setHoveredCounterId}
             diceRollers={diceRollers}
+            hoveredDiceRollerId={hoveredDiceRollerId}
+            setHoveredDiceRollerId={setHoveredDiceRollerId}
           />
           <Hand
             hand={hand}

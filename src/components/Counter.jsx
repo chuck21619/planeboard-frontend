@@ -7,10 +7,10 @@ export default function Counter({
   x,
   y,
   count,
-  onHoverChange,
   hovered,
   isRotated,
   setCounters,
+  hoveredCounterId,
   setHoveredCounterId,
 }) {
   const [isHovered, setIsHovered] = React.useState(false);
@@ -47,19 +47,15 @@ export default function Counter({
           y: rotatedY,
         });
       }}
-      onHoverChange={(hovered) => {
-        if (hovered) setHoveredCounterId(id);
-        else if (hoveredCounterId === id) setHoveredCounterId(null);
-      }}
       onMouseEnter={(e) => {
         setIsHovered(true);
-        onHoverChange?.(true);
+        setHoveredCounterId(id);
         const container = e.target.getStage().container();
         container.style.cursor = "pointer";
       }}
       onMouseLeave={(e) => {
         setIsHovered(false);
-        onHoverChange?.(false);
+        if ( hoveredCounterId === id ) setHoveredCounterId(null);
         const container = e.target.getStage().container();
         container.style.cursor = "default";
       }}

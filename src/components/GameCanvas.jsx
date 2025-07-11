@@ -48,6 +48,8 @@ export default function GameCanvas({
   hoveredCounterId,
   setHoveredCounterId,
   diceRollers,
+  hoveredDiceRollerId,
+  setHoveredDiceRollerId,
 }) {
   const viewerPosition = positions[username];
 
@@ -164,6 +166,7 @@ export default function GameCanvas({
             isRotated={isRotated}
             setCounters={setCounters}
             hovered={hoveredCounterId === id}
+            hoveredCounterId={hoveredCounterId}
             setHoveredCounterId={setHoveredCounterId}
           />
         ))}
@@ -178,6 +181,9 @@ export default function GameCanvas({
             y={isRotated ? -y-40 : y}
             numDice={numDice}
             numSides={numSides}
+            hovered={hoveredDiceRollerId === id}
+            hoveredDiceRollerId={hoveredDiceRollerId}
+            setHoveredDiceRollerId={setHoveredDiceRollerId}
           />
         ))}
       </Layer>
