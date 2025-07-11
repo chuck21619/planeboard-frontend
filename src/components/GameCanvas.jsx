@@ -174,8 +174,8 @@ export default function GameCanvas({
             key={id}
             id={id}
             isRotated={isRotated}
-            x={isRotated ? -x : x}
-            y={isRotated ? -y : y}
+            x={isRotated ? -x-(numDice * 50 + 85) : x}
+            y={isRotated ? -y-40 : y}
             numDice={numDice}
             numSides={numSides}
           />

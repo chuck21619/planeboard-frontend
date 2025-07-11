@@ -10,6 +10,7 @@ export default function DiceRollKonva({
   numDice,
   numSides,
 }) {
+  const width = numDice * 50 + 105;
   const rowHeight = 40;
   const cycles = 3;
   const [results, setResults] = useState(
@@ -67,7 +68,7 @@ export default function DiceRollKonva({
       y={y}
       draggable
       onDragEnd={(e) => {
-        const rotatedX = isRotated ? -e.target.x() - 40 : e.target.x();
+        const rotatedX = isRotated ? -e.target.x() - width + 20 : e.target.x();
         const rotatedY = isRotated ? -e.target.y() - 40 : e.target.y();
         sendMessage({
           type: "MOVE_DICE_ROLLER",
@@ -81,7 +82,7 @@ export default function DiceRollKonva({
       <Rect
         x={-10}
         y={-10}
-        width={numDice * 50 + 105}
+        width={width}
         height={rowHeight + 20}
         fill="black"
         opacity={0.6}
