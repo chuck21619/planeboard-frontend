@@ -243,6 +243,31 @@ export function useRoomHandlers({
           return updated;
         });
       } else if (message.type === "DICE_ROLLED") {
+        const { id, results } = message;
+        setDiceRollers((prev) => {
+          if (!prev[id]) return prev;
+          const newDiceRollers = {
+            ...prev,
+            [id]: {
+              ...prev[id],
+              rollTrigger: results,
+            },
+          };
+          // Clear it right after to avoid repeat triggering
+          setTimeout(() => {
+            setDiceRollers((prev2) => {
+              if (!prev2[id]) return prev2;
+              return {
+                ...prev2,
+                [id]: {
+                  ...prev2[id],
+                  rollTrigger: null,
+                },
+              };
+            });
+          }, 0); // next tick
+          return newDiceRollers;
+        });
       } else if (message.type === "DICE_ROLLER_DELETED") {
         setDiceRollers((prev) => {
           const copy = { ...prev };

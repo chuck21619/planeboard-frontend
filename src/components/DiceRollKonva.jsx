@@ -12,14 +12,12 @@ export default function DiceRollKonva({
   numSides,
   hoveredDiceRollerId,
   setHoveredDiceRollerId,
+  rollTrigger,
 }) {
   const [isHovered, setIsHovered] = React.useState(false);
   const width = numDice * 50 + 105;
   const rowHeight = 40;
   const cycles = 3;
-  const [results, setResults] = useState(
-    Array.from({ length: numDice }, () => 1)
-  );
   const [offsets, setOffsets] = useState(
     Array.from({ length: numDice }, () => 0)
   );
@@ -30,9 +28,7 @@ export default function DiceRollKonva({
   const generateResults = () =>
     Array.from({ length: numDice }, () => Math.ceil(Math.random() * numSides));
 
-  const startRolling = () => {
-    const newResults = generateResults();
-    setResults(newResults);
+  const startRolling = (newResults) => {
     setRolling(true);
     const totalHeight = rowHeight * numSides * cycles;
     const finalOffsets = newResults.map((val) => {
@@ -63,7 +59,12 @@ export default function DiceRollKonva({
       if (animationRef.current) cancelAnimationFrame(animationRef.current);
     };
   }, []);
-
+  useEffect(() => {
+    console.log("roll trigger changed");
+    if (rollTrigger && !rolling) {
+      startRolling(rollTrigger);
+    }
+  }, [rollTrigger, rolling]);
   const numbers = Array.from({ length: numSides }, (_, i) => i + 1);
   React.useEffect(() => {
     setIsHovered(hovered);
@@ -146,7 +147,15 @@ export default function DiceRollKonva({
         x={numDice * 50 + 5}
         y={rowHeight / 7}
         onClick={() => {
-          if (!rolling) startRolling();
+          if (!rolling) {
+            const newResults = generateResults();
+            startRolling(newResults);
+            sendMessage({
+              type: "ROLL_DICE",
+              id: hoveredDiceRollerId,
+              diceResults: newResults,
+            });
+          }
         }}
       >
         <Rect

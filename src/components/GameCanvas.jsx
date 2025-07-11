@@ -172,7 +172,7 @@ export default function GameCanvas({
         ))}
       </Layer>
       <Layer>
-        {Object.values(diceRollers).map(({ id, x, y, numDice, numSides }) => (
+        {Object.values(diceRollers).map(({ id, x, y, numDice, numSides, rollTrigger }) => (
           <DiceRollKonva
             key={id}
             id={id}
@@ -184,6 +184,7 @@ export default function GameCanvas({
             hovered={hoveredDiceRollerId === id}
             hoveredDiceRollerId={hoveredDiceRollerId}
             setHoveredDiceRollerId={setHoveredDiceRollerId}
+            rollTrigger={rollTrigger}
           />
         ))}
       </Layer>
