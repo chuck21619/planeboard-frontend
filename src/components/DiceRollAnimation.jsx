@@ -27,23 +27,69 @@ export default function DiceRollAnimation({ numDice, numSides, results }) {
 }
 
 function DieColumn({ numSides, finalValue, delayOffset }) {
-  const [value, setValue] = useState(() => Math.ceil(Math.random() * numSides));
+  const [offset, setOffset] = useState(0);
+  const [spinning, setSpinning] = useState(true);
 
   useEffect(() => {
-    let count = 0;
-    const totalSpins = 20 + Math.floor(Math.random() * 10); // full cycles before slowing
-    const spin = () => {
-      if (count < totalSpins) {
-        setValue(Math.ceil(Math.random() * numSides));
-        count++;
-        const delay = 30 + count * 5 + delayOffset * 0.1; // slowing effect
-        setTimeout(spin, delay);
+    const rowHeight = 40; // height per number
+    const cycles = 2 + Math.floor(Math.random() * 2); // how many times it loops
+    const totalDistance = rowHeight * numSides * cycles;
+
+    const finalIndex = finalValue - 1;
+    const finalOffset = totalDistance + rowHeight * finalIndex;
+
+    let start = null;
+
+    const duration = 1200 + delayOffset; // total animation duration
+
+    const step = (timestamp) => {
+      if (!start) start = timestamp;
+      const elapsed = timestamp - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const easeOut = 1 - Math.pow(1 - progress, 3);
+
+      setOffset(finalOffset * easeOut);
+
+      if (progress < 1) {
+        requestAnimationFrame(step);
       } else {
-        setValue(finalValue);
+        setSpinning(false);
       }
     };
-    spin();
+
+    requestAnimationFrame(step);
   }, [numSides, finalValue, delayOffset]);
 
-  return <div style={{ width: 40, textAlign: "center" }}>{value}</div>;
+  const numbers = Array.from({ length: numSides }, (_, i) => i + 1);
+
+  return (
+    <div
+      style={{
+        width: 40,
+        height: 40,
+        overflow: "hidden",
+        background: "#111",
+        border: "1px solid #444",
+        textAlign: "center",
+        fontSize: 28,
+        lineHeight: "40px",
+        fontFamily: "monospace",
+      }}
+    >
+      <div
+        style={{
+          transform: `translateY(-${offset}px)`,
+          transition: spinning ? "none" : "transform 0.3s ease-out",
+        }}
+      >
+        {Array.from({ length: 10 }).flatMap(() =>
+          numbers.map((n) => (
+            <div key={Math.random()} style={{ height: 40 }}>
+              {n}
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
 }
