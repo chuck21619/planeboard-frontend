@@ -30,7 +30,6 @@ import BoardContextMenu from "./BoardContextMenu";
 import ScryModal from "./ScryModal";
 import SurveilModal from "./SurveilModal";
 import DiceRollerPanel from "./DiceRollerPanel";
-import DiceRollAnimation from "./DiceRollAnimation";
 
 function Room() {
   const [username] = useState(() => localStorage.getItem("username"));
@@ -74,9 +73,6 @@ function Room() {
   const [handSizes, setHandSizes] = useState({});
   const [cardBackImage] = useImage("/defaultCardBack.jpg");
   const [diceRollerVisible, setDiceRollerVisible] = useState(false);
-  const [diceResults, setDiceResults] = useState(null);
-  const [showDiceAnimation, setShowDiceAnimation] = useState(false);
-  const [numSides, setNumSides] = useState(6);
   const [diceRollers, setDiceRollers] = useState({});
   const [positions, setPositions] = useState({});
   const { remappedPositions, isRotated } = useMemo(() => {
@@ -467,15 +463,6 @@ function Room() {
               setDiceRollerVisible(false);
             }}
           />
-        )}
-        {showDiceAnimation && (
-          <div style={{ position: "absolute", bottom: 20, left: 20 }}>
-            <DiceRollAnimation
-              numDice={diceResults.length}
-              numSides={numSides}
-              results={diceResults}
-            />
-          </div>
         )}
       </div>
     </div>
