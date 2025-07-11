@@ -77,6 +77,7 @@ function Room() {
   const [diceResults, setDiceResults] = useState(null);
   const [showDiceAnimation, setShowDiceAnimation] = useState(false);
   const [numSides, setNumSides] = useState(6);
+  const [diceRolls, setDiceRolls] = useState([]);
   const [positions, setPositions] = useState({});
   const { remappedPositions, isRotated } = useMemo(() => {
     return remapPositions(username, positions);
@@ -297,6 +298,7 @@ function Room() {
             setCounters={setCounters}
             hoveredCounterId={hoveredCounterId}
             setHoveredCounterId={setHoveredCounterId}
+            diceRolls={diceRolls}
           />
           <Hand
             hand={hand}
@@ -442,20 +444,11 @@ function Room() {
         )}
         {diceRollerVisible && (
           <DiceRollerPanel
-            onRoll={(numDice, numSides) => {
-              const results = Array.from({ length: numDice }, () =>
-                Math.ceil(Math.random() * numSides)
-              );
-              setDiceResults(results);
-              setNumSides(numSides);
-              setShowDiceAnimation(true);
-              // sendMessage({
-              //   type: "ROLL_DICE",
-              //   username: username,
-              //   numDice,
-              //   numSides,
-              //   results,
-              // });
+            onSpawn={(numDice, numSides) => {
+              setDiceRolls((prev) => [
+                ...prev,
+                { id: Date.now(), x: 0, y: 0, numDice, numSides },
+              ]);
             }}
             onClose={() => {
               setDiceRollerVisible(false);

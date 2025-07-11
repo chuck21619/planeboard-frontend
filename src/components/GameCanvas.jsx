@@ -6,6 +6,7 @@ import BoardBackground from "./BoardBackground";
 import { getCardRotation } from "../utils/cardOrientation";
 import Counter from "./Counter";
 import { sendMessage } from "../ws";
+import DiceRollKonva from "./DiceRollKonva";
 
 export default function GameCanvas({
   stageRef,
@@ -46,6 +47,7 @@ export default function GameCanvas({
   setCounters,
   hoveredCounterId,
   setHoveredCounterId,
+  diceRolls,
 }) {
   const viewerPosition = positions[username];
 
@@ -155,8 +157,8 @@ export default function GameCanvas({
         {Object.values(counters).map(({ id, x, y, count }) => (
           <Counter
             key={id}
-            x={isRotated ? -x-40 : x}
-            y={isRotated ? -y-40 : y}
+            x={isRotated ? -x - 40 : x}
+            y={isRotated ? -y - 40 : y}
             count={count}
             hovered={hoveredCounterId === id}
             onChange={(newCount) => {
@@ -174,8 +176,8 @@ export default function GameCanvas({
               });
             }}
             onMove={({ x, y }) => {
-              const rotatedX = isRotated ? -x-40 : x;
-              const rotatedY = isRotated ? -y-40 : y;
+              const rotatedX = isRotated ? -x - 40 : x;
+              const rotatedY = isRotated ? -y - 40 : y;
               sendMessage({
                 type: "MOVE_COUNTER",
                 id,
@@ -187,6 +189,17 @@ export default function GameCanvas({
               if (hovered) setHoveredCounterId(id);
               else if (hoveredCounterId === id) setHoveredCounterId(null);
             }}
+          />
+        ))}
+      </Layer>
+      <Layer>
+        {diceRolls.map((roll) => (
+          <DiceRollKonva
+            key={roll.id}
+            x={roll.x}
+            y={roll.y}
+            numDice={roll.numDice}
+            numSides={roll.numSides}
           />
         ))}
       </Layer>

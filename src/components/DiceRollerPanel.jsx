@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function DiceRollerPanel({ onRoll, onClose }) {
+export default function DiceRollerPanel({ onSpawn, onClose }) {
   const [numDice, setNumDice] = useState(2);
   const [numSides, setNumSides] = useState(6);
 
@@ -92,11 +92,11 @@ export default function DiceRollerPanel({ onRoll, onClose }) {
       >
         <button
           onClick={() => {
-            onRoll(numDice, numSides);
+            onSpawn(numDice, numSides);
             onClose();
           }}
         >
-          Roll
+          Spawn
         </button>
         <button onClick={onClose}>Close</button>
       </div>
