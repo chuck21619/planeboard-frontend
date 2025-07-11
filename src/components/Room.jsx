@@ -167,8 +167,6 @@ function Room() {
     setTurn,
     setCounters,
     setDiceRollers,
-    diceRollers,
-    counters,
   });
   const handleDeckRightClick = (clientX, clientY, deckId) => {
     rightClickHandledRef.current = true;
@@ -413,12 +411,10 @@ function Room() {
               count: 1,
               owner: username,
             };
-            console.log("counters 1:", counters);
             setCounters((prev) => ({
               ...prev,
               [newCounter.id]: newCounter,
             }));
-            console.log("counters 2:", counters);
             sendMessage({ type: "ADD_COUNTER", counters: [newCounter] });
             setHoveredCounterId(newId);
             setBoardMenuVisible(false);

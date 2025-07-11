@@ -157,66 +157,29 @@ export default function GameCanvas({
         {Object.values(counters).map(({ id, x, y, count }) => (
           <Counter
             key={id}
+            id={id}
             x={isRotated ? -x - 40 : x}
             y={isRotated ? -y - 40 : y}
             count={count}
+            isRotated={isRotated}
+            setCounters={setCounters}
             hovered={hoveredCounterId === id}
-            onChange={(newCount) => {
-              setCounters((prev) => ({
-                ...prev,
-                [id]: {
-                  ...prev[id],
-                  count: newCount,
-                },
-              }));
-              sendMessage({
-                type: "UPDATE_COUNTER",
-                id,
-                count: newCount,
-              });
-            }}
-            onMove={({ x, y }) => {
-              const rotatedX = isRotated ? -x - 40 : x;
-              const rotatedY = isRotated ? -y - 40 : y;
-              sendMessage({
-                type: "MOVE_COUNTER",
-                id,
-                x: rotatedX,
-                y: rotatedY,
-              });
-            }}
-            onHoverChange={(hovered) => {
-              if (hovered) setHoveredCounterId(id);
-              else if (hoveredCounterId === id) setHoveredCounterId(null);
-            }}
+            setHoveredCounterId={setHoveredCounterId}
           />
         ))}
       </Layer>
       <Layer>
-        {Object.values(diceRollers).map(({ id, x, y, numDice, numSides }) => {
-          console.log(`Rendering DiceRollKonva id=${id}, x=${x}, y=${y}, numDice=${numDice}, numSides=${numSides}`);
-          return (
-            <DiceRollKonva
-              key={id}
-              id={id}
-              isRotated={isRotated}
-              x={isRotated ? -x : x}
-              y={isRotated ? -y : y}
-              numDice={numDice}
-              numSides={numSides}
-              onMove={({ x, y }) => {
-                const rotatedX = isRotated ? -x : x;
-                const rotatedY = isRotated ? -y : y;
-                sendMessage({
-                  type: "MOVE_DICE_ROLLER",
-                  id,
-                  x: rotatedX,
-                  y: rotatedY,
-                });
-              }}
-            />
-          );
-        })}
+        {Object.values(diceRollers).map(({ id, x, y, numDice, numSides }) => (
+          <DiceRollKonva
+            key={id}
+            id={id}
+            isRotated={isRotated}
+            x={isRotated ? -x : x}
+            y={isRotated ? -y : y}
+            numDice={numDice}
+            numSides={numSides}
+          />
+        ))}
       </Layer>
     </Stage>
   );

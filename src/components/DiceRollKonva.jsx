@@ -9,7 +9,6 @@ export default function DiceRollKonva({
   y,
   numDice,
   numSides,
-  onMove,
 }) {
   const rowHeight = 40;
   const cycles = 3;
@@ -68,7 +67,14 @@ export default function DiceRollKonva({
       y={y}
       draggable
       onDragEnd={(e) => {
-        onMove?.({ x: e.target.x(), y: e.target.y() });
+        const rotatedX = isRotated ? -e.target.x() - 40 : e.target.x();
+        const rotatedY = isRotated ? -e.target.y() - 40 : e.target.y();
+        sendMessage({
+          type: "MOVE_DICE_ROLLER",
+          id,
+          x: rotatedX,
+          y: rotatedY,
+        });
       }}
     >
       {/* Background */}

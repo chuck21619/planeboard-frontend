@@ -1,16 +1,34 @@
 import React from "react";
 import { Group, Rect, Text } from "react-konva";
+import { sendMessage } from "../ws";
 
 export default function Counter({
+  id,
   x,
   y,
   count,
-  onChange,
   onHoverChange,
   hovered,
-  onMove,
+  isRotated,
+  setCounters,
+  setHoveredCounterId,
 }) {
   const [isHovered, setIsHovered] = React.useState(false);
+  const handleChange = (newCount) => {
+    setCounters((prev) => ({
+      ...prev,
+      [id]: {
+        ...prev[id],
+        count: newCount,
+      },
+    }));
+    sendMessage({
+      type: "UPDATE_COUNTER",
+      id,
+      count: newCount,
+    });
+  };
+
   React.useEffect(() => {
     setIsHovered(hovered);
   }, [hovered]);
@@ -20,7 +38,18 @@ export default function Counter({
       y={y}
       draggable
       onDragEnd={(e) => {
-        onMove?.({ x: e.target.x(), y: e.target.y() });
+        const rotatedX = isRotated ? -e.target.x() - 40 : e.target.x();
+        const rotatedY = isRotated ? -e.target.y() - 40 : e.target.y();
+        sendMessage({
+          type: "MOVE_COUNTER",
+          id,
+          x: rotatedX,
+          y: rotatedY,
+        });
+      }}
+      onHoverChange={(hovered) => {
+        if (hovered) setHoveredCounterId(id);
+        else if (hoveredCounterId === id) setHoveredCounterId(null);
       }}
       onMouseEnter={(e) => {
         setIsHovered(true);
@@ -38,14 +67,14 @@ export default function Counter({
         if (e.evt.button === 0) {
           console.log("on click");
           e.evt.preventDefault();
-          onChange && onChange(count + 1);
+          handleChange(count + 1);
         }
       }}
       onContextMenu={(e) => {
         e.evt.preventDefault();
         e.evt.stopPropagation(); // 💥 this blocks stage menu
         e.cancelBubble = true;
-        onChange && onChange(count - 1);
+        handleChange(count - 1);
       }}
     >
       <Rect
