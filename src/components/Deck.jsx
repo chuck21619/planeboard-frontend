@@ -12,7 +12,6 @@ export default function Deck({
   setHandSizes,
   remappedPositions,
 }) {
-  console.log("remappedPositions: ", remappedPositions);
   const [deckImage] = useImage("/deck.png");
   const [hovered, setHovered] = useState(false);
 

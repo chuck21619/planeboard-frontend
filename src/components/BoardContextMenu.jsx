@@ -1,4 +1,10 @@
-export default function BoardContextMenu({ visible, position, onClose, onAddCounter }) {
+export default function BoardContextMenu({
+  visible,
+  position,
+  onClose,
+  onAddCounter,
+  onRollDice,
+}) {
   if (!visible) return null;
 
   return (
@@ -23,6 +29,16 @@ export default function BoardContextMenu({ visible, position, onClose, onAddCoun
         }}
       >
         ➕ Add Counter
+      </div>
+
+      <div
+        style={{ cursor: "pointer" }}
+        onClick={() => {
+          onRollDice();
+          onClose();
+        }}
+      >
+        🎲 Roll Dice
       </div>
     </div>
   );

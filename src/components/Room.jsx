@@ -29,6 +29,8 @@ import { updateDeckTokens } from "../utils/deckUtils";
 import BoardContextMenu from "./BoardContextMenu";
 import ScryModal from "./ScryModal";
 import SurveilModal from "./SurveilModal";
+import DiceRollerPanel from "./DiceRollerPanel";
+import DiceRollAnimation from "./DiceRollAnimation";
 
 function Room() {
   const [username] = useState(() => localStorage.getItem("username"));
@@ -71,6 +73,10 @@ function Room() {
   const [turn, setTurn] = useState("");
   const [handSizes, setHandSizes] = useState({});
   const [cardBackImage] = useImage("/defaultCardBack.jpg");
+  const [diceRollerVisible, setDiceRollerVisible] = useState(false);
+  const [diceResults, setDiceResults] = useState(null);
+  const [showDiceAnimation, setShowDiceAnimation] = useState(false);
+  const [numSides, setNumSides] = useState(6);
   const [positions, setPositions] = useState({});
   const { remappedPositions, isRotated } = useMemo(() => {
     return remapPositions(username, positions);
@@ -410,6 +416,9 @@ function Room() {
             setHoveredCounterId(newId);
             setBoardMenuVisible(false);
           }}
+          onRollDice={() => {
+            setDiceRollerVisible(true);
+          }}
         />
         {scryData && contextMenuDeckId && decks[contextMenuDeckId] && (
           <ScryModal
@@ -430,6 +439,37 @@ function Room() {
             setCards={setCards}
             isRotated={isRotated}
           />
+        )}
+        {diceRollerVisible && (
+          <DiceRollerPanel
+            onRoll={(numDice, numSides) => {
+              const results = Array.from({ length: numDice }, () =>
+                Math.ceil(Math.random() * numSides)
+              );
+              setDiceResults(results);
+              setNumSides(numSides);
+              setShowDiceAnimation(true);
+              // sendMessage({
+              //   type: "ROLL_DICE",
+              //   username: username,
+              //   numDice,
+              //   numSides,
+              //   results,
+              // });
+            }}
+            onClose={() => {
+              setDiceRollerVisible(false);
+            }}
+          />
+        )}
+        {showDiceAnimation && (
+          <div style={{ position: "absolute", bottom: 20, left: 20 }}>
+            <DiceRollAnimation
+              numDice={diceResults.length}
+              numSides={numSides}
+              results={diceResults}
+            />
+          </div>
         )}
       </div>
     </div>
