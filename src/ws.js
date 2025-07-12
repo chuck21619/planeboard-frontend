@@ -4,7 +4,7 @@ const HTTP_BASE_URL = import.meta.env.VITE_HTTP_BASE_URL;
 const WS_BASE_URL = import.meta.env.VITE_WS_BASE_URL;
 let intentionalDisconnect = false;
 
-async function waitForHealth(retries = 10, delay = 1000) {
+async function waitForHealth(retries = 10, delay = 10000) {
   for (let i = 0; i < retries; i++) {
     try {
       const res = await fetch(`${HTTP_BASE_URL}/health`, { cache: "no-store" });
