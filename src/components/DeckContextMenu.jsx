@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { sendMessage } from "../ws";
 
 export default function DeckContextMenu({
   visible,
@@ -50,6 +51,17 @@ export default function DeckContextMenu({
         }}
       >
         🔍 Search
+      </div>
+
+      {/*Shuffle*/}
+      <div
+        style={{ cursor: "pointer", padding: "4px 0" }}
+        onClick={() => {
+          sendMessage({type: "SHUFFLE_DECK", id: deckId});
+          onClose();
+        }}
+      >
+        🔀 Shuffle
       </div>
 
       {/* Scry Menu Item */}
@@ -160,7 +172,10 @@ export default function DeckContextMenu({
           cursor: "pointer",
         }}
         onClick={() => {
-          setPeekCardsData({cards: decks[deckId].cards.slice(0, peekTopCount), position: "top"});
+          setPeekCardsData({
+            cards: decks[deckId].cards.slice(0, peekTopCount),
+            position: "top",
+          });
           onClose();
         }}
       >
@@ -208,7 +223,10 @@ export default function DeckContextMenu({
           cursor: "pointer",
         }}
         onClick={() => {
-          setPeekCardsData({cards: decks[deckId].cards.slice(-peekBottomCount), position: "bottom"});
+          setPeekCardsData({
+            cards: decks[deckId].cards.slice(-peekBottomCount),
+            position: "bottom",
+          });
           onClose();
         }}
       >

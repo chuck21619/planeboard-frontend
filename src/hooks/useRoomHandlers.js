@@ -122,6 +122,14 @@ export function useRoomHandlers({
             card.id === message.id ? { ...card, tapped: message.tapped } : card
           )
         );
+      } else if (message.type === "DECK_SHUFFLED") {
+        setDecks((prev) => {
+          const newDecks = { ...prev };
+          if (newDecks[message.id]) {
+            newDecks[message.id].cards = message.deckCards;
+          }
+          return newDecks;
+        });
       } else if (message.type === "CARD_FLIPPED") {
         setCards((prevCards) =>
           prevCards.map((card) =>

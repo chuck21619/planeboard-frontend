@@ -16,7 +16,6 @@ async function waitForHealth(retries = 10, delay = 10000) {
 }
 
 export async function connectToRoom() {
-  console.log("connect to room");
   const username = localStorage.getItem("username");
   const roomId = localStorage.getItem("roomId");
   const deckUrl = localStorage.getItem("deckUrl");
