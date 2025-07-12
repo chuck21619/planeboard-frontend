@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import HowToModal from "./components/HowToModal";
 
 export default function Login() {
   const [username, setUsername] = useState(
@@ -12,6 +13,7 @@ export default function Login() {
     () => localStorage.getItem("deckUrl") || ""
   );
   const [isFadingOut, setIsFadingOut] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
 
   const handleJoinRoom = () => {
@@ -51,7 +53,12 @@ export default function Login() {
         />
         <br />
         <button onClick={handleJoinRoom}>Join Room</button>
+        <button onClick={() => setShowModal(true)} className="help-button">
+          ?
+        </button>
       </div>
+
+      {showModal && <HowToModal onClose={() => setShowModal(false)} />}
     </div>
   );
 }
