@@ -1,47 +1,70 @@
 let socket = null;
 let onMessageHandler = null;
-
+const HTTP_BASE_URL = import.meta.env.VITE_HTTP_BASE_URL;
 const WS_BASE_URL = import.meta.env.VITE_WS_BASE_URL;
 let intentionalDisconnect = false;
 
-export function connectToRoom() {
+async function waitForHealth(retries = 10, delay = 1000) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const res = await fetch(`${HTTP_BASE_URL}/health`, { cache: "no-store" });
+      if (res.ok) return;
+    } catch (_) {}
+    await new Promise((resolve) => setTimeout(resolve, delay));
+  }
+  throw new Error("Backend health check failed after retries");
+}
+
+export async function connectToRoom() {
+  console.log("connect to room");
   const username = localStorage.getItem("username");
   const roomId = localStorage.getItem("roomId");
   const deckUrl = localStorage.getItem("deckUrl");
-  socket = new WebSocket(
-    `${import.meta.env.VITE_WS_BASE_URL}/ws?room=${roomId}&username=${username}`
-  );
 
-  socket.onopen = () => {
-    intentionalDisconnect = false;
-    console.log("✅ WebSocket connected");
-    socket.send(
-      JSON.stringify({
-        type: "JOIN",
-        username,
-        deckUrl,
-      })
+  try {
+    await waitForHealth();
+
+    socket = new WebSocket(
+      `${WS_BASE_URL.replace(
+        /^http/,
+        "ws"
+      )}/ws?room=${roomId}&username=${username}`
     );
-  };
 
-  socket.onmessage = (event) => {
-    const message = JSON.parse(event.data);
-    console.log("📨 Message from server:", message);
-    if (onMessageHandler) {
-      onMessageHandler(message);
-    }
-  };
+    socket.onopen = () => {
+      intentionalDisconnect = false;
+      console.log("✅ WebSocket connected");
+      socket.send(
+        JSON.stringify({
+          type: "JOIN",
+          username,
+          deckUrl,
+        })
+      );
+    };
 
-  socket.onclose = () => {
-    console.log("❌ WebSocket disconnected");
-    if (!intentionalDisconnect) {
-      alert("Connection lost. Please refresh or try again later.");
-    }
-  };
+    socket.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      console.log("📨 Message from server:", message);
+      if (onMessageHandler) {
+        onMessageHandler(message);
+      }
+    };
 
-  socket.onerror = (error) => {
-    console.error("⚠️ WebSocket error:", error);
-  };
+    socket.onclose = () => {
+      console.log("❌ WebSocket disconnected");
+      if (!intentionalDisconnect) {
+        alert("Connection lost. Please refresh or try again later.");
+      }
+    };
+
+    socket.onerror = (error) => {
+      console.error("⚠️ WebSocket error:", error);
+    };
+  } catch (err) {
+    console.error("🛑 Failed to connect:", err);
+    alert("Backend is not available. Please try again in a moment.");
+  }
 }
 
 export function sendMessage(msg) {
