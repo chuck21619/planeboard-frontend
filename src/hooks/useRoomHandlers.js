@@ -42,12 +42,16 @@ export function useRoomHandlers({
       if (message.type === "BOARD_STATE") {
         setCards(message.cards);
         setDecks(message.decks);
-        console.log("set positions");
         setPositions(message.positions);
         setHandSizes(message.handSizes);
         setTurn(message.turn);
         setCounters(message.counters);
         setDiceRollers(message.diceRollers);
+        setSpectator(message.spectators.includes(username));
+        setLifeTotals(message.lifeTotals);
+        if (message.users.includes(username) || message.spectators.includes(username)) {
+          setHasJoined(true);
+        }
       } else if (message.type === "MOVE_CARD") {
         setCards((prevCards) =>
           prevCards.map((card) =>
@@ -67,9 +71,6 @@ export function useRoomHandlers({
         setSpectator(message.spectators.includes(username));
         if ( message.commanders ) {
           setCards((prevCards) => [...prevCards, ...message.commanders]);
-        }
-        if (message.users.includes(username) || message.spectators.includes(username)) {
-          setHasJoined(true);
         }
         setLifeTotals(message.lifeTotals);
       } else if (message.type === "PLAYER_DREW_CARD") {

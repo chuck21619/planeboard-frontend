@@ -23,12 +23,12 @@ export async function connectToRoom() {
 
   try {
     await waitForHealth();
-
+    const encodedDeckUrl = encodeURIComponent(deckUrl);
     socket = new WebSocket(
       `${WS_BASE_URL.replace(
         /^http/,
         "ws"
-      )}/ws?room=${roomId}&username=${username}&spectator=${spectator}`
+      )}/ws?room=${roomId}&username=${username}&spectator=${spectator}&deckUrl=${encodedDeckUrl}`
     );
 
     socket.onopen = () => {
