@@ -117,7 +117,10 @@ export default function BoardBackground({
             onMouseDown={(e) =>
               handleClick(e, username, e.evt.button === 2 ? -1 : 1)
             }
-            onContextMenu={(e) => e.evt.preventDefault()}
+            onContextMenu={(e) => {
+              e.cancelBubble = true;
+              e.evt.preventDefault();
+            }}
           />
         )}
       </React.Fragment>
