@@ -41,9 +41,22 @@ export default function HowToModal({ onClose }) {
         </p>
 
         <p>
+          <strong>How do I flip cards?</strong>
+          <br />
+          Press 'f' while hovering over a card on the battlefield. You can also
+          flip a card while dragging by pressing 'f'.
+        </p>
+
+        <p>
           <strong>How do I add counters?</strong>
           <br />
           Right click on the battlefield.
+        </p>
+
+        <p>
+          <strong>How do I delete counters?</strong>
+          <br />
+          Press 'd' while hovering over counter.
         </p>
 
         <p>
@@ -53,9 +66,22 @@ export default function HowToModal({ onClose }) {
         </p>
 
         <p>
+          <strong>How do I delete dice?</strong>
+          <br />
+          Press 'd' while hovering over dice.
+        </p>
+
+        <p>
           <strong>How do I search a library?</strong>
           <br />
           Right click on deck. Drag card onto battlefield or hand.
+        </p>
+
+        <p>
+          <strong>How do I spectate?</strong>
+          <br />
+          Leave archidekt field blank when joining. Or join a room that already
+          has 4 players.
         </p>
 
         <button onClick={onClose}>Close</button>
