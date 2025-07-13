@@ -41,6 +41,7 @@ export function useRoomHandlers({
       if (message.type === "BOARD_STATE") {
         setCards(message.cards);
         setDecks(message.decks);
+        console.log("set positions");
         setPositions(message.positions);
         setHandSizes(message.handSizes);
         setTurn(message.turn);
@@ -61,9 +62,12 @@ export function useRoomHandlers({
         );
       } else if (message.type === "USER_JOINED") {
         setDecks(message.decks);
+        console.log("set positions");
         setPositions(message.positions);
-        setCards((prevCards) => [...prevCards, ...message.commanders]);
-        if (message.users.includes(username)) {
+        if ( message.commanders ) {
+          setCards((prevCards) => [...prevCards, ...message.commanders]);
+        }
+        if (message.users.includes(username) || message.spectators.includes(username)) {
           setHasJoined(true);
         }
         setLifeTotals(message.lifeTotals);
@@ -292,6 +296,7 @@ export function useRoomHandlers({
         setTurn(message.turn);
       } else if (message.type === "USER_LEFT") {
         setTurn(message.turn);
+        console.log("set positions");
         setPositions(message.positions);
         setCards((prevCards) =>
           prevCards.filter((card) => card.owner !== message.user)

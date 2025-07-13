@@ -87,7 +87,8 @@ export default function GameCanvas({
 
       <Layer>
         {Object.entries(handSizes).map(([playerName, count]) => {
-          //if (playerName === username) return null;
+          console.log("mapping from handsizes: ", playerName);
+          console.log("quadrant: ", remappedPositions[playerName]);
           return (
             <OpponentHand
               key={playerName}

@@ -2,7 +2,7 @@ export function remapPositions(viewer, positions) {
   const viewerPos = positions[viewer];
   if (!viewerPos) {
     console.warn("Viewer position not found:", viewer);
-    return positions; // fallback to original
+    return { remappedPositions: positions, isRotated: false };
   }
 
   const shouldRotate = !viewerPos.includes("bottom");

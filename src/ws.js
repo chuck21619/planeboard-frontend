@@ -19,6 +19,7 @@ export async function connectToRoom() {
   const username = localStorage.getItem("username");
   const roomId = localStorage.getItem("roomId");
   const deckUrl = localStorage.getItem("deckUrl");
+  const spectator = localStorage.getItem("spectator") == "true";
 
   try {
     await waitForHealth();
@@ -27,7 +28,7 @@ export async function connectToRoom() {
       `${WS_BASE_URL.replace(
         /^http/,
         "ws"
-      )}/ws?room=${roomId}&username=${username}`
+      )}/ws?room=${roomId}&username=${username}&spectator=${spectator}`
     );
 
     socket.onopen = () => {
@@ -67,6 +68,9 @@ export async function connectToRoom() {
 }
 
 export function sendMessage(msg) {
+  // if ( localStorage.getItem("spectator") == "true" ) {
+  //   console.warn("spectator trying to send message");
+  // } else 
   if (socket && socket.readyState === WebSocket.OPEN) {
     console.log("📤 Sending message:", msg);
     socket.send(JSON.stringify(msg));

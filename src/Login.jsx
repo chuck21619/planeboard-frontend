@@ -12,6 +12,10 @@ export default function Login() {
   const [deckUrl, setDeckUrl] = useState(
     () => localStorage.getItem("deckUrl") || ""
   );
+  const [spectator, setSpectator] = useState(() => {
+    const stored = localStorage.getItem("spectator");
+    return stored === "true";
+  });
   const [isFadingOut, setIsFadingOut] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
@@ -20,6 +24,7 @@ export default function Login() {
     localStorage.setItem("username", username);
     localStorage.setItem("roomId", roomId);
     localStorage.setItem("deckUrl", deckUrl);
+    localStorage.setItem("spectator", spectator.toString());
     setIsFadingOut(true);
     setTimeout(() => {
       navigate(`/room/${roomId}`);
@@ -47,7 +52,10 @@ export default function Login() {
         <input
           type="text"
           value={deckUrl}
-          onChange={(e) => setDeckUrl(e.target.value)}
+          onChange={(e) => {
+            setSpectator(!e.target.value);
+            setDeckUrl(e.target.value);
+          }}
           placeholder="Archidekt URL"
           className="login-input"
         />
