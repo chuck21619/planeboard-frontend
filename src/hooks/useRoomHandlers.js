@@ -21,6 +21,7 @@ export function useRoomHandlers({
   setTurn,
   setCounters,
   setDiceRollers,
+  setSpectator,
 }) {
   useEffect(() => {
     const handleBeforeUnload = () => {
@@ -62,8 +63,8 @@ export function useRoomHandlers({
         );
       } else if (message.type === "USER_JOINED") {
         setDecks(message.decks);
-        console.log("set positions");
         setPositions(message.positions);
+        setSpectator(message.spectators.includes(username));
         if ( message.commanders ) {
           setCards((prevCards) => [...prevCards, ...message.commanders]);
         }

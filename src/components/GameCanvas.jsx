@@ -50,6 +50,7 @@ export default function GameCanvas({
   diceRollers,
   hoveredDiceRollerId,
   setHoveredDiceRollerId,
+  spectator,
 }) {
   const viewerPosition = positions[username];
 
@@ -82,13 +83,12 @@ export default function GameCanvas({
           lifeTotals={lifeTotals}
           setLifeTotals={setLifeTotals}
           turn={turn}
+          spectator={spectator}
         />
       </Layer>
 
       <Layer>
         {Object.entries(handSizes).map(([playerName, count]) => {
-          console.log("mapping from handsizes: ", playerName);
-          console.log("quadrant: ", remappedPositions[playerName]);
           return (
             <OpponentHand
               key={playerName}
@@ -129,6 +129,7 @@ export default function GameCanvas({
                 onCardRightClick(e.evt.clientX, e.evt.clientY, card)
               }
               defaultCardBackImage={defaultCardBackImage}
+              spectator={spectator}
             />
           );
         })}
@@ -152,6 +153,7 @@ export default function GameCanvas({
               }
               setHandSizes={setHandSizes}
               remappedPositions={remappedPositions}
+              spectator={spectator}
             />
           );
         })}
@@ -169,6 +171,7 @@ export default function GameCanvas({
             hovered={hoveredCounterId === id}
             hoveredCounterId={hoveredCounterId}
             setHoveredCounterId={setHoveredCounterId}
+            spectator={spectator}
           />
         ))}
       </Layer>
@@ -186,6 +189,7 @@ export default function GameCanvas({
             hoveredDiceRollerId={hoveredDiceRollerId}
             setHoveredDiceRollerId={setHoveredDiceRollerId}
             rollTrigger={rollTrigger}
+            spectator={spectator}
           />
         ))}
       </Layer>

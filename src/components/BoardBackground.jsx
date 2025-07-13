@@ -18,7 +18,8 @@ export default function BoardBackground({
   lifeTotals,
   setLifeTotals,
   isRotated,
-  turn
+  turn,
+  spectator,
 }) {
   const getUsernameForPosition = (targetPos) =>
     Object.entries(positions).find(([_, pos]) => pos === targetPos)?.[0] || "";
@@ -34,6 +35,7 @@ export default function BoardBackground({
   );
 
   const handleClick = (e, username, delta) => {
+    if (spectator) return;
     e.cancelBubble = true;
     if (e.evt.button === 2) e.evt.preventDefault();
     const prev = lifeTotals[username] ?? 0;
@@ -71,7 +73,8 @@ export default function BoardBackground({
   const renderCorner = (x, y, align, posKey, fill) => {
     const username = getUsernameForPosition(posKey);
     const hasPlayer = Boolean(username);
-    const waterMarkColor = turn == username ? watermarkColorActive : watermarkColorInActive;
+    const waterMarkColor =
+      turn == username ? watermarkColorActive : watermarkColorInActive;
 
     return (
       <React.Fragment key={posKey}>

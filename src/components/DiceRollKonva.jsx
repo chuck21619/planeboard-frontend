@@ -13,6 +13,7 @@ export default function DiceRollKonva({
   hoveredDiceRollerId,
   setHoveredDiceRollerId,
   rollTrigger,
+  spectator,
 }) {
   const [isHovered, setIsHovered] = React.useState(false);
   const width = numDice * 50 + 105;
@@ -73,7 +74,7 @@ export default function DiceRollKonva({
     <Group
       x={x}
       y={y}
-      draggable
+      draggable={!spectator}
       onMouseEnter={(e) => {
         setIsHovered(true);
         setHoveredDiceRollerId(id);
@@ -147,6 +148,7 @@ export default function DiceRollKonva({
         x={numDice * 50 + 5}
         y={rowHeight / 7}
         onClick={() => {
+          if (spectator) return;
           if (!rolling) {
             const newResults = generateResults();
             startRolling(newResults);

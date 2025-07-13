@@ -25,6 +25,7 @@ export function useCardDrag({
   isRotated,
   cardDraggedToDeckMenu,
   setPeekCardsData,
+  spectator,
 }) {
   const onMouseMove = useCallback((e) => {
     // Intentionally empty — mousemove handled globally on window
@@ -37,6 +38,7 @@ export function useCardDrag({
   const dragOffsetRef = useRef({ x: 0, y: 0 });
 
   function getCardMouseDownHandler(card, source, rotation) {
+    if (spectator) return {};
     return (e) => {
       const isLeftClick = ("evt" in e && e.evt.button === 0) || e.button === 0;
       if (!isLeftClick) return;
@@ -115,6 +117,7 @@ export function useCardDrag({
 
   useEffect(() => {
     function handleGlobalMouseUp(e) {
+      if (spectator) return;
       const isLeftClick = ("evt" in e && e.evt.button === 0) || e.button === 0;
 
       if (!isLeftClick) return;

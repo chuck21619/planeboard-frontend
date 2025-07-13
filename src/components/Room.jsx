@@ -33,6 +33,7 @@ import DiceRollerPanel from "./DiceRollerPanel";
 
 function Room() {
   const [username] = useState(() => localStorage.getItem("username"));
+  const [spectator, setSpectator] = useState(null);
   const navigate = useNavigate();
   const stageRef = useRef();
   const [lifeTotals, setLifeTotals] = useState({});
@@ -148,6 +149,7 @@ function Room() {
     isRotated,
     cardDraggedToDeckMenu,
     setPeekCardsData,
+    spectator,
   });
   const { tapCard } = useCardTap(setCards, hasMoved);
   useRoomHandlers({
@@ -164,20 +166,24 @@ function Room() {
     setTurn,
     setCounters,
     setDiceRollers,
+    setSpectator,
   });
   const handleDeckRightClick = (clientX, clientY, deckId) => {
+    if (spectator) return;
     rightClickHandledRef.current = true;
     setDeckMenuVisible(true);
     setContextMenuPosition({ x: clientX - 2, y: clientY - 113 });
     setContextMenuDeckId(deckId);
   };
   const handleCardRightCLick = (clientX, clientY, card) => {
+    if (spectator) return;
     rightClickHandledRef.current = true;
     setCardMenuVisible(true);
     setContextMenuPosition({ x: clientX - 2, y: clientY - 1 });
     setCardMenuCard(card);
   };
   const handleStageRightClick = (e) => {
+    if (spectator) return;
     if (rightClickHandledRef.current) {
       rightClickHandledRef.current = false;
       return;
@@ -194,10 +200,12 @@ function Room() {
     setDraggingCard,
     setHoveredCard,
     setCards,
+    spectator,
   });
 
   useEffect(() => {
     const handleKeyDown = (e) => {
+      if (spectator) return;
       if (e.key === "d" && hoveredCounterId != null) {
         setCounters((prev) => {
           const newCounters = { ...prev };
@@ -206,8 +214,7 @@ function Room() {
         });
         sendMessage({ type: "DELETE_COUNTER", id: hoveredCounterId });
         setHoveredCounterId(null);
-      }
-      else if (e.key === "d" && hoveredDiceRollerId != null) {
+      } else if (e.key === "d" && hoveredDiceRollerId != null) {
         setDiceRollers((prev) => {
           const newDiceRollers = { ...prev };
           delete newDiceRollers[hoveredDiceRollerId];
@@ -219,7 +226,10 @@ function Room() {
     };
     const container = stageRef.current?.getStage()?.container();
     if (container) {
-      container.style.cursor = (hoveredCounterId != null || hoveredDiceRollerId != null) ? "pointer" : "default";
+      container.style.cursor =
+        hoveredCounterId != null || hoveredDiceRollerId != null
+          ? "pointer"
+          : "default";
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
@@ -307,6 +317,7 @@ function Room() {
             diceRollers={diceRollers}
             hoveredDiceRollerId={hoveredDiceRollerId}
             setHoveredDiceRollerId={setHoveredDiceRollerId}
+            spectator={spectator}
           />
           <Hand
             hand={hand}

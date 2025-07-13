@@ -11,16 +11,19 @@ export default function Deck({
   setDecks,
   setHandSizes,
   remappedPositions,
+  spectator,
 }) {
   const [deckImage] = useImage("/deck.png");
   const [hovered, setHovered] = useState(false);
 
   const handleContextMenu = (e) => {
+    if (spectator) return;
     e.evt.preventDefault();
     onRightClick(e);
   };
 
   const handleClick = (e) => {
+    if (spectator) return;
     if (e.evt.button !== 0) return;
     const username = localStorage.getItem("username");
     if (deck.id === username) {

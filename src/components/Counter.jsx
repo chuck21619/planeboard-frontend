@@ -12,6 +12,7 @@ export default function Counter({
   setCounters,
   hoveredCounterId,
   setHoveredCounterId,
+  spectator,
 }) {
   const [isHovered, setIsHovered] = React.useState(false);
   const handleChange = (newCount) => {
@@ -36,7 +37,7 @@ export default function Counter({
     <Group
       x={x}
       y={y}
-      draggable
+      draggable={!spectator}
       onDragEnd={(e) => {
         const rotatedX = isRotated ? -e.target.x() - 40 : e.target.x();
         const rotatedY = isRotated ? -e.target.y() - 40 : e.target.y();
@@ -55,11 +56,12 @@ export default function Counter({
       }}
       onMouseLeave={(e) => {
         setIsHovered(false);
-        if ( hoveredCounterId === id ) setHoveredCounterId(null);
+        if (hoveredCounterId === id) setHoveredCounterId(null);
         const container = e.target.getStage().container();
         container.style.cursor = "default";
       }}
       onClick={(e) => {
+        if (spectator) return;
         if (e.evt.button === 0) {
           console.log("on click");
           e.evt.preventDefault();
@@ -67,6 +69,7 @@ export default function Counter({
         }
       }}
       onContextMenu={(e) => {
+        if (spectator) return;
         e.evt.preventDefault();
         e.evt.stopPropagation(); // 💥 this blocks stage menu
         e.cancelBubble = true;

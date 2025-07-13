@@ -10,6 +10,7 @@ export default function Card({
   onRightClick,
   rotation,
   defaultCardBackImage,
+  spectator,
 }) {
   const frontImage = useSharedImage(card.imageUrl);
   const backImage = useSharedImage(card.imageUrlBack);
@@ -18,10 +19,12 @@ export default function Card({
   const rotationWithTap = card.tapped ? rotation + 90 : rotation;
 
   const handleContextMenu = (e) => {
+    if (spectator) return;
     e.evt.preventDefault();
     onRightClick(e);
   };
   const handleClick = (e) => {
+    if (spectator) return;
     if (e.evt.button !== 0) return;
     onTapCard(card.id);
   };

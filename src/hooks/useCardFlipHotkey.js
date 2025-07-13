@@ -8,9 +8,11 @@ export function useCardFlipHotkey({
   setDraggingCard,
   setHoveredCard,
   setCards,
+  spectator,
 }) {
   useEffect(() => {
     const handleKeyDown = (event) => {
+      if (spectator) return;
       if (event.key !== "f" && event.key !== "F") return;
       if (!hoveredCard) return;
 
