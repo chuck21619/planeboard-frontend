@@ -49,7 +49,10 @@ export function useRoomHandlers({
         setDiceRollers(message.diceRollers);
         setSpectator(message.spectators.includes(username));
         setLifeTotals(message.lifeTotals);
-        if (message.users.includes(username) || message.spectators.includes(username)) {
+        if (
+          message.users.includes(username) ||
+          message.spectators.includes(username)
+        ) {
           setHasJoined(true);
         }
       } else if (message.type === "MOVE_CARD") {
@@ -69,7 +72,7 @@ export function useRoomHandlers({
         setDecks(message.decks);
         setPositions(message.positions);
         setSpectator(message.spectators.includes(username));
-        if ( message.commanders ) {
+        if (message.commanders) {
           setCards((prevCards) => [...prevCards, ...message.commanders]);
         }
         setLifeTotals(message.lifeTotals);
@@ -106,6 +109,8 @@ export function useRoomHandlers({
         }));
       } else if (message.type === "SPAWN_TOKEN") {
         setCards((prev) => [...prev, message.token]);
+      } else if (message.type === "TOKEN_DELETED") {
+        setCards((prev) => prev.filter((card) => card.id !== message.id));
       } else if (message.type === "CARD_PLAYED_FROM_LIBRARY") {
         const card = message.card;
         setCards((prev) => [...prev, message.card]);

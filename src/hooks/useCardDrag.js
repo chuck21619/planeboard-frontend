@@ -228,6 +228,7 @@ export function useCardDrag({
             tapped: false,
             flipIndex: draggingCard.flipIndex,
             owner: username,
+            token: card.token,
           };
 
           setCards((prev) => [...prev, playedCard]);
@@ -272,6 +273,7 @@ export function useCardDrag({
               y,
               tapped: false,
               flipIndex: draggingCard.flipIndex,
+              token: card.token,
             },
             username,
           });

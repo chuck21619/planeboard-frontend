@@ -41,6 +41,7 @@ export default function CardContextMenu({
       owner: localStorage.getItem("username"),
       tapped: false,
       flipIndex: 0,
+      token: true,
     };
 
     setCards((prev) => [...prev, newToken]);

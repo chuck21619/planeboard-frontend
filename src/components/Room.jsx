@@ -222,18 +222,25 @@ function Room() {
         });
         sendMessage({ type: "DELETE_DICE_ROLLER", id: hoveredDiceRollerId });
         setHoveredDiceRollerId(null);
+      } else if (e.key === "d" && hoveredCard?.token == true) {
+        setCards((prev) => prev.filter((card) => card.id !== hoveredCard.id));
+        sendMessage({ type: "DELETE_TOKEN", id: hoveredCard.id });
+        setHoveredCard(null);
       }
     };
     const container = stageRef.current?.getStage()?.container();
     if (container) {
       container.style.cursor =
-        hoveredCounterId != null || hoveredDiceRollerId != null
+        hoveredCounterId != null ||
+        hoveredDiceRollerId != null ||
+        hoveredCard != null
           ? "pointer"
           : "default";
     }
     window.addEventListener("keydown", handleKeyDown);
+    console.log("hoveredCard: ", hoveredCard?.id);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [hoveredCounterId, hoveredDiceRollerId]);
+  }, [hoveredCounterId, hoveredDiceRollerId, hoveredCard]);
 
   useEffect(() => {
     if (!(draggingCard && dragSource === "deckCardViewer")) return;

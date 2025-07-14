@@ -39,6 +39,7 @@ export default function CardToDeckMenu({
           y: 0,
           tapped: false,
           flipIndex: 0,
+          token: card.token,
         },
       });
     };
