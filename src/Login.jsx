@@ -60,7 +60,12 @@ export default function Login() {
           className="login-input"
         />
         <br />
-        <button onClick={handleJoinRoom}>Join Room</button>
+        <button
+          onClick={handleJoinRoom}
+          disabled={!username.trim() || !roomId.trim()}
+        >
+          Join Room
+        </button>
         <button onClick={() => setShowModal(true)} className="help-button">
           ?
         </button>
