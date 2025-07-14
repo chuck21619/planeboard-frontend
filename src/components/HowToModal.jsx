@@ -84,6 +84,12 @@ export default function HowToModal({ onClose }) {
           has 4 players.
         </p>
 
+        <p>
+          <strong>How do I report a bug or request a feature?</strong>
+          <br />
+          Click the exclamation button at the bottom left of the login screen.
+        </p>
+
         <button onClick={onClose}>Close</button>
       </div>
     </div>

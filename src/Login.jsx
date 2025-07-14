@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import HowToModal from "./components/HowToModal";
+import ReportModal from "./components/ReportModal";
 
 export default function Login() {
   const [username, setUsername] = useState(
@@ -17,7 +18,8 @@ export default function Login() {
     return stored === "true";
   });
   const [isFadingOut, setIsFadingOut] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
   const navigate = useNavigate();
 
   const handleJoinRoom = () => {
@@ -66,12 +68,21 @@ export default function Login() {
         >
           Join Room
         </button>
-        <button onClick={() => setShowModal(true)} className="help-button">
+        <button onClick={() => setShowHelpModal(true)} className="help-button">
           ?
+        </button>
+        <button
+          onClick={() => setShowReportModal(true)}
+          className="report-button"
+        >
+          !
         </button>
       </div>
 
-      {showModal && <HowToModal onClose={() => setShowModal(false)} />}
+      {showHelpModal && <HowToModal onClose={() => setShowHelpModal(false)} />}
+      {showReportModal && (
+        <ReportModal onClose={() => setShowReportModal(false)} />
+      )}
     </div>
   );
 }
