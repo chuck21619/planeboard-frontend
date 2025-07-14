@@ -90,6 +90,18 @@ export default function HowToModal({ onClose }) {
           Click the exclamation button at the bottom left of the login screen.
         </p>
 
+        <p>
+          <strong>
+            Why am I not seeing the tokens when right clicking a card?
+          </strong>
+          <br />
+          There are two main reasons this can happen:
+          <br />
+          1) The archidekt api did not provide token information for the card
+          <br />
+          2) The token data for the card is still loading
+        </p>
+
         <button onClick={onClose}>Close</button>
       </div>
     </div>
