@@ -41,7 +41,7 @@ export default function SurveilModal({
     const placedGraveyard = toGraveyard.map((card, index) => ({
       ...card,
       x: deck.x,
-      y: deck.y + (isRotated ? (-100-(index*10)) : (100+index*10)),
+      y: deck.y + (isRotated ? -100 - index * 10 : 100 + index * 10),
       flipIndex: 0,
       owner: deck.id,
       tapped: false,
@@ -68,7 +68,9 @@ export default function SurveilModal({
         border: "1px solid black",
         borderRadius: "8px",
       }}
-      onMouseEnter={() => setHoveredDeckCardViewerCard({ ...item.card, flipIndex: 0 })}
+      onMouseEnter={() =>
+        setHoveredDeckCardViewerCard({ ...item.card, flipIndex: 0 })
+      }
       onMouseLeave={() => setHoveredDeckCardViewerCard(null)}
     />
   );
@@ -93,7 +95,15 @@ export default function SurveilModal({
             list={topItems}
             setList={setTopItems}
             direction="vertical"
-            style={{ display: "flex", flexDirection: "column", gap: "10px" }}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "10px",
+              minHeight: "160px", // Ensures a visible drop zone even when empty
+              width: "100px", // Optional: match card width
+              borderRadius: "8px",
+              padding: "10px", // Gives a bit of spacing
+            }}
           >
             {topItems.map(renderCard)}
           </ReactSortable>
@@ -106,7 +116,15 @@ export default function SurveilModal({
             list={graveyardItems}
             setList={setGraveyardItems}
             direction="vertical"
-            style={{ display: "flex", flexDirection: "column", gap: "10px" }}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "10px",
+              minHeight: "160px", // Ensures a visible drop zone even when empty
+              width: "100px", // Optional: match card width
+              borderRadius: "8px",
+              padding: "10px", // Gives a bit of spacing
+            }}
           >
             {graveyardItems.map(renderCard)}
           </ReactSortable>
