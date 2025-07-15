@@ -1,11 +1,10 @@
-import { Stage, Layer } from "react-konva";
+import { Stage, Layer, Rect } from "react-konva";
 import Card from "./Card";
 import Deck from "./Deck";
 import OpponentHand from "./OpponentHand";
 import BoardBackground from "./BoardBackground";
 import { getCardRotation } from "../utils/cardOrientation";
 import Counter from "./Counter";
-import { sendMessage } from "../ws";
 import DiceRollKonva from "./DiceRollKonva";
 
 export default function GameCanvas({
@@ -51,6 +50,7 @@ export default function GameCanvas({
   hoveredDiceRollerId,
   setHoveredDiceRollerId,
   spectator,
+  selectionRect,
 }) {
   const viewerPosition = positions[username];
 
@@ -176,22 +176,38 @@ export default function GameCanvas({
         ))}
       </Layer>
       <Layer>
-        {Object.values(diceRollers).map(({ id, x, y, numDice, numSides, rollTrigger }) => (
-          <DiceRollKonva
-            key={id}
-            id={id}
-            isRotated={isRotated}
-            x={isRotated ? -x-(numDice * 50 + 85) : x}
-            y={isRotated ? -y-40 : y}
-            numDice={numDice}
-            numSides={numSides}
-            hovered={hoveredDiceRollerId === id}
-            hoveredDiceRollerId={hoveredDiceRollerId}
-            setHoveredDiceRollerId={setHoveredDiceRollerId}
-            rollTrigger={rollTrigger}
-            spectator={spectator}
+        {Object.values(diceRollers).map(
+          ({ id, x, y, numDice, numSides, rollTrigger }) => (
+            <DiceRollKonva
+              key={id}
+              id={id}
+              isRotated={isRotated}
+              x={isRotated ? -x - (numDice * 50 + 85) : x}
+              y={isRotated ? -y - 40 : y}
+              numDice={numDice}
+              numSides={numSides}
+              hovered={hoveredDiceRollerId === id}
+              hoveredDiceRollerId={hoveredDiceRollerId}
+              setHoveredDiceRollerId={setHoveredDiceRollerId}
+              rollTrigger={rollTrigger}
+              spectator={spectator}
+            />
+          )
+        )}
+      </Layer>
+      <Layer>
+        {selectionRect && (
+          <Rect
+            x={selectionRect.x}
+            y={selectionRect.y}
+            width={selectionRect.width}
+            height={selectionRect.height}
+            fill="rgba(0, 162, 255, 0.2)"
+            stroke="blue"
+            strokeWidth={1}
+            dash={[4, 4]}
           />
-        ))}
+        )}
       </Layer>
     </Stage>
   );

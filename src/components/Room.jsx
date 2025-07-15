@@ -70,6 +70,7 @@ function Room() {
   const [hoveredDeckCardViewerCard, setHoveredDeckCardViewerCard] =
     useState(null);
   const [dragPos, setDragPos] = useState({ x: 0, y: 0 });
+  const [selectionRect, setSelectionRect] = useState(null);
   const canvasRef = useRef(null);
   const [turn, setTurn] = useState("");
   const [handSizes, setHandSizes] = useState({});
@@ -150,6 +151,8 @@ function Room() {
     cardDraggedToDeckMenu,
     setPeekCardsData,
     spectator,
+    selectionRect,
+    setSelectionRect,
   });
   const { tapCard } = useCardTap(setCards, hasMoved);
   useRoomHandlers({
@@ -238,7 +241,6 @@ function Room() {
           : "default";
     }
     window.addEventListener("keydown", handleKeyDown);
-    console.log("hoveredCard: ", hoveredCard?.id);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [hoveredCounterId, hoveredDiceRollerId, hoveredCard]);
 
@@ -325,6 +327,7 @@ function Room() {
             hoveredDiceRollerId={hoveredDiceRollerId}
             setHoveredDiceRollerId={setHoveredDiceRollerId}
             spectator={spectator}
+            selectionRect={selectionRect}
           />
           <Hand
             hand={hand}

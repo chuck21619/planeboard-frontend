@@ -26,6 +26,8 @@ export function useCardDrag({
   cardDraggedToDeckMenu,
   setPeekCardsData,
   spectator,
+  selectionRect,
+  setSelectionRect,
 }) {
   const onMouseMove = useCallback((e) => {
     // Intentionally empty — mousemove handled globally on window
@@ -62,11 +64,26 @@ export function useCardDrag({
   }
   useEffect(() => {
     function handleGlobalMouseMove(e) {
+      
       const rect = canvasRef.current?.getBoundingClientRect();
       const x =
-        (e.clientX - rect.left - stagePosition.x) / stageScale - cardWidth / 2;
+        (e.clientX - rect.left - stagePosition.x) / stageScale;
       const y =
-        (e.clientY - rect.top - stagePosition.y) / stageScale - cardHeight / 2;
+        (e.clientY - rect.top - stagePosition.y) / stageScale;
+      if (selectionRect) {
+        const newX = Math.min(x, selectionRect.startX);
+        const newY = Math.min(y, selectionRect.startY);
+        const newWidth = Math.abs(x - selectionRect.startX);
+        const newHeight = Math.abs(y - selectionRect.startY);
+
+        setSelectionRect((prev) => ({
+          ...prev,
+          x: newX,
+          y: newY,
+          width: newWidth,
+          height: newHeight,
+        }));
+      }
       if (!hasMoved) {
         setHasMoved(true);
         if (pendingDragRef.current) {
@@ -108,16 +125,35 @@ export function useCardDrag({
     setDraggingCard,
     setDragSource,
     hasMoved,
+    selectionRect,
   ]);
 
   const onMouseDown = useCallback((e) => {
+    if (e.evt.button !== 1) {
+      // Disable dragging for anything other than middle mouse
+      e.target.getStage().draggable(false);
+      const { x, y } = e.target.getStage().getPointerPosition();
+      
+      const rect = canvasRef.current?.getBoundingClientRect();
+      const testx =
+        (e.evt.clientX - rect.left - stagePosition.x) / stageScale;
+      const testy =
+        (e.evt.clientY - rect.top - stagePosition.y) / stageScale;
+      setSelectionRect({ x, y, width: 0, height: 0, startX: testx, startY: testy });
+    } else {
+      e.target.getStage().draggable(true);
+    }
     e.evt.preventDefault();
     e.evt.stopPropagation();
-  }, []);
+  }, [canvasRef, stagePosition, stageScale]);
 
   useEffect(() => {
     function handleGlobalMouseUp(e) {
       if (spectator) return;
+      if (selectionRect) {
+        // TODO: select items within rect here
+        setSelectionRect(null);
+      }
       const isLeftClick = ("evt" in e && e.evt.button === 0) || e.button === 0;
 
       if (!isLeftClick) return;
@@ -295,6 +331,7 @@ export function useCardDrag({
     setHand,
     username,
     ignoreNextChange,
+    selectionRect,
   ]);
   const stageDraggable = !draggingCard && !pendingDragRef.current;
   return {
