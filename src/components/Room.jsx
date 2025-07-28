@@ -92,6 +92,8 @@ function Room() {
     useState(null);
   const [cardDraggedToDeckMenuPosition, setCardDraggedToDeckMenuPosition] =
     useState({ x: 0, y: 0 });
+  const [selectedCards, setSelectedCards] = useState([]);
+  const [selectedCardsOffsets, setSelectedCardsOffsets] = useState([]);
   const { hoveredCard, setHoveredCard, ignoreNextChange } = useHoveredCard(
     mousePos,
     cards,
@@ -154,6 +156,9 @@ function Room() {
     spectator,
     selectionRect,
     setSelectionRect,
+    selectedCards,
+    setSelectedCards,
+    setSelectedCardsOffsets,
   });
   const { tapCard } = useCardTap(setCards, hasMoved);
   useRoomHandlers({
@@ -329,6 +334,8 @@ function Room() {
             setHoveredDiceRollerId={setHoveredDiceRollerId}
             spectator={spectator}
             selectionRect={selectionRect}
+            selectedCards={selectedCards}
+            selectedCardsOffsets={selectedCardsOffsets}
           />
           <Hand
             hand={hand}

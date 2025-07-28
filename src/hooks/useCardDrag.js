@@ -29,6 +29,9 @@ export function useCardDrag({
   spectator,
   selectionRect,
   setSelectionRect,
+  selectedCards,
+  setSelectedCards,
+  setSelectedCardsOffsets,
 }) {
   const onMouseMove = useCallback((e) => {
     // Intentionally empty — mousemove handled globally on window
@@ -81,30 +84,31 @@ export function useCardDrag({
           height: newHeight,
         }));
 
-          // select items
-          const startX = selectionRect.startX;
-          const startY = selectionRect.startY;
-          const rectLeft = Math.min(startX, x);
-          const rectRight = Math.max(startX, x);
-          const rectTop = Math.min(startY, y);
-          const rectBottom = Math.max(startY, y);
-          cards.forEach((card) => {
-            card.isSelected = false;
-          });
-          const selectedCards = cards.filter((card) => {
-            const cardLeft = card.x;
-            const cardRight = card.x + cardWidth;
-            const cardTop = card.y;
-            const cardBottom = card.y + cardHeight;
-            const horizontalOverlap = cardRight >= rectLeft && cardLeft <= rectRight;
-            const verticalOverlap = cardBottom >= rectTop && cardTop <= rectBottom;
-            return horizontalOverlap && verticalOverlap;
-          });
-
-          selectedCards.forEach((card) => {
-            card.isSelected = true;
-          });
-        
+        // select items
+        const startX = selectionRect.startX;
+        const startY = selectionRect.startY;
+        const rectLeft = Math.min(startX, x);
+        const rectRight = Math.max(startX, x);
+        const rectTop = Math.min(startY, y);
+        const rectBottom = Math.max(startY, y);
+        cards.forEach((card) => {
+          card.isSelected = false;
+        });
+        const tmpSelectedCards = cards.filter((card) => {
+          const cardLeft = card.x;
+          const cardRight = card.x + cardWidth;
+          const cardTop = card.y;
+          const cardBottom = card.y + cardHeight;
+          const horizontalOverlap =
+            cardRight >= rectLeft && cardLeft <= rectRight;
+          const verticalOverlap =
+            cardBottom >= rectTop && cardTop <= rectBottom;
+          return horizontalOverlap && verticalOverlap;
+        });
+        setSelectedCards(tmpSelectedCards);
+        tmpSelectedCards.forEach((card) => {
+          card.isSelected = true;
+        });
       } else {
         x = x - cardWidth / 2;
         y = y - cardHeight / 2;
@@ -112,6 +116,11 @@ export function useCardDrag({
       if (!hasMoved) {
         setHasMoved(true);
         if (pendingDragRef.current) {
+          const selectedCardsOffsets = selectedCards.map((card) => ({
+            x: card.x - pendingDragRef.current.card.x,
+            y: card.y - pendingDragRef.current.card.y,
+          }));
+          setSelectedCardsOffsets(selectedCardsOffsets);
           let offsetX = 0;
           let offsetY = 0;
           const pendingCard = pendingDragRef.current?.card;
@@ -155,7 +164,7 @@ export function useCardDrag({
   const onMouseDown = useCallback(
     (e) => {
       if (e.evt.button !== 1) {
-        if (e.evt.button === 0 ) {
+        if (e.evt.button === 0) {
           if (pendingDragRef.current == null) {
             cards.forEach((card) => {
               card.isSelected = false;
@@ -226,7 +235,7 @@ export function useCardDrag({
       //   });
 
       //   console.log("Selected cards:", selectedCards);
-        setSelectionRect(null);
+      setSelectionRect(null);
       // }
       const isLeftClick = ("evt" in e && e.evt.button === 0) || e.button === 0;
 

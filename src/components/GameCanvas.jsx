@@ -51,6 +51,8 @@ export default function GameCanvas({
   setHoveredDiceRollerId,
   spectator,
   selectionRect,
+  selectedCards,
+  selectedCardsOffsets,
 }) {
   const viewerPosition = positions[username];
 
@@ -109,6 +111,20 @@ export default function GameCanvas({
             isGhost
           />
         )}
+        {draggingCard && dragSource !== "deckCardViewer" &&
+          selectedCards.map((card, i) => (
+            <Card
+              key={card.id}
+              card={{
+                ...card,
+                x: dragPos.x + selectedCardsOffsets[i].x,
+                y: dragPos.y + selectedCardsOffsets[i].y,
+              }}
+              defaultCardBackImage={defaultCardBackImage}
+              rotation={card.rotation}
+              isGhost
+            />
+          ))}
         {cards.map((card) => {
           const ownerPosition = positions[card.owner];
           const rotation = getCardRotation(viewerPosition, ownerPosition);
