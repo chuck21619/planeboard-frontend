@@ -23,6 +23,7 @@ export default function Card({
     e.evt.preventDefault();
     onRightClick(e);
   };
+
   const handleClick = (e) => {
     if (spectator) return;
     if (e.evt.button !== 0) return;
@@ -59,10 +60,27 @@ export default function Card({
   }
 
   if (displayedImage) {
-    return <KonvaImage image={displayedImage} {...commonProps} />;
-  } else {
     return (
-      <Rect fill="grey" stroke="black" strokeWidth={2} {...commonProps} />
+      <>
+        {card.isSelected && (
+          <Rect
+            x={card.x + width / 2}
+            y={card.y + height / 2}
+            width={width}
+            height={height}
+            offsetX={width / 2}
+            offsetY={height / 2}
+            rotation={rotationWithTap}
+            stroke="yellow"
+            strokeWidth={3}
+            cornerRadius={4}
+            listening={false}
+          />
+        )}
+        <KonvaImage image={displayedImage} {...commonProps} />
+      </>
     );
+  } else {
+    return <Rect fill="grey" stroke="black" strokeWidth={2} {...commonProps} />;
   }
 }

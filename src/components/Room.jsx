@@ -144,6 +144,7 @@ function Room() {
     setHandSizes,
     username,
     ignoreNextChange,
+    cards,
     decks,
     setDecks,
     contextMenuDeckId,

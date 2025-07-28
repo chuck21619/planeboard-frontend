@@ -198,8 +198,8 @@ export default function GameCanvas({
       <Layer>
         {selectionRect && (
           <Rect
-            x={selectionRect.x}
-            y={selectionRect.y}
+            x={Math.min(selectionRect.startX, selectionRect.x)}
+            y={Math.min(selectionRect.startY, selectionRect.y)}
             width={selectionRect.width}
             height={selectionRect.height}
             fill="rgba(0, 162, 255, 0.2)"

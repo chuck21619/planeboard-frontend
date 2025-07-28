@@ -19,6 +19,7 @@ export function useCardDrag({
   setHandSizes,
   username,
   ignoreNextChange,
+  cards,
   decks,
   setDecks,
   contextMenuDeckId,
@@ -64,18 +65,18 @@ export function useCardDrag({
   }
   useEffect(() => {
     function handleGlobalMouseMove(e) {
-      
       const rect = canvasRef.current?.getBoundingClientRect();
-      const x =
-        (e.clientX - rect.left - stagePosition.x) / stageScale;
-      const y =
-        (e.clientY - rect.top - stagePosition.y) / stageScale;
+      const x = (e.clientX - rect.left - stagePosition.x) / stageScale;
+      const y = (e.clientY - rect.top - stagePosition.y) / stageScale;
       if (selectionRect) {
-        const newX = Math.min(x, selectionRect.startX);
-        const newY = Math.min(y, selectionRect.startY);
+        const newX = Math.min(x);
+        const newY = Math.min(y);
         const newWidth = Math.abs(x - selectionRect.startX);
         const newHeight = Math.abs(y - selectionRect.startY);
-
+        console.log("newX: ", newX);
+        console.log("newY: ", newY);
+        console.log("width: ", newWidth);
+        console.log("height: ", newHeight);
         setSelectionRect((prev) => ({
           ...prev,
           x: newX,
@@ -128,30 +129,73 @@ export function useCardDrag({
     selectionRect,
   ]);
 
-  const onMouseDown = useCallback((e) => {
-    if (e.evt.button !== 1) {
-      // Disable dragging for anything other than middle mouse
-      e.target.getStage().draggable(false);
-      const { x, y } = e.target.getStage().getPointerPosition();
-      
-      const rect = canvasRef.current?.getBoundingClientRect();
-      const testx =
-        (e.evt.clientX - rect.left - stagePosition.x) / stageScale;
-      const testy =
-        (e.evt.clientY - rect.top - stagePosition.y) / stageScale;
-      setSelectionRect({ x, y, width: 0, height: 0, startX: testx, startY: testy });
-    } else {
-      e.target.getStage().draggable(true);
-    }
-    e.evt.preventDefault();
-    e.evt.stopPropagation();
-  }, [canvasRef, stagePosition, stageScale]);
+  const onMouseDown = useCallback(
+    (e) => {
+      if (e.evt.button !== 1) {
+        // Disable dragging for anything other than middle mouse
+        e.target.getStage().draggable(false);
+        if (pendingDragRef.current == null) {
+          const { x, y } = e.target.getStage().getPointerPosition();
+
+          const rect = canvasRef.current?.getBoundingClientRect();
+          const testx =
+            (e.evt.clientX - rect.left - stagePosition.x) / stageScale;
+          const testy =
+            (e.evt.clientY - rect.top - stagePosition.y) / stageScale;
+          setSelectionRect({
+            x,
+            y,
+            width: 0,
+            height: 0,
+            startX: testx,
+            startY: testy,
+          });
+        }
+      } else {
+        e.target.getStage().draggable(true);
+      }
+      e.evt.preventDefault();
+      e.evt.stopPropagation();
+    },
+    [canvasRef, stagePosition, stageScale]
+  );
 
   useEffect(() => {
     function handleGlobalMouseUp(e) {
       if (spectator) return;
       if (selectionRect) {
         // TODO: select items within rect here
+        console.log("select items");
+        const { startX, startY, x, y } = selectionRect;
+        console.log("start x: ", startX);
+        console.log("start y: ", startY);
+        console.log("x: ", x);
+        console.log("y: ", y);
+
+        // Calculate bounds
+        const rectLeft = Math.min(startX, x);
+        const rectRight = Math.max(startX, x);
+        const rectTop = Math.min(startY, y);
+        const rectBottom = Math.max(startY, y);
+        console.log("selection left: ", rectLeft);
+        console.log("selection right: ", rectRight);
+        console.log("selection top: ", rectTop);
+        console.log("selection bottom: ", rectBottom);
+
+        const selectedCards = cards.filter((card) => {
+          return (
+            card.x + cardWidth / 2 >= rectLeft &&
+            card.x + cardWidth / 2 <= rectRight &&
+            card.y + cardHeight / 2 >= rectTop &&
+            card.y + cardHeight / 2 <= rectBottom
+          );
+        });
+
+        selectedCards.forEach((card) => {
+          card.isSelected = true;
+        });
+
+        console.log("Selected cards:", selectedCards);
         setSelectionRect(null);
       }
       const isLeftClick = ("evt" in e && e.evt.button === 0) || e.button === 0;
