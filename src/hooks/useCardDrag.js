@@ -96,13 +96,15 @@ export function useCardDrag({
             card.isSelected = false;
           });
           const selectedCards = cards.filter((card) => {
-            return (
-              card.x + cardWidth / 2 >= rectLeft &&
-              card.x + cardWidth / 2 <= rectRight &&
-              card.y + cardHeight / 2 >= rectTop &&
-              card.y + cardHeight / 2 <= rectBottom
-            );
+            const cardLeft = card.x;
+            const cardRight = card.x + cardWidth;
+            const cardTop = card.y;
+            const cardBottom = card.y + cardHeight;
+            const horizontalOverlap = cardRight >= rectLeft && cardLeft <= rectRight;
+            const verticalOverlap = cardBottom >= rectTop && cardTop <= rectBottom;
+            return horizontalOverlap && verticalOverlap;
           });
+
           selectedCards.forEach((card) => {
             card.isSelected = true;
           });
