@@ -111,7 +111,8 @@ export default function GameCanvas({
             isGhost
           />
         )}
-        {draggingCard && dragSource !== "deckCardViewer" &&
+        {draggingCard &&
+          dragSource !== "deckCardViewer" &&
           selectedCards.map((card, i) => (
             <Card
               key={card.id}
@@ -146,6 +147,7 @@ export default function GameCanvas({
               }
               defaultCardBackImage={defaultCardBackImage}
               spectator={spectator}
+              isSelected={selectedCards.some((c) => c.id === card.id)}
             />
           );
         })}

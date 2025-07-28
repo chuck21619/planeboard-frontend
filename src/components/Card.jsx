@@ -11,6 +11,7 @@ export default function Card({
   rotation,
   defaultCardBackImage,
   spectator,
+  isSelected = false,
 }) {
   const frontImage = useSharedImage(card.imageUrl);
   const backImage = useSharedImage(card.imageUrlBack);
@@ -62,7 +63,7 @@ export default function Card({
   if (displayedImage) {
     return (
       <>
-        {card.isSelected && (
+        {isSelected && (
           <Rect
             x={card.x + width / 2}
             y={card.y + height / 2}

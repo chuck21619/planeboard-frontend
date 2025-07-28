@@ -31,6 +31,7 @@ export function useCardDrag({
   setSelectionRect,
   selectedCards,
   setSelectedCards,
+  selectedCardsOffsets,
   setSelectedCardsOffsets,
 }) {
   const onMouseMove = useCallback((e) => {
@@ -91,9 +92,6 @@ export function useCardDrag({
         const rectRight = Math.max(startX, x);
         const rectTop = Math.min(startY, y);
         const rectBottom = Math.max(startY, y);
-        cards.forEach((card) => {
-          card.isSelected = false;
-        });
         const tmpSelectedCards = cards.filter((card) => {
           const cardLeft = card.x;
           const cardRight = card.x + cardWidth;
@@ -106,9 +104,6 @@ export function useCardDrag({
           return horizontalOverlap && verticalOverlap;
         });
         setSelectedCards(tmpSelectedCards);
-        tmpSelectedCards.forEach((card) => {
-          card.isSelected = true;
-        });
       } else {
         x = x - cardWidth / 2;
         y = y - cardHeight / 2;
@@ -165,10 +160,10 @@ export function useCardDrag({
     (e) => {
       if (e.evt.button !== 1) {
         if (e.evt.button === 0) {
+          console.log("clearing selected cards" + Date.now());
           if (pendingDragRef.current == null) {
-            cards.forEach((card) => {
-              card.isSelected = false;
-            });
+            setSelectedCards([]);
+            setSelectedCardsOffsets([]);
           }
         }
         // Disable dragging for anything other than middle mouse
@@ -306,10 +301,25 @@ export function useCardDrag({
           sendMessage({ type: "RETURN_TO_HAND", id: card.id, username });
         } else {
           //dragging within the board
+          // setCards((prev) =>
+          //   prev.map((c) =>
+          //     c.id === card.id ? { ...c, x, y, flipIndex: card.flipIndex } : c
+          //   )
+          // );
           setCards((prev) =>
-            prev.map((c) =>
-              c.id === card.id ? { ...c, x, y, flipIndex: card.flipIndex } : c
-            )
+            prev.map((c) => {
+              const index = selectedCards.findIndex((sc) => sc.id === c.id);
+              if (index !== -1) {
+                const offset = selectedCardsOffsets[index];
+                return {
+                  ...c,
+                  x: x + offset.x,
+                  y: y + offset.y,
+                  flipIndex: selectedCards[index].flipIndex,
+                };
+              }
+              return c;
+            })
           );
           sendMessage({
             type: "MOVE_CARD",
