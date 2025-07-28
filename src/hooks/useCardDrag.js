@@ -66,8 +66,8 @@ export function useCardDrag({
   useEffect(() => {
     function handleGlobalMouseMove(e) {
       const rect = canvasRef.current?.getBoundingClientRect();
-      const x = (e.clientX - rect.left - stagePosition.x) / stageScale;
-      const y = (e.clientY - rect.top - stagePosition.y) / stageScale;
+      let x = (e.clientX - rect.left - stagePosition.x) / stageScale;
+      let y = (e.clientY - rect.top - stagePosition.y) / stageScale;
       if (selectionRect) {
         const newX = Math.min(x);
         const newY = Math.min(y);
@@ -84,6 +84,32 @@ export function useCardDrag({
           width: newWidth,
           height: newHeight,
         }));
+
+          // select items
+          const startX = selectionRect.startX;
+          const startY = selectionRect.startY;
+          const rectLeft = Math.min(startX, x);
+          const rectRight = Math.max(startX, x);
+          const rectTop = Math.min(startY, y);
+          const rectBottom = Math.max(startY, y);
+          cards.forEach((card) => {
+            card.isSelected = false;
+          });
+          const selectedCards = cards.filter((card) => {
+            return (
+              card.x + cardWidth / 2 >= rectLeft &&
+              card.x + cardWidth / 2 <= rectRight &&
+              card.y + cardHeight / 2 >= rectTop &&
+              card.y + cardHeight / 2 <= rectBottom
+            );
+          });
+          selectedCards.forEach((card) => {
+            card.isSelected = true;
+          });
+        
+      } else {
+        x = x - cardWidth / 2;
+        y = y - cardHeight / 2;
       }
       if (!hasMoved) {
         setHasMoved(true);
@@ -163,41 +189,41 @@ export function useCardDrag({
   useEffect(() => {
     function handleGlobalMouseUp(e) {
       if (spectator) return;
-      if (selectionRect) {
-        // TODO: select items within rect here
-        console.log("select items");
-        const { startX, startY, x, y } = selectionRect;
-        console.log("start x: ", startX);
-        console.log("start y: ", startY);
-        console.log("x: ", x);
-        console.log("y: ", y);
+      // if (selectionRect) {
+      //   // TODO: select items within rect here
+      //   console.log("select items");
+      //   const { startX, startY, x, y } = selectionRect;
+      //   console.log("start x: ", startX);
+      //   console.log("start y: ", startY);
+      //   console.log("x: ", x);
+      //   console.log("y: ", y);
 
-        // Calculate bounds
-        const rectLeft = Math.min(startX, x);
-        const rectRight = Math.max(startX, x);
-        const rectTop = Math.min(startY, y);
-        const rectBottom = Math.max(startY, y);
-        console.log("selection left: ", rectLeft);
-        console.log("selection right: ", rectRight);
-        console.log("selection top: ", rectTop);
-        console.log("selection bottom: ", rectBottom);
+      //   // Calculate bounds
+      //   const rectLeft = Math.min(startX, x);
+      //   const rectRight = Math.max(startX, x);
+      //   const rectTop = Math.min(startY, y);
+      //   const rectBottom = Math.max(startY, y);
+      //   console.log("selection left: ", rectLeft);
+      //   console.log("selection right: ", rectRight);
+      //   console.log("selection top: ", rectTop);
+      //   console.log("selection bottom: ", rectBottom);
 
-        const selectedCards = cards.filter((card) => {
-          return (
-            card.x + cardWidth / 2 >= rectLeft &&
-            card.x + cardWidth / 2 <= rectRight &&
-            card.y + cardHeight / 2 >= rectTop &&
-            card.y + cardHeight / 2 <= rectBottom
-          );
-        });
+      //   const selectedCards = cards.filter((card) => {
+      //     return (
+      //       card.x + cardWidth / 2 >= rectLeft &&
+      //       card.x + cardWidth / 2 <= rectRight &&
+      //       card.y + cardHeight / 2 >= rectTop &&
+      //       card.y + cardHeight / 2 <= rectBottom
+      //     );
+      //   });
 
-        selectedCards.forEach((card) => {
-          card.isSelected = true;
-        });
+      //   selectedCards.forEach((card) => {
+      //     card.isSelected = true;
+      //   });
 
-        console.log("Selected cards:", selectedCards);
+      //   console.log("Selected cards:", selectedCards);
         setSelectionRect(null);
-      }
+      // }
       const isLeftClick = ("evt" in e && e.evt.button === 0) || e.button === 0;
 
       if (!isLeftClick) return;
