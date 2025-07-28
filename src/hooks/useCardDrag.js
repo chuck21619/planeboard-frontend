@@ -73,10 +73,6 @@ export function useCardDrag({
         const newY = Math.min(y);
         const newWidth = Math.abs(x - selectionRect.startX);
         const newHeight = Math.abs(y - selectionRect.startY);
-        console.log("newX: ", newX);
-        console.log("newY: ", newY);
-        console.log("width: ", newWidth);
-        console.log("height: ", newHeight);
         setSelectionRect((prev) => ({
           ...prev,
           x: newX,
@@ -132,7 +128,6 @@ export function useCardDrag({
           const { card, source, rotation } = pendingDragRef.current;
           pendingDragRef.current = null;
           card.rotation = rotation;
-          setHasMoved(true);
           setDraggingCard(card);
           setDragSource(source);
         }
@@ -160,6 +155,13 @@ export function useCardDrag({
   const onMouseDown = useCallback(
     (e) => {
       if (e.evt.button !== 1) {
+        if (e.evt.button === 0 ) {
+          if (pendingDragRef.current == null) {
+            cards.forEach((card) => {
+              card.isSelected = false;
+            });
+          }
+        }
         // Disable dragging for anything other than middle mouse
         e.target.getStage().draggable(false);
         if (pendingDragRef.current == null) {
@@ -185,7 +187,7 @@ export function useCardDrag({
       e.evt.preventDefault();
       e.evt.stopPropagation();
     },
-    [canvasRef, stagePosition, stageScale]
+    [canvasRef, stagePosition, stageScale, cards]
   );
 
   useEffect(() => {
@@ -233,7 +235,6 @@ export function useCardDrag({
       if (!hasMoved) {
         return;
       }
-      setHasMoved(true);
       if (!draggingCard) return;
       const rect = canvasRef.current?.getBoundingClientRect();
       if (!rect) return;
