@@ -93,10 +93,10 @@ export function useCardDrag({
         const rectTop = Math.min(startY, y);
         const rectBottom = Math.max(startY, y);
         const tmpSelectedCards = cards.filter((card) => {
-          const cardLeft = card.x;
-          const cardRight = card.x + cardWidth;
-          const cardTop = card.y;
-          const cardBottom = card.y + cardHeight;
+          const cardLeft = isRotated ? -card.x - cardWidth : card.x;
+          const cardRight = isRotated ? -card.x : card.x + cardWidth;
+          const cardTop = isRotated ? -card.y - cardHeight : card.y;
+          const cardBottom = isRotated ? -card.y : card.y + cardHeight;
           const horizontalOverlap =
             cardRight >= rectLeft && cardLeft <= rectRight;
           const verticalOverlap =
@@ -112,8 +112,8 @@ export function useCardDrag({
         setHasMoved(true);
         if (pendingDragRef.current) {
           const selectedCardsOffsets = selectedCards.map((card) => ({
-            x: card.x - pendingDragRef.current.card.x,
-            y: card.y - pendingDragRef.current.card.y,
+            x: isRotated ? -card.x + pendingDragRef.current.card.x : card.x - pendingDragRef.current.card.x,
+            y: isRotated ? -card.y + pendingDragRef.current.card.y : card.y - pendingDragRef.current.card.y,
           }));
           setSelectedCardsOffsets(selectedCardsOffsets);
           let offsetX = 0;
@@ -197,41 +197,7 @@ export function useCardDrag({
   useEffect(() => {
     function handleGlobalMouseUp(e) {
       if (spectator) return;
-      // if (selectionRect) {
-      //   // TODO: select items within rect here
-      //   console.log("select items");
-      //   const { startX, startY, x, y } = selectionRect;
-      //   console.log("start x: ", startX);
-      //   console.log("start y: ", startY);
-      //   console.log("x: ", x);
-      //   console.log("y: ", y);
-
-      //   // Calculate bounds
-      //   const rectLeft = Math.min(startX, x);
-      //   const rectRight = Math.max(startX, x);
-      //   const rectTop = Math.min(startY, y);
-      //   const rectBottom = Math.max(startY, y);
-      //   console.log("selection left: ", rectLeft);
-      //   console.log("selection right: ", rectRight);
-      //   console.log("selection top: ", rectTop);
-      //   console.log("selection bottom: ", rectBottom);
-
-      //   const selectedCards = cards.filter((card) => {
-      //     return (
-      //       card.x + cardWidth / 2 >= rectLeft &&
-      //       card.x + cardWidth / 2 <= rectRight &&
-      //       card.y + cardHeight / 2 >= rectTop &&
-      //       card.y + cardHeight / 2 <= rectBottom
-      //     );
-      //   });
-
-      //   selectedCards.forEach((card) => {
-      //     card.isSelected = true;
-      //   });
-
-      //   console.log("Selected cards:", selectedCards);
       setSelectionRect(null);
-      // }
       const isLeftClick = ("evt" in e && e.evt.button === 0) || e.button === 0;
 
       if (!isLeftClick) return;
@@ -322,8 +288,8 @@ export function useCardDrag({
                   const offset = selectedCardsOffsets[index];
                   return {
                     ...c,
-                    x: x + offset.x,
-                    y: y + offset.y,
+                    x: isRotated ? x - offset.x : x + offset.x,
+                    y: isRotated ? y - offset.y : y + offset.y,
                     flipIndex: selectedCards[index].flipIndex,
                   };
                 }
@@ -334,8 +300,8 @@ export function useCardDrag({
               const offset = selectedCardsOffsets[index];
               return {
                 ...card,
-                x: x + offset.x,
-                y: y + offset.y,
+                x: isRotated ? x - offset.x : x + offset.x,
+                y: isRotated ? y - offset.y : y + offset.y,
               };
             });
             sendMessage({
