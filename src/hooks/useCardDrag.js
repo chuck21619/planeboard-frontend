@@ -301,33 +301,48 @@ export function useCardDrag({
           sendMessage({ type: "RETURN_TO_HAND", id: card.id, username });
         } else {
           //dragging within the board
-          // setCards((prev) =>
-          //   prev.map((c) =>
-          //     c.id === card.id ? { ...c, x, y, flipIndex: card.flipIndex } : c
-          //   )
-          // );
-          setCards((prev) =>
-            prev.map((c) => {
-              const index = selectedCards.findIndex((sc) => sc.id === c.id);
-              if (index !== -1) {
-                const offset = selectedCardsOffsets[index];
-                return {
-                  ...c,
-                  x: x + offset.x,
-                  y: y + offset.y,
-                  flipIndex: selectedCards[index].flipIndex,
-                };
-              }
-              return c;
-            })
-          );
-          sendMessage({
-            type: "MOVE_CARD",
-            id: card.id,
-            x,
-            y,
-            flipIndex: card.flipIndex,
-          });
+          if (selectedCards.length == 0) {
+            setCards((prev) =>
+              prev.map((c) =>
+                c.id === card.id ? { ...c, x, y, flipIndex: card.flipIndex } : c
+              )
+            );
+            sendMessage({
+              type: "MOVE_CARD",
+              id: card.id,
+              x,
+              y,
+              flipIndex: card.flipIndex,
+            });
+          } else {
+            setCards((prev) =>
+              prev.map((c) => {
+                const index = selectedCards.findIndex((sc) => sc.id === c.id);
+                if (index !== -1) {
+                  const offset = selectedCardsOffsets[index];
+                  return {
+                    ...c,
+                    x: x + offset.x,
+                    y: y + offset.y,
+                    flipIndex: selectedCards[index].flipIndex,
+                  };
+                }
+                return c;
+              })
+            );
+            const movedCards = selectedCards.map((card, index) => {
+              const offset = selectedCardsOffsets[index];
+              return {
+                ...card,
+                x: x + offset.x,
+                y: y + offset.y,
+              };
+            });
+            sendMessage({
+              type: "MOVE_CARDS",
+              cards: movedCards,
+            });
+          }
         }
       } else if (dragSource === "deckCardViewer") {
         if (isDroppingInHand) {

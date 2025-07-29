@@ -68,6 +68,14 @@ export function useRoomHandlers({
               : card
           )
         );
+      } else if (message.type === "CARDS_MOVED") {
+        setCards((prev) =>
+          prev.map((card) => {
+            const moved = message.cards.find((c) => c.id === card.id);
+            console.log("x: ", moved?.x, ", y: ", moved?.y);
+            return moved ? { ...card, x: moved.x, y: moved.y } : card;
+          })
+        );
       } else if (message.type === "USER_JOINED") {
         setDecks(message.decks);
         setPositions(message.positions);
