@@ -161,7 +161,7 @@ function Room() {
     selectedCardsOffsets,
     setSelectedCardsOffsets,
   });
-  const { tapCard } = useCardTap(setCards, hasMoved);
+  const tapCard = useCardTap(setCards, hasMoved, selectedCards);
   useRoomHandlers({
     roomId,
     setCards,
