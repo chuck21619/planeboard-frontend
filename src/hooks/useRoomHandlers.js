@@ -141,6 +141,15 @@ export function useRoomHandlers({
             card.id === message.id ? { ...card, tapped: message.tapped } : card
           )
         );
+      } else if (message.type === "CARDS_TAPPED") {
+        const tappedIds = message.cards.map((c) => c.id);
+        setCards((prevCards) =>
+          prevCards.map((card) =>
+            tappedIds.includes(card.id)
+              ? { ...card, tapped: message.tapped }
+              : card
+          )
+        );
       } else if (message.type === "DECK_SHUFFLED") {
         setDecks((prev) => {
           const newDecks = { ...prev };

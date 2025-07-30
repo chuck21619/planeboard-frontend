@@ -25,7 +25,7 @@ export function useCardTap(setCards, hasMoved, selectedCards) {
       if (tappingMultiple) {
         sendMessage({
           type: "TAP_CARDS",
-          ids: selectedIds,
+          cards: selectedCards,
           tapped: newTapped,
         });
       } else {
