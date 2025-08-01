@@ -262,14 +262,39 @@ export function useCardDrag({
 
       if (dragSource === "board") {
         if (isDroppingInHand) {
-          const untappedCard = { ...card, x, y, tapped: false, flipIndex: 0 };
-          setHand((prev) => [...prev, untappedCard]);
-          setCards((prev) => prev.filter((c) => c.id !== card.id));
-          setHandSizes((prev) => ({
-            ...prev,
-            [username]: prev[username] + 1,
-          }));
-          sendMessage({ type: "RETURN_TO_HAND", id: card.id, username });
+          if (selectedCards.length == 0) {
+            const untappedCard = { ...card, x, y, tapped: false, flipIndex: 0 };
+            setHand((prev) => [...prev, untappedCard]);
+            setCards((prev) => prev.filter((c) => c.id !== card.id));
+            setHandSizes((prev) => ({
+              ...prev,
+              [username]: prev[username] + 1,
+            }));
+            sendMessage({ type: "RETURN_TO_HAND", id: card.id, username });
+          } else {
+            const untappedCards = selectedCards.map((c) => ({
+              ...c,
+              x,
+              y,
+              tapped: false,
+              flipIndex: 0,
+            }));
+            setHand((prev) => [...prev, ...untappedCards]);
+            setCards((prev) =>
+              prev.filter((c) => !selectedCards.some((sc) => sc.id === c.id))
+            );
+            setHandSizes((prev) => ({
+              ...prev,
+              [username]: prev[username] + selectedCards.length,
+            }));
+            sendMessage({
+              type: "RETURN_CARDS_TO_HAND",
+              cards: selectedCards.map((c) => ({ id: c.id })),
+              username,
+            });
+
+            setSelectedCards([]);
+          }
         } else {
           //dragging within the board
           if (selectedCards.length == 0) {

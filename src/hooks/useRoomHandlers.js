@@ -211,6 +211,16 @@ export function useRoomHandlers({
           ...prev,
           [message.player]: message.handSize,
         }));
+      } else if (message.type === "RETURN_CARDS_TO_HAND") {
+        setCards((prevCards) =>
+          prevCards.filter(
+            (card) => !message.cards.some((c) => c.id === card.id)
+          )
+        );
+        setHandSizes((prev) => ({
+          ...prev,
+          [message.player]: message.handSize,
+        }));
       } else if (message.type === "TUTORED_TO_HAND") {
         setHandSizes((prev) => ({
           ...prev,
