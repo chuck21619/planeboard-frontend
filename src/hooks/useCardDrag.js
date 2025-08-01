@@ -112,8 +112,12 @@ export function useCardDrag({
         setHasMoved(true);
         if (pendingDragRef.current) {
           const selectedCardsOffsets = selectedCards.map((card) => ({
-            x: isRotated ? -card.x + pendingDragRef.current.card.x : card.x - pendingDragRef.current.card.x,
-            y: isRotated ? -card.y + pendingDragRef.current.card.y : card.y - pendingDragRef.current.card.y,
+            x: isRotated
+              ? -card.x + pendingDragRef.current.card.x
+              : card.x - pendingDragRef.current.card.x,
+            y: isRotated
+              ? -card.y + pendingDragRef.current.card.y
+              : card.y - pendingDragRef.current.card.y,
           }));
           setSelectedCardsOffsets(selectedCardsOffsets);
           let offsetX = 0;
@@ -160,7 +164,6 @@ export function useCardDrag({
     (e) => {
       if (e.evt.button !== 1) {
         if (e.evt.button === 0) {
-          console.log("clearing selected cards" + Date.now());
           if (pendingDragRef.current == null) {
             setSelectedCards([]);
             setSelectedCardsOffsets([]);
@@ -168,7 +171,9 @@ export function useCardDrag({
         }
         // Disable dragging for anything other than middle mouse
         e.target.getStage().draggable(false);
-        if (pendingDragRef.current == null) {
+        const isDiceRoller = !!e.target.findAncestor(".DiceRoller", true);
+        const isCounter = !!e.target.findAncestor(".Counter", true);
+        if (pendingDragRef.current == null && !isDiceRoller && !isCounter) {
           const { x, y } = e.target.getStage().getPointerPosition();
 
           const rect = canvasRef.current?.getBoundingClientRect();

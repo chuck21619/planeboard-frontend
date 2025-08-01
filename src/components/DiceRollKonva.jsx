@@ -72,6 +72,7 @@ export default function DiceRollKonva({
   }, [hovered]);
   return (
     <Group
+      name="DiceRoller"
       x={x}
       y={y}
       draggable={!spectator}

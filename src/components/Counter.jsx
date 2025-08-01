@@ -35,6 +35,7 @@ export default function Counter({
   }, [hovered]);
   return (
     <Group
+      name="Counter"
       x={x}
       y={y}
       draggable={!spectator}
@@ -63,7 +64,6 @@ export default function Counter({
       onClick={(e) => {
         if (spectator) return;
         if (e.evt.button === 0) {
-          console.log("on click");
           e.evt.preventDefault();
           handleChange(count + 1);
         }
