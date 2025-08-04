@@ -432,6 +432,8 @@ function Room() {
           setHand={setHand}
           setDecks={setDecks}
           onClose={() => setCardDraggedToDeckMenuVisible(false)}
+          selectedCards={selectedCards}
+          setSelectedCards={setSelectedCards}
         />
         <BoardContextMenu
           visible={boardMenuVisible}

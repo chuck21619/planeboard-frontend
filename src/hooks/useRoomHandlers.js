@@ -186,11 +186,54 @@ export function useRoomHandlers({
         setHandSizes((prev) => {
           return { ...prev, ...handSize };
         });
+      } else if (
+        message.type === "CARDS_TO_TOP_OF_DECK" ||
+        message.type === "CARDS_TO_BOTTOM_OF_DECK"
+      ) {
+        const {
+          deckId,
+          deckCards,
+          handSize,
+          ids: removedIds,
+          source,
+        } = message;
+        if (source === "board") {
+          setCards((prevCards) =>
+            prevCards.filter((card) => !removedIds.includes(card.id))
+          );
+        }
+        setDecks((prev) => {
+          const newDecks = { ...prev };
+          if (newDecks[deckId]) {
+            newDecks[deckId].cards = deckCards;
+          }
+          return newDecks;
+        });
+        setHandSizes((prev) => {
+          return { ...prev, ...handSize };
+        });
       } else if (message.type === "CARD_TO_SHUFFLE_IN_DECK") {
         const { deckId, deckCards, handSize, id: removedId, source } = message;
         if (source === "board") {
           setCards((prevCards) =>
             prevCards.filter((card) => card.id !== removedId)
+          );
+        }
+        setDecks((prev) => {
+          const newDecks = { ...prev };
+          if (newDecks[deckId]) {
+            newDecks[deckId].cards = deckCards;
+          }
+          return newDecks;
+        });
+        setHandSizes((prev) => {
+          return { ...prev, ...handSize };
+        });
+      } else if (message.type === "CARDS_TO_SHUFFLE_IN_DECK") {
+        const { deckId, deckCards, handSize, ids: cardIds, source } = message;
+        if (source === "board") {
+          setCards((prevCards) =>
+            prevCards.filter((card) => !cardIds.some((c) => c.id === card.id))
           );
         }
         setDecks((prev) => {

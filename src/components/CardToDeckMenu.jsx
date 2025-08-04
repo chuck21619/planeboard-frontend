@@ -11,62 +11,106 @@ export default function CardToDeckMenu({
   setCards,
   setDecks,
   onClose,
+  selectedCards,
+  setSelectedCards,
 }) {
   if (!visible || !card) return null;
 
   const handleMove = (placement) => {
+    const cardsToMove = selectedCards.length !== 0 ? selectedCards : [card];
     const moveCard = () => {
       if (dragSource === "board") {
-        setCards((prev) => prev.filter((c) => c.id !== card.id));
+        if (selectedCards.length == 0) {
+          setCards((prev) => prev.filter((c) => c.id !== card.id));
+        } else {
+          setCards((prev) =>
+            prev.filter((c) => !selectedCards.some((sc) => sc.id === c.id))
+          );
+        }
       }
-      setHand((prev) => prev.filter((c) => c.id !== card.id));
+      setHand((prev) =>
+        prev.filter((c) => !cardsToMove.some((mc) => mc.id === c.id))
+      );
     };
 
     const sendCardMessage = (type) => {
-      sendMessage({
-        type,
-        username: deckId,
-        source: dragSource,
-        card: {
-          id: card.id,
-          name: card.name,
-          imageUrl: card.imageUrl,
-          imageUrlBack: card.imageUrlBack,
-          uid: card.uid,
-          hasTokens: card.hasTokens,
-          numFaces: card.numFaces,
-          x: 0,
-          y: 0,
-          tapped: false,
-          flipIndex: 0,
-          token: card.token,
-        },
-      });
+      if (selectedCards.length !== 0) {
+        sendMessage({
+          type,
+          username: deckId,
+          source: dragSource,
+          cards: selectedCards,
+        });
+      } else {
+        sendMessage({
+          type,
+          username: deckId,
+          source: dragSource,
+          card: card,
+        });
+      }
     };
 
     if (placement === "top") {
-      setDecks((prev) => {
-        const copy = { ...prev };
-        const target = [...(copy[deckId]?.cards || [])];
-        copy[deckId].cards = [card, ...target];
-        return copy;
-      });
-      moveCard();
-      sendCardMessage("CARD_TO_TOP_OF_DECK");
+      if (selectedCards.length == 0) {
+        setDecks((prev) => {
+          const copy = { ...prev };
+          const target = [...(copy[deckId]?.cards || [])];
+          copy[deckId].cards = [card, ...target];
+          return copy;
+        });
+        moveCard();
+        sendCardMessage("CARD_TO_TOP_OF_DECK");
+      } else {
+        setDecks((prev) => {
+          const copy = { ...prev };
+          const target = [...(copy[deckId]?.cards || [])];
+          copy[deckId].cards = [...cardsToMove, ...target];
+          return copy;
+        });
+        moveCard();
+        sendCardMessage("CARDS_TO_TOP_OF_DECK");
+      }
     } else if (placement === "bottom") {
-      setDecks((prev) => {
-        const copy = { ...prev };
-        const target = [...(copy[deckId]?.cards || [])];
-        copy[deckId].cards = [...target, card];
-        return copy;
-      });
-      moveCard();
-      sendCardMessage("CARD_TO_BOTTOM_OF_DECK");
+      if (selectedCards.length == 0) {
+        setDecks((prev) => {
+          const copy = { ...prev };
+          const target = [...(copy[deckId]?.cards || [])];
+          copy[deckId].cards = [...target, card];
+          return copy;
+        });
+        moveCard();
+        sendCardMessage("CARD_TO_BOTTOM_OF_DECK");
+      } else {
+        setDecks((prev) => {
+          const copy = { ...prev };
+          const target = [...(copy[deckId]?.cards || [])];
+          copy[deckId].cards = [...target, ...cardsToMove];
+          return copy;
+        });
+        moveCard();
+        sendCardMessage("CARDS_TO_BOTTOM_OF_DECK");
+      }
     } else if (placement === "shuffle") {
-      moveCard();
-      sendCardMessage("CARD_TO_SHUFFLE_IN_DECK");
+      if (selectedCards.length == 0) {
+        moveCard();
+        sendCardMessage("CARD_TO_SHUFFLE_IN_DECK");
+      } else {
+        setDecks((prev) => {
+          const copy = { ...prev };
+          const shuffled = [
+            ...(copy[deckId]?.cards || []),
+            ...cardsToMove,
+          ].sort(() => Math.random() - 0.5);
+          copy[deckId].cards = shuffled;
+          return copy;
+        });
+        moveCard();
+        sendCardMessage("CARDS_TO_SHUFFLE_IN_DECK");
+      }
     }
 
+    setSelectedCards([]);
     onClose();
   };
 
